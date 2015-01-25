@@ -1,0 +1,5 @@
+F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\bin\Debug\Archiv.dll
+F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\bin\Debug\Archiv.pdb
+F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\obj\Debug\Archiv.csprojResolveAssemblyReference.cache
+F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\obj\Debug\Archiv.dll
+F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\obj\Debug\Archiv.pdb
