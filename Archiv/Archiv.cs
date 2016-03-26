@@ -11,8 +11,8 @@ namespace Archiv1
     /// </summary>
     public class Archiv
     {
-        private int MainCounter = 128;
-        private int PackByte = 45;
+        public int MainCounter = 128;
+        public int PackByte = 45;
 
 
         public Archiv()
@@ -129,30 +129,33 @@ namespace Archiv1
             string[] Files = ByteArrayToString(getBytes[0].ToArray()).Split(new string[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
             if (getBytes.Count == 1 && Files.Length != 1)
             {
-             //   this.Instance.err.AddError("Invalid file, it couldn't be extracted!");
+                // this.Instance.err.AddError("Invalid file, it couldn't be extracted!");
                 return;
             }
 
             string[] rFiles = new string[] { };
-            string[] rFolders = new string[] {};
+            string[] rFolders = new string[] { };
 
             if (Files.Length - 1 == 0 || Files.Length - 1 == 1)
                 rFiles = Files[0].Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
             if (Files.Length - 1 == 1)
                 rFolders = Files[1].Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
+            for (int i = 0; i <= rFolders.Length - 1; i++)
+            {
+                try
+                {
+                    rFolders[i] = rFolders[i].Replace(">", string.Empty).Replace("<", string.Empty);
+                    System.IO.Directory.CreateDirectory(System.IO.Path.Combine(Folder, this.correctingPath(rFolders[i])));
+                }
+                catch { }
+            }
 
             int count = 1;
             for (int x = 0; x <= getBytes.Count - 1; x++)
             {
                 if (x != 0)
                 {
-                    try
-                    {
-                        rFolders[count - 1] = rFolders[count - 1].Replace(">", string.Empty).Replace("<", string.Empty);
-                        System.IO.Directory.CreateDirectory(System.IO.Path.Combine(Folder, correctingPath(rFolders[count - 1])));
-                    }
-                    catch { }
                     string FileName = correctingPath(rFiles[count - 1]);
                     try
                     {
@@ -164,8 +167,8 @@ namespace Archiv1
                         System.IO.File.WriteAllBytes(Path, getBytes[x].ToArray());
                     }
                     catch (Exception e)
-                    { 
-                    //    this.Instance.err.AddError("The file couldn't be written: " + e.Message); 
+                    {
+                        // this.Instance.err.AddError("The file couldn't be written: " + e.Message); 
                     }
                     count++;
                 }
