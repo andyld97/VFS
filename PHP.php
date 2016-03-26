@@ -44,21 +44,27 @@ if ($fCount == 0 || $fCount == 1)
 if ($fCount == 1)
 	$rFolders = explode(",", $files[1]);
 
+for ($i = 0; $i <= count($rFolders) - 1; $i++)
+{
+	try 
+	{
+			$rFolders[$i] = str_replace(">", "", $rFolders[$i]);
+			$rFolders[$i] = str_replace("<", "", $rFolders[$i]);
+			$pt = correctionPath($rFolders[$i]);
+			if ($pt != "" && !is_dir($pt))
+				mkdir(correctionPath($rFolders[$i]), 0777, true);
+	} 
+	catch (Exception $e) 
+	{
+			
+	}
+}
+
 $count = 1;
 for ($xy = 0; $xy <= count($byteList) - 1; $xy++)
 {
 	if ($xy != 0)
 	{
-		try 
-		{
-			$rFolders[$count - 1] = str_replace(">", "", $rFolders[$count - 1]);
-			$rFolders[$count - 1] = str_replace("<", "", $rFolders[$count - 1]);
-			$pt = correctionPath($rFolders[$count - 1]);
-			if ($pt != "" && !is_dir($pt))
-				mkdir(correctionPath($rFolders[$count - 1]), 0777, true);
-		} catch (Exception $e) {
-			
-		}
 		$fileName = correctionPath($rFiles[$count - 1]);
 		try 
 		{
