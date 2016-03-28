@@ -77,7 +77,11 @@ void archiv::extract(std::string finalPath)
 
         for (std::vector<std::string>::iterator folder = rFolders.begin(); folder != rFolders.end(); ++folder)
         {
-            std::string currentFolder (this->replaceString(this->replaceString(*folder, ">" , ""), "<", ""));
+            std::string current (*folder);
+            this->replaceString(&current, "<", "");
+            this->replaceString(&current, ">" , "");
+
+            std::string currentFolder (*folder);
             std::string path = this->correctionPath(currentFolder);
 
             if (path != "")
@@ -153,15 +157,14 @@ void archiv::createDirectory(std::string path)
 
 }
 
-std::string archiv::replaceString(std::string str, const std::string& search, const std::string& replace)
+void archiv::replaceString(std::string *str, const std::string search, const std::string replace)
 {
     size_t pos = 0;
-    while ((pos = str.find(search, pos)) != std::string::npos)
+    while ((pos = str->find(search, pos)) != std::string::npos)
     {
-        str.replace(pos, search.length(), replace);
+        *str = str->replace(pos, search.length(), replace);
         pos += replace.length();
     }
-    return str;
 }
 
 bool archiv::checkNextItems(int count, int byte, int index, QStringList *ls)
@@ -200,7 +203,7 @@ std::string archiv::correctionPath(std::string file)
     for (uint i = 1; i <= file.length() - 1; i++)
         outputString += file.at(i);
 
-    outputString = this->replaceString(outputString, "\\", "/");
+    this->replaceString(&outputString, "\\", "/");
     return outputString;
 }
 

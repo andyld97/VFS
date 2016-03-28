@@ -24,7 +24,7 @@ private:
     bool checkNextItems(int count, int byte, int index, QStringList* ls);
     std::__cxx11::string convertIntToChar(int value);
     std::vector<std::__cxx11::string> split(std::__cxx11::string sequence, char sep);
-    std::string replaceString(std::string str, const std::string& search, const std::string& replace);
+    void replaceString(std::string *str, const std::__cxx11::string search, const std::__cxx11::string replace);
     std::string correctionPath(std::string file);
     void createDirectory(std::string path);
 
