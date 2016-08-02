@@ -1,5 +1,12 @@
-F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\bin\Debug\Archiv.dll
-F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\bin\Debug\Archiv.pdb
-F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\obj\Debug\Archiv.csprojResolveAssemblyReference.cache
-F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\obj\Debug\Archiv.dll
-F:\Andy's Dokumente\Eigene Librays\Archiv\Archiv\obj\Debug\Archiv.pdb
+F:\Andy's Dokumente\Archiv\Archiv\bin\Debug\Archiv.exe
+F:\Andy's Dokumente\Archiv\Archiv\bin\Debug\Archiv.pdb
+F:\Andy's Dokumente\Archiv\Archiv\bin\Debug\VFS.dll
+F:\Andy's Dokumente\Archiv\Archiv\bin\Debug\VFS.pdb
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.csprojResolveAssemblyReference.cache
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.Properties.Resources.resources
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.csproj.GenerateResource.Cache
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.exe
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.pdb
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.GUI.frmAbout.resources
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.GUI.frmExplorer.resources
+F:\Andy's Dokumente\Archiv\Archiv\obj\Debug\Archiv.GUI.Tab.Dialog.AddFolderDirectoryDialog.AddFolderDirectoryDialog.resources
