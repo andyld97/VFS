@@ -22,6 +22,7 @@ namespace Archiv.GUI.Tab
         private Directory currentDirectory = null;
         private const int distance = 32;
         private Point mouseLocation = new Point();
+        private static List<string> lstPaths = new List<string>();
 
         public delegate void onSelectedChanged(Element currentElement);
         public event onSelectedChanged OnSelectedChanged;
@@ -183,7 +184,15 @@ namespace Archiv.GUI.Tab
             this.UpdateStyles();
 
             this.path = path;
-            this.currentFileSystem = new VFS.VFS(System.IO.Path.Combine(Application.StartupPath, "Log.log"), path, 128, 45);
+
+            // Load settings here
+            Settings sc = Settings.Read();
+
+            if (vTabPage.lstPaths.Contains(path))
+                throw new InvalidOperationException("File is open already");
+
+            vTabPage.lstPaths.Add(path);
+            this.currentFileSystem = new VFS.VFS(System.IO.Path.Combine(Application.StartupPath, "Log.log"), path, sc.MainCounter, sc.PackByte);
             this.currentFileSystem.Read(path);
             this.currentFileSystem.OnReady += CurrentFileSystem_OnReady;
             this.currentFileSystem.RootDirectory.OnChanged += RootDirectory_OnChanged;
