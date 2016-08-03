@@ -35,6 +35,9 @@
     <ApplicationIcon>Packer.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Serialization">
+      <HintPath>..\..\..\Eigene Dateien\Desktop\UserInterface Projekt\UserInterface\UserInterface\bin\Debug\Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -62,6 +65,25 @@
     <Compile Include="GUI\frmExplorer.designer.cs">
       <DependentUpon>frmExplorer.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\frmPack.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\frmPack.Designer.cs">
+      <DependentUpon>frmPack.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\frmSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\frmSettings.Designer.cs">
+      <DependentUpon>frmSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\InputDialog.Designer.cs">
+      <DependentUpon>InputDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Settings.cs" />
     <Compile Include="GUI\Tab\Dialog\AddFolderDirectoryDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -83,6 +105,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\frmExplorer.resx">
       <DependentUpon>frmExplorer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\frmPack.resx">
+      <DependentUpon>frmPack.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\frmSettings.resx">
+      <DependentUpon>frmSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\InputDialog.resx">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Tab\Dialog\AddFolderDirectoryDialog.resx">
       <DependentUpon>AddFolderDirectoryDialog.cs</DependentUpon>
@@ -109,6 +140,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Packer.ico" />
+    <None Include="Resources\Back.png" />
+    <None Include="Resources\Rename.png" />
+    <None Include="Resources\Open1.png" />
+    <None Include="Resources\checklist-icon.png" />
+    <None Include="Resources\Open.png" />
+    <None Include="Resources\LeftArrow.png" />
+    <None Include="Resources\RIghtArrow.png" />
+    <None Include="Resources\Book%283%29.png" />
+    <None Include="Resources\Abort.png" />
+    <None Include="Resources\Eigene Dateien.png" />
+    <None Include="Resources\Book.png" />
+    <None Include="Resources\Settings.png" />
+    <None Include="Resources\Logo.jpg" />
     <None Include="Resources\unknwon.png" />
     <None Include="Resources\RightBlue.png" />
     <None Include="Resources\next.png" />

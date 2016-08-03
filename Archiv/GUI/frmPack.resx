@@ -117,26 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label1.Text" xml:space="preserve">
-    <value>Archiv ist ein, von Code A Software, entwickeltes Dateiformat, das es
-ermöglicht, eine Dateien und Ordner in eine Datei zu verpacken. Dabei
-funktioniert es jetzt mit VFS.dll (Virtual File System). D.h. die Daten werden
-in dem Arbeitspeicher geschrieben oder auch aus dem Arbeitsspeicher gelesen,
-ohne das vorher Änderungen an der eigentlichen Datei entstehen. Dabei kann
-man sich aber einstellen, ob zwischengespeichert werden soll, oder nicht.
-Schließlich könnte dies sonst ein Problem werden, sobald der Strom ausfällt oder
-der Rechner abstürtzt. Dann sind alle Daten im Arbeitsspeicher nicht mehr vorhanden.
-Archiv bzw. VFS.dll ist NICHT zum komprimieren der Dateien geeignet, sondern die
-Dateien werden größer. Um die Dateien auseinanderzuhalten ist es notwendig,
-sie mit mehreren Trennzeichen zu verpacken, damit keine Korruptionen auftreten.
-Dabei können Korruptionen immer noch auftreten, dann sollte die Zahl der Trennstriche
-erhöhrt werden. Das Format selber weiß aber die Anzahl der Striche derzeit noch nicht.
-Es werden nur Dateien bis 2 GB unterstützt, wobei es nicht sinnvoll ist, solche großen Dateien
-zu verwenden. Das Format ist dafür ausgerichtet, Einstellungsdateien und z.B. kleine Daten
-(z.B. Bilder oder Musik) zu speichern.
-Um das VFS zu verwenden, können Sie einfach die VFS.dll in Ihr VS-Projekt einbinden.
-Genauere Infos dazu gibt es auf GitHub.</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

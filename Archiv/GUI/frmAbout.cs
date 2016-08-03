@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Deployment.Application;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,31 @@ namespace Archiv.GUI
 
         private void frmAbout_Load(object sender, EventArgs e)
         {
+            this.lblVersion.Text = "Version: " + Application.ProductVersion.ToString();
+        }
 
+        private void lnkGitHub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("https://github.com/andy123456789088/Archiv");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(this, "Die Seite https://github.com/andy123456789088/Archiv konnte nicht aufgerufen werden!", "Seite konnte nicht geöffnet werden!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void lnkHomepage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("http://seite.bplaced.net");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(this, "Die Seite http://seite.bplaced.net konnte nicht aufgerufen werden!", "Seite konnte nicht geöffnet werden!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
