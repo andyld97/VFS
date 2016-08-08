@@ -4,3 +4,4 @@ F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.Properties.Resources.re
 F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.csproj.GenerateResource.Cache
 F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.dll
 F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.pdb
+F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.csprojResolveAssemblyReference.cache

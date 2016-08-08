@@ -594,6 +594,19 @@ namespace VFS
                 passDirs(this.rootDir);
 
                 // Create files
+                foreach (File currentFile in this.rootDir.Files)
+                {
+                    string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.Path));
+                    try
+                    {
+                        System.IO.File.WriteAllBytes(path, currentFile.Bytes.ToArray());
+                    }
+                    catch (Exception e)
+                    {
+                        this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + path }, e.Message);
+                    }
+                }
+
                 Action<Directory> passFiles = null;
 
                 passFiles = new Action<Directory>((Directory dir) => {

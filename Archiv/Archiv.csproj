@@ -34,6 +34,9 @@
   <PropertyGroup>
     <ApplicationIcon>Packer.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Serialization">
       <HintPath>..\..\..\Eigene Dateien\Desktop\UserInterface Projekt\UserInterface\UserInterface\bin\Debug\Serialization.dll</HintPath>
@@ -128,6 +131,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

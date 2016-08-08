@@ -218,20 +218,18 @@ namespace VFS
             string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
 
             Directory firstNode = this;
-            int index = 0;
 
-            while (index <= segments.Length - 1)
+            foreach (Directory subDir in firstNode.SubDirs)
             {
-                foreach (Directory subDir in firstNode.SubDirs)
+                for (int i = 0; i <= segments.Length - 1; i++)
                 {
-                    if (segments[index] == subDir.Name)
+                    if (segments[i] == subDir.Name)
                     {
                         firstNode = subDir;
-                        index++;
                         break;
                     }
                 }
-            }
+            }            
 
             if (firstNode != null && firstNode.Parent != null)
             {
