@@ -2,7 +2,7 @@
 // frmExplorer.cs written by Code A Software (http://www.seite.bplaced.net)
 // All rights reserved
 // Created on:      11.04.2016
-// Last update on:  03.08.2016
+// Last update on:  17.10.2016
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -116,12 +116,14 @@ namespace Archiv.GUI
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (this.currentFile != null)
+            Tab.vTabPage selctedTabPage = this.tbcFiles.SelectedTab as Tab.vTabPage;
+            if (this.currentFile != null && selctedTabPage != null)
             {
-                Tab.vTabPage selctedTabPage = this.tbcFiles.SelectedTab as Tab.vTabPage;
                 selctedTabPage.CurrentFileSystem.WriteAllText(this.txtNotepad.Text, this.currentFile.Name, selctedTabPage.CurrentDirectory, true);
                 selctedTabPage.CurrentFileSystem.Save();
             }
+            else
+                MessageBox.Show(this, "Das Speichern dieser Datei ist nicht möglich, da entweder der Tab geschlossen wurde, oder die Datei nicht mehr existiert!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void tpNotepad_Click(object sender, EventArgs e)

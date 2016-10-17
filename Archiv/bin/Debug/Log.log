@@ -1,12 +1,253 @@
-08.08.2016 @ 12:05:17: Das Dateisystem wurde initalisiert | F:\Andy's Dokumente\Archiv\Archiv\bin\Debug\Log.log
-08.08.2016 @ 12:05:17: Es wurde eine Änderung am Dateisystem vorgenommen | Action: AddedPath
-08.08.2016 @ 12:05:17: Es wurde eine Änderung am Dateisystem vorgenommen | Action: AddedFile
-08.08.2016 @ 12:05:17: Die Datei existiert bereits | File: Archiv.exe,Path: \Archiv.exe
-08.08.2016 @ 12:05:17: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:MZ,
-08.08.2016 @ 12:05:17: Die Datei existiert bereits | File: Serialization.dll,Path: \Serialization.dll
-08.08.2016 @ 12:05:17: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:MZ,
-08.08.2016 @ 12:05:17: Die Datei existiert bereits | File: Settings.xml,Path: \Settings.xml
-08.08.2016 @ 12:05:17: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
-08.08.2016 @ 12:05:17: Die Datei existiert bereits | File: VFS.dll,Path: \VFS.dll
-08.08.2016 @ 12:05:17: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:MZ,
-08.08.2016 @ 12:05:28: Eine neue Datei wurde hinzugefügt | File: Archiv.ico,Path: \Archiv.ico
+17.10.2016 @ 23:23:39: Das Dateisystem wurde initalisiert | F:\Andy's Dokumente\Archiv\Archiv\bin\Debug\Log.log
+17.10.2016 @ 23:23:39: Es wurde eine Änderung am Dateisystem vorgenommen | Action: AddedPath
+17.10.2016 @ 23:23:39: Es wurde eine Änderung am Dateisystem vorgenommen | Action: AddedFile
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Mail.pro,Path: \Projekte\Mail\Mail\Mail.pro
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#-,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Mail.pro.user,Path: \Projekte\Mail\Mail\Mail.pro.user
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: main.cpp,Path: \Projekte\Mail\Mail\main.cpp
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: mainwindow.cpp,Path: \Projekte\Mail\Mail\mainwindow.cpp
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: mainwindow.h,Path: \Projekte\Mail\Mail\mainwindow.h
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: mainwindow.ui,Path: \Projekte\Mail\Mail\mainwindow.ui
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<u,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Mail,Path: \Projekte\Mail\Mail\Build\Mail
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: main.o,Path: \Projekte\Mail\Mail\Build\main.o
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\Mail\Mail\Build\mainwindow.o
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Makefile,Path: \Projekte\Mail\Mail\Build\Makefile
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\Mail\Mail\Build\moc_mainwindow.cpp
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\Mail\Mail\Build\moc_mainwindow.o
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\Mail\Mail\Build\ui_mainwindow.h
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Nachricht.mp3,Path: \Projekte\Mail\Mail\Files\Nachricht.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿû,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: main.o,Path: \Projekte\Musik\Build\main.o
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\Musik\Build\mainwindow.o
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Makefile,Path: \Projekte\Musik\Build\Makefile
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\Musik\Build\moc_mainwindow.cpp
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\Musik\Build\moc_mainwindow.o
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: Musik,Path: \Projekte\Musik\Build\Musik
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\Musik\Build\ui_mainwindow.h
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 01.mp3,Path: \Projekte\Musik\Files\01.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 02.mp3,Path: \Projekte\Musik\Files\02.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 03.mp3,Path: \Projekte\Musik\Files\03.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 04.mp3,Path: \Projekte\Musik\Files\04.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 05.mp3,Path: \Projekte\Musik\Files\05.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 06.mp3,Path: \Projekte\Musik\Files\06.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 07.mp3,Path: \Projekte\Musik\Files\07.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 08.mp3,Path: \Projekte\Musik\Files\08.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:39: Die Datei existiert bereits | File: 09.mp3,Path: \Projekte\Musik\Files\09.mp3
+17.10.2016 @ 23:23:39: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: 10.mp3,Path: \Projekte\Musik\Files\10.mp3
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ID,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: abort,Path: \Projekte\Musik\Files\abort
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: index.index,Path: \Projekte\Musik\Files\index.index
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/h,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.cpp,Path: \Projekte\Musik\Projekt\Musik\main.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.cpp,Path: \Projekte\Musik\Projekt\Musik\mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.h,Path: \Projekte\Musik\Projekt\Musik\mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.ui,Path: \Projekte\Musik\Projekt\Musik\mainwindow.ui
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<u,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Musik.pro,Path: \Projekte\Musik\Projekt\Musik\Musik.pro
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#-,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Musik.pro.user,Path: \Projekte\Musik\Projekt\Musik\Musik.pro.user
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.o,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\main.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Makefile,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\Makefile
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\moc_mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\moc_mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Musik,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\Musik
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\Musik\Projekt\Musik-build-desktop-Qt_4_8_2__System__Release\ui_mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.o,Path: \Projekte\NIS\Build\main.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\NIS\Build\mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Makefile,Path: \Projekte\NIS\Build\Makefile
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\NIS\Build\moc_mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\NIS\Build\moc_mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_weather.cpp,Path: \Projekte\NIS\Build\moc_weather.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_weather.o,Path: \Projekte\NIS\Build\moc_weather.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: NIS,Path: \Projekte\NIS\Build\NIS
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\NIS\Build\ui_mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: weather.o,Path: \Projekte\NIS\Build\weather.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Index.index,Path: \Projekte\NIS\Files\Index.index
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/h,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Index.index.old,Path: \Projekte\NIS\Files\Index.index.old
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/h,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Index.index.old.old,Path: \Projekte\NIS\Files\Index.index.old.old
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/h,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: ip.php,Path: \Projekte\NIS\Files\ip.php
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:17,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: news.html,Path: \Projekte\NIS\Files\news.html
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<s,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: w1.html,Path: \Projekte\NIS\Files\w1.html
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<a,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: weather2.php%3Fq=1,Path: \Projekte\NIS\Files\weather2.php%3Fq=1
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:So,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Weihnachten (WP1).jpg,Path: \Projekte\NIS\Files\Weihnachten (WP1).jpg
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿØ,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: WP1.jpg,Path: \Projekte\NIS\Files\WP1.jpg
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿØ,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: WP2.jpg,Path: \Projekte\NIS\Files\WP2.jpg
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿØ,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: WPNight.jpg,Path: \Projekte\NIS\Files\WPNight.jpg
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿØ,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.cpp,Path: \Projekte\NIS\NIS\NIS\main.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.cpp,Path: \Projekte\NIS\NIS\NIS\mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.h,Path: \Projekte\NIS\NIS\NIS\mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.ui,Path: \Projekte\NIS\NIS\NIS\mainwindow.ui
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: NIS.pro,Path: \Projekte\NIS\NIS\NIS\NIS.pro
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#-,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: NIS.pro.user,Path: \Projekte\NIS\NIS\NIS\NIS.pro.user
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: NIS.pro.user.1.3,Path: \Projekte\NIS\NIS\NIS\NIS.pro.user.1.3
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: weather.cpp,Path: \Projekte\NIS\NIS\NIS\weather.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: weather.h,Path: \Projekte\NIS\NIS\NIS\weather.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.o,Path: \Projekte\Pizza\Build\main.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\Pizza\Build\mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Makefile,Path: \Projekte\Pizza\Build\Makefile
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\Pizza\Build\moc_mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\Pizza\Build\moc_mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Pizza,Path: \Projekte\Pizza\Build\Pizza
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\Pizza\Build\ui_mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.cpp,Path: \Projekte\Pizza\Projekt\main.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.cpp,Path: \Projekte\Pizza\Projekt\mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.h,Path: \Projekte\Pizza\Projekt\mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.ui,Path: \Projekte\Pizza\Projekt\mainwindow.ui
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Pizza.pro,Path: \Projekte\Pizza\Projekt\Pizza.pro
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#-,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Pizza.pro.user,Path: \Projekte\Pizza\Projekt\Pizza.pro.user
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.o,Path: \Projekte\Wecker\Build\main.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\Wecker\Build\mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Makefile,Path: \Projekte\Wecker\Build\Makefile
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\Wecker\Build\moc_mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\Wecker\Build\moc_mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\Wecker\Build\ui_mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Wecker,Path: \Projekte\Wecker\Build\Wecker
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Data.txt,Path: \Projekte\Wecker\Files\Data.txt
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:-1,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Nachricht.mp3,Path: \Projekte\Wecker\Files\Nachricht.mp3
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:-ÿ,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Wecker.mp3,Path: \Projekte\Wecker\Files\Wecker.mp3
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿû,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date1,Path: \Projekte\Wecker\Files\Date\Date1
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:06,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date2,Path: \Projekte\Wecker\Files\Date\Date2
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:06,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date3,Path: \Projekte\Wecker\Files\Date\Date3
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:06,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date4,Path: \Projekte\Wecker\Files\Date\Date4
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:06,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date5,Path: \Projekte\Wecker\Files\Date\Date5
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:06,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date6,Path: \Projekte\Wecker\Files\Date\Date6
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:10,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Date7,Path: \Projekte\Wecker\Files\Date\Date7
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:10,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.cpp,Path: \Projekte\Wecker\Projekt\main.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.cpp,Path: \Projekte\Wecker\Projekt\mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.h,Path: \Projekte\Wecker\Projekt\mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.ui,Path: \Projekte\Wecker\Projekt\mainwindow.ui
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Wecker.pro,Path: \Projekte\Wecker\Projekt\Wecker.pro
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#-,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Wecker.pro.user,Path: \Projekte\Wecker\Projekt\Wecker.pro.user
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.o,Path: \Projekte\Weihnachten\Build\main.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.o,Path: \Projekte\Weihnachten\Build\mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Makefile,Path: \Projekte\Weihnachten\Build\Makefile
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:##,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.cpp,Path: \Projekte\Weihnachten\Build\moc_mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: moc_mainwindow.o,Path: \Projekte\Weihnachten\Build\moc_mainwindow.o
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: ui_mainwindow.h,Path: \Projekte\Weihnachten\Build\ui_mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:/*,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Weihnachten,Path: \Projekte\Weihnachten\Build\Weihnachten
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:E,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: WP1.jpg,Path: \Projekte\Weihnachten\Files\WP1.jpg
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:ÿØ,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: main.cpp,Path: \Projekte\Weihnachten\Projekt\Weihnachten\main.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.cpp,Path: \Projekte\Weihnachten\Projekt\Weihnachten\mainwindow.cpp
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.h,Path: \Projekte\Weihnachten\Projekt\Weihnachten\mainwindow.h
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#i,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: mainwindow.ui,Path: \Projekte\Weihnachten\Projekt\Weihnachten\mainwindow.ui
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<u,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Weihnachten.pro,Path: \Projekte\Weihnachten\Projekt\Weihnachten\Weihnachten.pro
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:#-,
+17.10.2016 @ 23:23:40: Die Datei existiert bereits | File: Weihnachten.pro.user,Path: \Projekte\Weihnachten\Projekt\Weihnachten\Weihnachten.pro.user
+17.10.2016 @ 23:23:40: Die Datei existiert schon, enthält aber keinen Inhalt, deswegen wird die Datei überschrieben | Bytes:<?,

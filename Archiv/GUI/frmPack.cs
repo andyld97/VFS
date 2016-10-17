@@ -2,7 +2,7 @@
 // frmSettings.cs written by Code A Software (http://www.seite.bplaced.net)
 // All rights reserved
 // Created on:      03.08.2016
-// Last update on:  03.08.2016
+// Last update on:  17.10.2016
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -106,6 +106,7 @@ namespace Archiv.GUI
 
                         string nPath = string.Empty;
                         bool doAdding = false;
+
                         for (int i = 0; i <= segements.Length - 1; i++)
                         {
                             if (segements[i] == vDir.Name)
@@ -118,10 +119,16 @@ namespace Archiv.GUI
                                 nPath += segements[i] + @"\";
                         }
 
-                        vDir.AddPathes(new string[] { nPath  });
-                        this.addItemToStateBox(nPath + " wurde erstellt ...");
+                        if (!string.IsNullOrEmpty(nPath))
+                        {
+                            vDir.AddPathes(new string[] { nPath });
+                            this.addItemToStateBox(nPath + " wurde erstellt");
+                        }
+                        else
+                            this.addItemToStateBox(vDir.Name + " wurde erstellt");
 
-                        VFS.Directory lastDirectory = VFS.Directory.CalculateLastNode(vDir, nPath);
+                        VFS.Directory lastDirectory = (nPath == string.Empty ? vDir : VFS.Directory.CalculateLastNode(vDir, nPath));
+
                         foreach (var fi in data.GetFiles())
                         {
                             VFS.File currentFile = new VFS.File(fi.Name, lastDirectory);
@@ -131,8 +138,8 @@ namespace Archiv.GUI
                                 this.addItemToStateBox(currentFile.Path + " wurde kopiert ...");
                             }
                             catch (Exception)
-                            {
-                                this.addItemToStateBox(currentFile.Path + "konnte nicht kopiert werden ...");
+                            {                               
+                                this.addItemToStateBox(currentFile.Path + " konnte nicht kopiert werden ...");
                             }
                             lastDirectory.Files.Add(currentFile);
                         }
@@ -269,10 +276,7 @@ namespace Archiv.GUI
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
                 if (sfd.ShowDialog(this) == DialogResult.OK)
-                {
-                    if (!sfd.FileName.EndsWith(".ap"))
-                        this.txtPath.Text = sfd.FileName + ".ap";
-                }
+                    this.txtPath.Text = (!sfd.FileName.EndsWith(".ap") ? sfd.FileName + ".ap" : sfd.FileName);
             }
         }
 
