@@ -70,7 +70,7 @@ namespace Setup
         private void lblHomepage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             try {
-                System.Diagnostics.Process.Start("http://www.seite.bplaced.net");
+                System.Diagnostics.Process.Start("http://code-a-software.net");
             }
             catch { }
         }
