@@ -1,0 +1,36 @@
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\Archiv.exe
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\Archiv.pdb
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\Serialization.dll
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\VFS.dll
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\Serialization.pdb
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\VFS.pdb
+F:\Andy's Dokumente\VFS\Archiv\bin\Debug\VFS.xml
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\VFS.csprojResolveAssemblyReference.cache
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.GUI.frmAbout.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.GUI.frmExplorer.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.GUI.frmPack.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.GUI.frmSettings.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.GUI.InputDialog.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.GUI.Tab.Dialog.AddFolderDirectoryDialog.AddFolderDirectoryDialog.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.Properties.Resources.resources
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\VFS.csproj.GenerateResource.Cache
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.exe
+F:\Andy's Dokumente\VFS\Archiv\obj\Debug\Archiv.pdb
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\VFS.pdb
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\Serialization.dll
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\VFS.dll
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\Serialization.pdb
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\VFS.xml
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.csprojResolveAssemblyReference.cache
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.Properties.Resources.resources
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.csproj.GenerateResource.Cache
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.GUI.frmAbout.resources
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.GUI.frmExplorer.resources
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.GUI.frmPack.resources
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.GUI.frmSettings.resources
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.GUI.InputDialog.resources
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS.GUI.Tab.Dialog.AddFolderDirectoryDialog.AddFolderDirectoryDialog.resources
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\VFS Application.exe
+F:\Andy's Dokumente\VFS\VFS\bin\Debug\VFS Application.pdb
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS Application.exe
+F:\Andy's Dokumente\VFS\VFS\obj\Debug\VFS Application.pdb
