@@ -41,6 +41,9 @@ I think that these explanations are enough to go on and use further methods.
 
 **Old Format**
 ```csharp
+// MainCounter: 128 (how much bytes, see description)
+// PackByte:     45 (which byte, see description)
+
 VFS currentFileSystem = new VFS(string.empty, "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
 
 File pwFile = new File("Passwort.txt");
@@ -75,7 +78,7 @@ It's of course very inconvenient. But currently this version doesn't have a meth
 ```csharp
 string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
 
-ModifiedVFST currentVFS = new ModifiedVFST(string.Empty, currentPath, "_YOUR_WORKSPACE_PATH", 128, 45, 32768); // 32768 is the default buffer-size
+ModifiedVFST currentVFS = new ModifiedVFST(string.Empty, currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
 
 curentVFS.OnFinished += delegate (Result rst)
 {
