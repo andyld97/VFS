@@ -36,8 +36,8 @@ C:\Data\Images\Computer.png
 C:\Data\Images\Notebook.png
 C:\Data\Passwort.txt
 ```
-
-At first we create a new file:
+In the following examples I am going to explain how you can create and import files, because
+I think that these explanations are enough to go on and use further methods. 
 
 **Old Format**
 ```csharp
