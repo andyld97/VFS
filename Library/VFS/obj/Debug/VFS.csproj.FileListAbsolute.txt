@@ -1,7 +1,0 @@
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\bin\Debug\VFS.dll
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\bin\Debug\VFS.pdb
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.Properties.Resources.resources
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.csproj.GenerateResource.Cache
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.dll
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.pdb
-F:\Andy's Dokumente\Eigene Librays\VFS\VFS\obj\Debug\VFS.csprojResolveAssemblyReference.cache
