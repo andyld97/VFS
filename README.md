@@ -143,7 +143,7 @@ the values of the `ProgressBars` you need to `Invoke` to access the `GUI-Thread`
 ```csharp
 string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
 
-ModifiedVFS currentVFS = new ModifiedVFS(string.Empty, currentPath, "_YOUR_WORKSPACE_PATH", 128, 45, 32768); // 32768 is the default buffer-size
+ModifiedVFS currentVFS = new ModifiedVFS(string.Empty, currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
 
 currentVFS.CreateVHP(@"C:\Data");
 currentVFS.Read(currentPath);
