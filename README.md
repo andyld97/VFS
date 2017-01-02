@@ -2,9 +2,9 @@
 VFS (Virtual File System) is a file format which makes it possible to store any files and directories just into one file. See more in the [documentation](https://github.com/andy123456789088/VFS/blob/master/Documentation/Documentation%20VFS.pdf).
 
 ## Future updates
-- [ ] Implementing new version in **VFS Application** and in **Setup**
-- [ ] Implementing new version in **PHP** and **C++**
-- [ ] Extend the PHP and QT C++ code with more features
+- [ ] Implementing new version in `VFS Application` and in `Setup`
+- [ ] Implementing new version in `PHP` and `C++`
+- [ ] Extend the `PHP` and `QT C++` code with more features
 - [ ] Refresh the old format (working byte-wise with a buffer,
                               integrating a possiblity to get the current progress,
                               adding support to create a file from a directory(-array))
@@ -18,7 +18,7 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 - Revising comments in VFS-Library
 
 **Version 1.0.0.2**
-- A lot bugfixes
+- A lot of bugfixes
 
 **Version 1.0.0.1**
 - Created a new application to manage files with a new graphical user-interface
