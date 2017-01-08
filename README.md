@@ -44,33 +44,8 @@ I think that these explanations are enough to go on and use further methods.
 // MainCounter: 128 (how much bytes, see description)
 // PackByte:     45 (which byte, see description)
 
-VFS currentFileSystem = new VFS(string.empty, "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
-
-File pwFile = new File("Passwort.txt");
-pwFile.SetByte(System.IO.ReadAllBytes("C:\Data\Passwort.txt");
-currentFileSystem.RootDirectory.GetFiles().Add(pwFile);
-
-Directory currentDirData = new Directory("Data");
-
-Directory currentDirDocuments = new Directory("Documents");
-File toDoFile = new File("ToDo.docx");
-File meetingFile = new File("Meeting.docx");
-
-toDoFile.SetBytes(System.IO.ReadAllBytes("C:\Data\Documents\ToDo.docx"));
-meetingFile.SetBytes(System.IO.ReadAllBytes("C:\Data\Documents\Meeting.docx"));
-
-Directory currentDirImages = new Directory("Images");
-File computerFile = new File("Computer.png");
-File notebookFile = new File("Notbook.png");
-
-computerFile.SetBytes(System.IO.ReadAllBytes("C:\Data\Images\Computer.png"));
-notebookFile.SetBytes(System.IO.ReadAllBytes("C:\Data\Images\Notebook.png"));
-
-currentDirData.GetSubDirectories().Add(currentDirDocuments);
-currentDirData.GetSubDirectories().Add(currentDirImages);
-
-currentFileSystem.RootDirectory.GetSubDirectories().Add(currentDirData);
-currentFileSystem.Save();
+SplitVFS currentVFS = new SplitVFS("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
+currentVFS.Create(@"C:\Data");
 ```
 It's of course very inconvenient. But currently this version doesn't have a method. But you can look [here](https://github.com/andy123456789088/VFS/blob/master/Applications/VFS/VFS/GUI/frmPack.cs#L60) how it works.
 
@@ -78,7 +53,7 @@ It's of course very inconvenient. But currently this version doesn't have a meth
 ```csharp
 string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
 
-ModifiedVFST currentVFS = new ModifiedVFST(string.Empty, currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
+ExtendedVFST currentVFS = new ExtendedVFST(currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
 
 curentVFS.OnFinished += delegate (Result rst)
 {
@@ -88,10 +63,10 @@ curentVFS.OnFinished += delegate (Result rst)
           currentVFS.Read(currentPath);
       }
 };
-currentVFS.CreateVHP(@"C:\Data");
+currentVFS.Create(@"C:\Data");
 ```
 Firstly, you can see it's much easier than bevor, but in the future I want to implement this into the old format.
-The OnFinished-event is called when a the methods achieve the finish and you get a [Result](https://github.com/andy123456789088/VFS/blob/master/Library/ModifiedVFS/Wrapper/Result.cs)-instance which delievers you information: 
+The OnFinished-event is called when a the methods achieve the finish and you get a [Result](https://github.com/andy123456789088/VFS/blob/master/Library/ExtendedVFS/Wrapper/Result.cs)-instance which delievers you information: 
 - Succeeded or not
 - The result as `object`
 - The type of the result for casting
@@ -143,9 +118,9 @@ the values of the `ProgressBars` you need to `Invoke` to access the `GUI-Thread`
 ```csharp
 string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
 
-ModifiedVFS currentVFS = new ModifiedVFS(string.Empty, currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
+ExtendedVFS currentVFS = new ExtendedVFS(currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
 
-currentVFS.CreateVHP(@"C:\Data");
+currentVFS.Create(@"C:\Data");
 currentVFS.Read(currentPath);
 ```
 The only problem is that this can block the `UI-Thread` if you choose big files or much directories. 
