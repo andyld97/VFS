@@ -2,7 +2,7 @@
 // ModifiedVFST.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      27.12.2016
-// Last update on:  30.12.2016
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -13,17 +13,18 @@ using System.Threading;
 using VFS.Interfaces;
 using System.IO;
 
-namespace VFS.ModifiedVFS.Wrapper
+namespace VFS.ExtendedVFS.Wrapper
 {
     /// <summary>
     /// Thread-based and exception handling ModifiedVFS
     /// </summary>
-    public class ModifiedVFST : ModifiedVFS
+    public class ExtendedVFST : VFS
     {
         private Thread currentThread = null;
         private bool isBusy = false;
         private Result result = null;
         private Stopwatch stw = null;
+        private ExtendedVFS eVFS;
 
         /// <summary>
         /// A result which is false - no need to create a false result every time when needed a false result
@@ -44,23 +45,36 @@ namespace VFS.ModifiedVFS.Wrapper
         /// <summary>
         /// Returns the StopWatch-Instance of the current process
         /// </summary>
-        public Stopwatch CurrentStopWatch
-        {
-            get
-            {
-                return this.stw;
-            }
-        }
+        public Stopwatch CurrentStopWatch => this.stw;
+
+        /// <summary>
+        /// If true, creates the file completly new after a change like calling WriteAllText or WriteAllBytes
+        /// </summary>
+        public bool SaveAfterChange => eVFS.SaveAfterChange;
+
+        /// <summary>
+        /// Root Directory - Name: ""
+        /// </summary>
+        public override IDirectory RootDirectory => eVFS.RootDirectory;
+
+        /// <summary>
+        /// A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
+        /// </summary>
+        public override IFile NULLFILE => eVFS.NULLFILE;
 
         /// <summary>
         /// Instantiate a new VFS which is modified and thread-based
         /// </summary>
-        /// <param name="logPath">The path for the logging-file</param>
         /// <param name="savePath">The path where the file will be created</param>
         /// <param name="workSpacePath">The path of the cliboard (Please do not save an files or directories there!)</param>
+        /// <param name="saveAfterChanged">Determines if the system should save after a change</param>
         /// <param name="BufferSize">The size of the file-buffer in bytes</param>
-        public ModifiedVFST(string logPath, string savePath, string workSpacePath, long BufferSize = 32768) : base(logPath, savePath, workSpacePath, 0, 0, BufferSize)
-        { }
+        public ExtendedVFST(string savePath, string workSpacePath, bool saveAfterChanged = true, long BufferSize = 32768)
+        {
+            this.savePath = savePath;
+            this.eVFS = new ExtendedVFS(savePath, workSpacePath, BufferSize);
+            this.eVFS.SaveAfterChange = saveAfterChanged;
+        }
 
         #region Private
         private void endStopWatch()
@@ -84,31 +98,44 @@ namespace VFS.ModifiedVFS.Wrapper
         {
             if (this.isBusy)
             {
-                this.OnFinished?.Invoke(defaultResult);
+                this.OnFinished?.Invoke(new Result(false));
                 return false;
             }
 
             this.isBusy = true;
             return true;
         }
-#endregion
+        #endregion
+
+
+        /// <summary>
+        /// Cancels the current thread
+        /// </summary>
+        /// <param name="currentAction">The method which is working currently</param>
+        public void CancelThread(Methods currentAction)
+        {
+            this.currentThread.Abort();
+            this.currentThread = null;
+
+            this.onFinished(new Result(false, currentAction));
+        }
 
         /// <summary>
         /// Creates a new VHP
         /// </summary>
         /// <param name="directory">All files and directories of this directory will be progressed into the VHP</param>
         /// <returns></returns>
-        public override bool CreateVHP(string directory)
+        public override void Create(string directory)
         {
             if (!this.changeBusy())
-                return false;
+                return;
 
             this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    bool result = base.CreateVHP(directory);
-                    this.onFinished(new Result(result, Methods.CREATE));
+                    eVFS.Create(directory);
+                    this.onFinished(new Result(true, Methods.CREATE));
                     this.endStopWatch();
                 }
                 catch (Exception e)
@@ -118,37 +145,8 @@ namespace VFS.ModifiedVFS.Wrapper
             }));
 
             currentThread.Start();
-            return true;
         }
 
-        /// <summary>
-        /// Creates a new VHP
-        /// </summary>
-        /// <param name="file">Just this one file will be taken to be progressed</param>
-        /// <param name="f">Just for differnitate the methods</param>
-        /// <returns></returns>
-        public override bool CreateVHP(string file, bool f = true)
-        {
-            if (!this.changeBusy())
-                return false;
-
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
-                try
-                {
-                    stw = Stopwatch.StartNew();
-                    bool result = base.CreateVHP(file, f);
-                    this.onFinished(new Result(result, Methods.CREATE));
-                    this.endStopWatch();
-                }
-                catch (Exception e)
-                {
-                    this.onFinished(new Result(false, e, Methods.CREATE));
-                }
-            }));
-
-            currentThread.Start();
-            return true;
-        }
 
         /// <summary>
         /// Creates a new VHP
@@ -156,17 +154,17 @@ namespace VFS.ModifiedVFS.Wrapper
         /// <param name="directories">This directories will be taken to be progressed</param>
         /// <param name="files">This files will be taken to be progressed</param>
         /// <returns></returns>
-        public override bool CreateVHP(string[] directories, string[] files)
+        public override void Create(string[] directories, string[] files)
         {
             if (!this.changeBusy())
-                return false;
+                return;
 
             this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    bool result = base.CreateVHP(directories, files);
-                    this.onFinished(new Result(result, Methods.CREATE));
+                    eVFS.Create(directories, files);
+                    this.onFinished(new Result(true, Methods.CREATE));
                     this.endStopWatch();
                 }
                 catch (Exception e)
@@ -176,7 +174,6 @@ namespace VFS.ModifiedVFS.Wrapper
             }));
 
             currentThread.Start();
-            return true;
         }
 
         /// <summary>
@@ -193,7 +190,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    bool result = base.Extract(filePath);
+                    bool result = eVFS.Extract(filePath);
                     this.onFinished(new Result(result, Methods.EXTRACT));
                     this.endStopWatch();
                 }
@@ -222,7 +219,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.ExtractDirectory(path, filePath);
+                    eVFS.ExtractDirectory(path, filePath);
                     this.onFinished(new Result(true, Methods.EXTRACT_DIR));
                     this.endStopWatch();
                 }
@@ -248,7 +245,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.ExtractDirectory(currentDir, toPath);
+                    eVFS.ExtractDirectory(currentDir, toPath);
                     this.onFinished(new Result(true, Methods.EXTRACT_DIR));
                     this.endStopWatch();
                 }
@@ -275,7 +272,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.ExtractFiles(files, directoryPath);
+                    eVFS.ExtractFiles(files, directoryPath);
                     this.onFinished(new Result(true, Methods.EXTRACT_FILES));
                     this.endStopWatch();
                 }
@@ -302,7 +299,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.ExtractFiles(files, directoryPath);
+                    eVFS.ExtractFiles(files, directoryPath);
                     this.onFinished(new Result(true, Methods.EXTRACT_FILES));
                     this.endStopWatch();
                 }
@@ -337,20 +334,21 @@ namespace VFS.ModifiedVFS.Wrapper
         {
             // No thread based needed for this method.
             // It just deletes the file out of the list, but if you save then thread based.
-            if (!this.SaveAfterChange)
-                return base.RemoveFile(path, startNode);
+            if (!eVFS.SaveAfterChange)
+                return eVFS.RemoveFile(path, startNode);
             else
             {
                 // Thread based
                 if (!this.changeBusy())
                     return false;
 
-                this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+                this.currentThread = new Thread(new ParameterizedThreadStart(delegate
+                {
                     try
                     {
                         stw = Stopwatch.StartNew();
-                        base.RemoveFile(path, startNode);
-                        this.onFinished(new Result(true, Methods.REMOVE_FILE));
+                        bool result = eVFS.RemoveFile(path, startNode);
+                        this.onFinished(new Result(result, Methods.REMOVE_FILE));
                         this.endStopWatch();
                     }
                     catch (Exception e)
@@ -360,7 +358,6 @@ namespace VFS.ModifiedVFS.Wrapper
                 }));
                 currentThread.Start();
             }
-
             return true;
         }
 
@@ -378,7 +375,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.Read(filePath);
+                    eVFS.Read(filePath);
                     this.onFinished(new Result(true, Methods.READ));
                     this.endStopWatch();
                 }
@@ -406,7 +403,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    byte[] temp = base.ReadAllBytes(path, startNode, different);
+                    byte[] temp = eVFS.ReadAllBytes(path, startNode, different);
                     this.onFinished(new Result(true, temp, Methods.READ_ALL_BYTES));
                     this.endStopWatch();
                 }
@@ -435,7 +432,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    string temp = base.ReadAllText(path, startNode);
+                    string temp = eVFS.ReadAllText(path, startNode);
                     this.onFinished(new Result(true, temp, Methods.READ_ALL_TEXT));
                     this.endStopWatch();
                 }
@@ -466,7 +463,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    bool result = base.WriteStream(name, dir, stream, overrideExisting);
+                    bool result = eVFS.WriteStream(name, dir, stream, overrideExisting);
                     this.onFinished(new Result(result, Methods.WRITE_STREAM));
                     this.endStopWatch();
                 }
@@ -497,8 +494,8 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.WriteAllBytes(data, name, dir, overrideExisting);
-                    this.onFinished(new Result(true, Methods.WRITE_ALL_BYTES));
+                    bool result = eVFS.WriteAllBytes(data, name, dir, overrideExisting);
+                    this.onFinished(new Result(result, Methods.WRITE_ALL_BYTES));
                     this.endStopWatch();
                 }
                 catch (Exception e)
@@ -527,8 +524,8 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.WriteAllBytes(data, path, overrideExisting);
-                    this.onFinished(new Result(true, Methods.WRITE_ALL_BYTES));
+                    bool result = eVFS.WriteAllBytes(data, path, overrideExisting);
+                    this.onFinished(new Result(result, Methods.WRITE_ALL_BYTES));
                     this.endStopWatch();
                 }
                 catch (Exception e)
@@ -558,8 +555,8 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    base.WriteAllText(content, name, dir, overrideExisting);
-                    this.onFinished(new Result(true, Methods.WRITE_ALL_TEXT));
+                    bool result = eVFS.WriteAllText(content, name, dir, overrideExisting);
+                    this.onFinished(new Result(result, Methods.WRITE_ALL_TEXT));
                     this.endStopWatch();
                 }
                 catch (Exception e)
@@ -586,7 +583,7 @@ namespace VFS.ModifiedVFS.Wrapper
                 try
                 {
                     stw = Stopwatch.StartNew();
-                    bool result = base.Save();
+                    bool result = eVFS.Save();
                     this.onFinished(new Result(result, Methods.SAVE));
                     this.endStopWatch();
                 }

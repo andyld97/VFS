@@ -294,7 +294,7 @@ namespace VFS
                     else
                         break;
                 }
-                if (segments.Length > 0 && !VFS.NULLFILE.Contains(currentNode.GetFiles(), String.Join(@"\", segments)))
+                if (segments.Length > 0 && !(new File(string.Empty, new Directory(string.Empty)).Contains(currentNode.GetFiles(), String.Join(@"\", segments))))
                 {
                     IFile currentFile = new File(segments[segments.Length - 1], currentNode);
                     currentNode.GetFiles().Add(currentFile);

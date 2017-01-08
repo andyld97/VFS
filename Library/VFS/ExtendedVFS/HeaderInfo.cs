@@ -2,14 +2,14 @@
 // HeaderInfo.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      17.12.2016
-// Last update on:  17.12.2016
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace VFS.ModifiedVFS
+namespace VFS.ExtendedVFS
 {
     /// <summary>
     /// Struct that contains and can processing path, start - and end - position

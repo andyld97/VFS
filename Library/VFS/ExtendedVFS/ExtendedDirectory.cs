@@ -1,8 +1,8 @@
 ﻿// ------------------------------------------------------------------------
-// ModifiedDirectory.cs written by Code A Software (http://www.code-a-software.net)
+// ExtendedDirectory.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      17.12.2016
-// Last update on:  30.12.2016
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -10,26 +10,26 @@ using System.Linq;
 using System.Text;
 using VFS.Interfaces;
 
-namespace VFS.ModifiedVFS
+namespace VFS.ExtendedVFS
 {
     /// <summary>
     /// Directory which is modified to store instances of ModifiedFiles
     /// </summary>
-    public class ModifiedDirectory : IDirectory
+    public class ExtendedDirectory : IDirectory
     {
         private IDirectory instanceDir = null;
-        private ModifiedDirectory parent = null;
+        private ExtendedDirectory parent = null;
         private string Name = string.Empty;
 
         /// <summary>
         /// An empty file to use the instance-methods which are non-static
         /// </summary>
-        public static ModifiedFile NULLFILE = new ModifiedFile(new HeaderInfo(), new ModifiedDirectory(""));
+        public static ExtendedFile NULLFILE = new ExtendedFile(new HeaderInfo(), new ExtendedDirectory(""));
 
         /// <summary>
         /// Instantiates a new ModifiedDirectory
         /// </summary>
-        public ModifiedDirectory()
+        public ExtendedDirectory()
         {
             instanceDir = new Directory(this.GetName());
         }
@@ -38,7 +38,7 @@ namespace VFS.ModifiedVFS
         /// Instantiates a new ModifiedDirectory
         /// </summary>
         /// <param name="name">The name of the virtual directory which will be created</param>
-        public ModifiedDirectory(string name)
+        public ExtendedDirectory(string name)
         {
             instanceDir = new Directory(name);
             this.Name = name;
@@ -64,22 +64,22 @@ namespace VFS.ModifiedVFS
                 if (!currentFileName.Contains(@"\"))
                 {
                     string[] segements = currentFileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                    this.GetFiles().Add(new ModifiedFile(HeaderInfo.FromString(segements[segements.Length - 1]), this));
+                    this.GetFiles().Add(new ExtendedFile(HeaderInfo.FromString(segements[segements.Length - 1]), this));
                     continue;
                 }
 
-                ModifiedDirectory currentNode = this;
+                ExtendedDirectory currentNode = this;
                 string[] segments = currentFileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i <= segments.Length - 2; i++)
                 {
                     if (currentNode.Contains(segments[i]))
-                        currentNode = (ModifiedDirectory)currentNode.GetSubDirectories()[currentNode.IndexOf(segments[i])];
+                        currentNode = (ExtendedDirectory)currentNode.GetSubDirectories()[currentNode.IndexOf(segments[i])];
                     else
                         break;
                 }
                 if (segments.Length > 0 && !NULLFILE.Contains(currentNode.GetFiles(), String.Join(@"\", segments)))
                 {
-                    ModifiedFile cF = new ModifiedFile(HeaderInfo.FromString(segments[segments.Length - 1]), currentNode);
+                    ExtendedFile cF = new ExtendedFile(HeaderInfo.FromString(segments[segments.Length - 1]), currentNode);
                     currentNode.GetFiles().Add(cF);
                 }
             }
@@ -114,7 +114,7 @@ namespace VFS.ModifiedVFS
                     for (int j = i; j <= segments.Length - 1; j++)
                     {
                         string currentName = segments[j];
-                        IDirectory nd = new ModifiedDirectory(currentName);
+                        IDirectory nd = new ExtendedDirectory(currentName);
                         nd.SetParent(currentNode);
                         currentNode.GetSubDirectories().Add(nd);
                         int indexSubDir = currentNode.IndexOf(currentName);
@@ -263,7 +263,7 @@ namespace VFS.ModifiedVFS
         /// <param name="parent">Direcotry instance which will be the owner of this directory</param>
         public void SetParent(IDirectory parent)
         {
-            this.parent = (ModifiedDirectory)parent;
+            this.parent = (ExtendedDirectory)parent;
         }
 
         /// <summary>
@@ -282,10 +282,10 @@ namespace VFS.ModifiedVFS
         /// <returns></returns>
         public string ToFullPath(IDirectory parent = null)
         {
-            Action<ModifiedDirectory> searchAction = null;
+            Action<ExtendedDirectory> searchAction = null;
             List<string> paths = new List<string>();
 
-            searchAction = new Action<ModifiedDirectory>((ModifiedDirectory dir) =>
+            searchAction = new Action<ExtendedDirectory>((ExtendedDirectory dir) =>
             {
                 if (dir.parent == parent)
                 {
@@ -321,20 +321,20 @@ namespace VFS.ModifiedVFS
         /// <param name="path">The path where the file is stored at</param>
         /// <param name="rootDir">The main directory (necessary, because static)</param>
         /// <returns></returns>
-        public static ModifiedFile ByPath(string path, ModifiedDirectory rootDir)
+        public static ExtendedFile ByPath(string path, ExtendedDirectory rootDir)
         {
             string[] segements = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-            ModifiedDirectory startNode = rootDir;
+            ExtendedDirectory startNode = rootDir;
             for (int i = 0; i <= segements.Length - 2; i++)
             {
                 string currentSegement = segements[i];
                 if (startNode.Contains(currentSegement))
-                    startNode = (ModifiedDirectory)startNode.GetSubDirectories()[startNode.IndexOf(currentSegement)];
+                    startNode = (ExtendedDirectory)startNode.GetSubDirectories()[startNode.IndexOf(currentSegement)];
                 else
                     return null;
             }
 
-            return (ModifiedFile)NULLFILE.ByPath(startNode.GetFiles(), path);
+            return (ExtendedFile)NULLFILE.ByPath(startNode.GetFiles(), path);
         }
     }
 }

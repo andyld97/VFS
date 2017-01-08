@@ -2,7 +2,7 @@
 // ModifiedVFS.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      17.12.2016
-// Last update on:  01.01.2017
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -10,21 +10,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using VFS.Interfaces;
-using VFS.Language;
-using VFS.ModifiedVFS.Wrapper;
-using VFS.ModifiedVFS;
+using VFS.ExtendedVFS.Wrapper;
+using VFS.ExtendedVFS;
 
-namespace VFS.ModifiedVFS
+namespace VFS.ExtendedVFS
 {
     /// <summary>
     /// Represents a VFS which is more efficent and can reduce the amount of bytes to save
     /// </summary>
-    public class ModifiedVFS : VFS
+    public class ExtendedVFS : VFS
     {
         /// <summary>
         /// The root directory
         /// </summary>
-        protected new ModifiedDirectory rootDir = new ModifiedDirectory("");
+        private ExtendedDirectory rootDir = new ExtendedDirectory("");
 
         private bool saveAfterChange = true;
 
@@ -39,7 +38,7 @@ namespace VFS.ModifiedVFS
         /// <summary>
         /// A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
         /// </summary>
-        public new static ModifiedFile NULLFILE = new ModifiedFile(new HeaderInfo(), null);
+        public override IFile NULLFILE => new ExtendedFile(new HeaderInfo(), new ExtendedDirectory());
 
         /// <summary>
         /// The sequence to identfy file format [{***VHP***}]
@@ -66,14 +65,14 @@ namespace VFS.ModifiedVFS
         {
             get
             {
-                return this.offset + ModifiedVFS.StartSequence.Length;
+                return this.offset + ExtendedVFS.StartSequence.Length;
             }
         }
 
         /// <summary>
         /// Root Directory - Name: ""
         /// </summary>
-        public new ModifiedDirectory RootDirectory
+        public override IDirectory RootDirectory
         {
             get
             {
@@ -100,39 +99,24 @@ namespace VFS.ModifiedVFS
         /// <summary>
         /// Instantiate a new ModifiedVFS (Version 2)
         /// </summary>
-        /// <param name="logPath"></param>
-        /// <param name="savePath"></param>
-        /// <param name="workSpacePath"></param>
-        /// <param name="MainCounter"></param>
-        /// <param name="PackByte"></param>
-        /// <param name="BufferSize"></param>
-        public ModifiedVFS(string logPath, string savePath, string workSpacePath, int MainCounter = 128, int PackByte = 45, long BufferSize = 32768) : base(logPath, savePath, MainCounter, PackByte)
+        /// <param name="savePath">The path where the VFS file is stored</param>
+        /// <param name="workSpacePath">The path of the temp directory</param>
+        /// <param name="BufferSize">The size of the buffer</param>
+        public ExtendedVFS(string savePath, string workSpacePath, long BufferSize = 32768)
         {
-            this.BUFFER_SIZE = BufferSize;
+            this.savePath = savePath;
             this.WorkSpacePath = workSpacePath;
-        }
-
-        #region Create VHP Methods
-
-        /// <summary>
-        /// Creates a new VHP (Version 2)
-        /// </summary>
-        /// <param name="directory"></param>
-        /// <returns></returns>
-        public virtual bool CreateVHP(string directory)
-        {
-            return this.CreateVHP(new string[] { directory }, new string[] { });
+            this.BUFFER_SIZE = BufferSize;
         }
 
         /// <summary>
         /// Creates a new VHP (Version 2)
         /// </summary>
-        /// <param name="file">The file you want to include</param>
-        /// <param name="f">Additionally to differentiate between this and CreateVHP(string directory)</param>
+        /// <param name="directory">All files and folders in this directory are used</param>
         /// <returns></returns>
-        public virtual bool CreateVHP(string file, bool f = true)
+        public override void Create(string directory)
         {
-            return this.CreateVHP(new string[] { }, new string[] { file });
+            this.Create(new string[] { directory }, new string[] { });
         }
 
         /// <summary>
@@ -141,7 +125,7 @@ namespace VFS.ModifiedVFS
         /// <param name="directories">The directories which you want to include</param>
         /// <param name="files">The files which you want to include</param>
         /// <returns></returns>
-        public virtual bool CreateVHP(string[] directories, string[] files)
+        public override void Create(string[] directories, string[] files)
         {
             Progress.Register(0, 0, Methods.CREATE);
             int steps = 3;
@@ -150,7 +134,7 @@ namespace VFS.ModifiedVFS
             int value = files.Length + directories.Length;
             double currentValue = 0;
 
-            ModifiedFile oldFile = null;
+            ExtendedFile oldFile = null;
 
             int counter = 0;
             foreach (string currentFile in files)
@@ -169,7 +153,7 @@ namespace VFS.ModifiedVFS
                     }
                     catch (Exception) { }
                     HeaderInfo hi = new HeaderInfo(currentFile, startSize, startSize + size);
-                    ModifiedFile cFile = new ModifiedFile(hi, this.RootDirectory);
+                    ExtendedFile cFile = new ExtendedFile(hi, this.RootDirectory as ExtendedDirectory);
                     this.RootDirectory.GetFiles().Add(cFile);
                     oldFile = cFile;
                 }
@@ -181,7 +165,7 @@ namespace VFS.ModifiedVFS
                 Progress.Register(currentValue, Methods.CREATE);
 
                 System.IO.DirectoryInfo info = new System.IO.DirectoryInfo(currentDirectory);
-                ModifiedDirectory vDir = new ModifiedDirectory(info.Name);
+                ExtendedDirectory vDir = new ExtendedDirectory(info.Name);
 
                 Action<string> recurseDirs = null;
                 recurseDirs = new Action<string>((string lastDir) =>
@@ -207,7 +191,7 @@ namespace VFS.ModifiedVFS
                     if (!string.IsNullOrEmpty(nPath))
                         vDir.AddPathes(new string[] { nPath });
 
-                    ModifiedDirectory lastDirectory = (nPath == string.Empty ? vDir : (ModifiedDirectory)vDir.CalculateLastNode(vDir, nPath));
+                    ExtendedDirectory lastDirectory = (nPath == string.Empty ? vDir : (ExtendedDirectory)vDir.CalculateLastNode(vDir, nPath));
 
                     foreach (var fi in data.GetFiles())
                     {
@@ -219,7 +203,7 @@ namespace VFS.ModifiedVFS
                         }
                         catch (Exception) { }
                         HeaderInfo hi = new HeaderInfo(fi.FullName, startSize, startSize + size);
-                        ModifiedFile cFile = new ModifiedFile(hi, lastDirectory);
+                        ExtendedFile cFile = new ExtendedFile(hi, lastDirectory);
                         lastDirectory.GetFiles().Add(cFile);
                         oldFile = cFile;
                     }
@@ -250,7 +234,7 @@ namespace VFS.ModifiedVFS
                     string nFile = currentFile;
 
                     // Get orginial file back
-                    ModifiedFile orgFile = ModifiedDirectory.ByPath(nFile, this.RootDirectory);
+                    ExtendedFile orgFile = ExtendedDirectory.ByPath(nFile, this.RootDirectory as ExtendedDirectory);
                     if (orgFile != null)
                     {
                         //File.file:0:2018|\FILEY.txt:2018:2020
@@ -275,7 +259,7 @@ namespace VFS.ModifiedVFS
                 byte[] buffer = new byte[BUFFER_SIZE];
 
                 // Writing V2 at first {***VHP***}
-                buffer = ModifiedVFS.StartSequence;
+                buffer = ExtendedVFS.StartSequence;
                 writeStream.Write(buffer, 0, buffer.Length);
 
                 // Writing header
@@ -289,7 +273,7 @@ namespace VFS.ModifiedVFS
                 foreach (string file in this.RootDirectory.ToFileStringArray())
                 {
                     // Get orginial file back
-                    ModifiedFile orgFile = ModifiedDirectory.ByPath(file, this.RootDirectory);
+                    ExtendedFile orgFile = ExtendedDirectory.ByPath(file, this.RootDirectory as ExtendedDirectory);
                     if (orgFile != null)
                     {
                         try
@@ -312,17 +296,14 @@ namespace VFS.ModifiedVFS
                         }
                         catch (Exception)
                         {
-                            return false;
+                            
                         }
                         Progress.Register(++currentStep / (double)steps, Methods.CREATE, false);
                     }
                 }
             }
             Progress.Register(1.0, 1.0, Methods.CREATE);
-
-            return true;
         }
-        #endregion
 
         /// <summary>
         /// Loads a VHP-File into the RAM (just header-content)
@@ -331,9 +312,11 @@ namespace VFS.ModifiedVFS
         public override void Read(string filePath)
         {
             // Check if this file is right, otherwise it cause problems which took very much time
-            bool? validation = ModifiedVFS.IsNewVersion(filePath);
+            bool? validation = ExtendedVFS.IsNewVersion(filePath);
             if (!validation.HasValue || validation.HasValue && !validation.Value)
                 return;
+
+            Progress.Register(0.0, 0.0, Methods.READ);
 
             string header = string.Empty;
             long currentPosition = 0;
@@ -347,7 +330,7 @@ namespace VFS.ModifiedVFS
                     byte[] buffer = new byte[1];
 
                     // Set position to ModifiedVFS.StartSequence
-                    fs.Position = ModifiedVFS.StartSequence.Length;
+                    fs.Position = ExtendedVFS.StartSequence.Length;
                     currentPosition = fs.Position;
 
                     while (true)
@@ -376,6 +359,8 @@ namespace VFS.ModifiedVFS
                     }
                 }
             }
+
+            Progress.Register(1.0, 1.0, Methods.READ);
         }
 
         /// <summary>
@@ -407,7 +392,7 @@ namespace VFS.ModifiedVFS
                     IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
                     if (currentNode != null)
                     {
-                        ModifiedFile mf = (ModifiedFile)currentFile;
+                        ExtendedFile mf = (ExtendedFile)currentFile;
 
                         if (!mf.IsInvalid)
                         {
@@ -416,11 +401,11 @@ namespace VFS.ModifiedVFS
                             using (System.IO.FileStream currentFS = new System.IO.FileStream(this.savePath, System.IO.FileMode.Open))
                             {
                                 if (mf.Size > READ_RESTRICTION)
-                                    return System.Text.Encoding.UTF8.GetBytes("FILE_TOO_LARGE");
+                                    throw new Exception("FILE_TOO_LARGE");
 
-                                long start = (currentFile as ModifiedFile).StartPosition + this.Offset;
-                                long currentPosition = (currentFile as ModifiedFile).StartPosition + this.Offset;
-                                long endPosition = (currentFile as ModifiedFile).EndPosition + this.Offset;
+                                long start = (currentFile as ExtendedFile).StartPosition + this.Offset;
+                                long currentPosition = (currentFile as ExtendedFile).StartPosition + this.Offset;
+                                long endPosition = (currentFile as ExtendedFile).EndPosition + this.Offset;
 
                                 byte[] buffer = new byte[BUFFER_SIZE];
                                 byte[] finalBytes = new byte[Math.Abs(currentPosition - endPosition)];
@@ -473,17 +458,17 @@ namespace VFS.ModifiedVFS
                                 Progress.Register(1.0, 1.0, Methods.READ_ALL_BYTES);
                                 return fileBytes.ToArray();
                             }
+                            else
+                                throw new Exception("FILE_TOO_LARGE");
                         }
                     }
                     else
                     {
-                        this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + path }, string.Empty);
                         return null;
                     }
                 }
-                else
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + path }, string.Empty);
             }
+
             string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i <= segments.Length - 2; i++)
             {
@@ -493,10 +478,7 @@ namespace VFS.ModifiedVFS
                 if (nIndex != -1)
                     currentNode = currentNode.GetSubDirectories()[nIndex];
                 else
-                {
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + path }, string.Empty);
                     return null;
-                }
             }
 
             if (currentNode != null)
@@ -505,7 +487,7 @@ namespace VFS.ModifiedVFS
                 {
                     // Get the file
                     IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
-                    ModifiedFile mf = (ModifiedFile)currentFile;
+                    ExtendedFile mf = (ExtendedFile)currentFile;
 
                     if (!mf.IsInvalid)
                     {
@@ -513,11 +495,11 @@ namespace VFS.ModifiedVFS
                         using (System.IO.FileStream currentFS = new System.IO.FileStream(this.savePath, System.IO.FileMode.Open))
                         {
                             if (mf.Size > READ_RESTRICTION)
-                                return System.Text.Encoding.UTF8.GetBytes("FILE_TOO_LARGE");
+                                throw new Exception("FILE_TOO_LARGE");
 
-                            long start = (currentFile as ModifiedFile).StartPosition + this.Offset;
-                            long currentPosition = (currentFile as ModifiedFile).StartPosition + this.Offset;
-                            long endPosition = (currentFile as ModifiedFile).EndPosition + this.Offset;
+                            long start = (currentFile as ExtendedFile).StartPosition + this.Offset;
+                            long currentPosition = (currentFile as ExtendedFile).StartPosition + this.Offset;
+                            long endPosition = (currentFile as ExtendedFile).EndPosition + this.Offset;
 
                             byte[] buffer = new byte[BUFFER_SIZE];
                             byte[] finalBytes = new byte[Math.Abs(currentPosition - endPosition)];
@@ -566,10 +548,11 @@ namespace VFS.ModifiedVFS
                             Progress.Register(1.0, 1.0, Methods.READ_ALL_BYTES);
                             return fileBytes.ToArray();
                         }
+                        else
+                            throw new Exception("FILE_TOO_LARGE");
                     }
                 }
             }
-            this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "Path: " + path }, string.Empty);
             return null;
         }
 
@@ -582,7 +565,7 @@ namespace VFS.ModifiedVFS
         {
             if (System.IO.File.Exists(path))
             {
-                byte[] compArray = new byte[ModifiedVFS.StartSequence.Length];
+                byte[] compArray = new byte[ExtendedVFS.StartSequence.Length];
 
                 using (System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open))
                 {
@@ -590,11 +573,11 @@ namespace VFS.ModifiedVFS
                     bool condition = false;
                     int currentCounter = 0;
 
-                    while (currentCounter != ModifiedVFS.StartSequence.Length)
+                    while (currentCounter != ExtendedVFS.StartSequence.Length)
                     {
                         fs.Read(buffer, 0, buffer.Length);
                         // Check if both arrays contains the same content
-                        if (buffer[0] != ModifiedVFS.StartSequence[currentCounter++])
+                        if (buffer[0] != ExtendedVFS.StartSequence[currentCounter++])
                         {
                             condition = false;
                             break;
@@ -609,7 +592,7 @@ namespace VFS.ModifiedVFS
                 return null;
         }
 
-        private bool copyFileStream(ModifiedFile currentFile, string path, Methods m)
+        private bool copyFileStream(ExtendedFile currentFile, string path, Methods m)
         {
             using (System.IO.FileStream readStream = new FileStream(this.savePath, System.IO.FileMode.Open))
             {
@@ -662,9 +645,8 @@ namespace VFS.ModifiedVFS
                         {
                             System.IO.Directory.CreateDirectory(path);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            this.lgInstance.Add(Localization.IO_ERROR, new string[] { "DIR Path: " + path }, e.Message);
                         }
                         passDirs(currentDir);
                     }
@@ -684,7 +666,7 @@ namespace VFS.ModifiedVFS
                 {
                     foreach (IDirectory currentDir in dir.GetSubDirectories())
                     {
-                        foreach (ModifiedFile currentFile in currentDir.GetFiles())
+                        foreach (ExtendedFile currentFile in currentDir.GetFiles())
                             steps++;
                         countFiles(currentDir);
                     }
@@ -695,7 +677,7 @@ namespace VFS.ModifiedVFS
                 // Create files
                 if (this.rootDir.GetSubDirectories().Count > 0)
                 {
-                    foreach (ModifiedFile currentFile in this.rootDir.GetSubDirectories()[0].GetFiles())
+                    foreach (ExtendedFile currentFile in this.rootDir.GetSubDirectories()[0].GetFiles())
                     {
                         string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.Path));
                         this.copyFileStream(currentFile, path, Methods.EXTRACT);
@@ -704,7 +686,7 @@ namespace VFS.ModifiedVFS
                 }
 
                 // Create files which are directly in the root directory
-                foreach (ModifiedFile currentFile in this.rootDir.GetFiles())
+                foreach (ExtendedFile currentFile in this.rootDir.GetFiles())
                 {
                     string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.Path));
                     this.copyFileStream(currentFile, path, Methods.EXTRACT);
@@ -718,7 +700,7 @@ namespace VFS.ModifiedVFS
                 {
                     foreach (IDirectory currentDir in dir.GetSubDirectories())
                     {
-                        foreach (ModifiedFile currentFile in currentDir.GetFiles())
+                        foreach (ExtendedFile currentFile in currentDir.GetFiles())
                         {
                             string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.GetPath()));
                             this.copyFileStream(currentFile, path, Methods.EXTRACT);
@@ -756,7 +738,7 @@ namespace VFS.ModifiedVFS
                 }
                 catch (Exception e)
                 {
-                    this.lgInstance.Add(Localization.IO_ERROR, new string[] { "DIR Path: " + path }, e.Message);
+
                 }
 
                 // Counting files for progress
@@ -767,7 +749,7 @@ namespace VFS.ModifiedVFS
                 {
                     foreach (IDirectory subDir in currentDirectory.GetSubDirectories())
                     {
-                        foreach (ModifiedFile currentFile in subDir.GetFiles())
+                        foreach (ExtendedFile currentFile in subDir.GetFiles())
                         {
                             if (toPath == this.WorkSpacePath && currentFile.IsInvalid)
                                 continue; // Invalid file shouldn't be overriden
@@ -781,7 +763,7 @@ namespace VFS.ModifiedVFS
                 Progress.Register(0.0, 0.0, Methods.EXTRACT_DIR);
 
                 // Create files from main dir
-                foreach (ModifiedFile currentFile in currentDir.GetFiles())
+                foreach (ExtendedFile currentFile in currentDir.GetFiles())
                 {
                     if (toPath == this.WorkSpacePath && currentFile.IsInvalid)
                         continue; // Invalid file shouldn't be overriden
@@ -799,7 +781,7 @@ namespace VFS.ModifiedVFS
                         try
                         {
                             System.IO.Directory.CreateDirectory(dirPath);
-                            foreach (ModifiedFile currentFile in subDir.GetFiles())
+                            foreach (ExtendedFile currentFile in subDir.GetFiles())
                             {
                                 if (toPath == this.WorkSpacePath && currentFile.IsInvalid)
                                     continue; // Invalid file shouldn't be overriden
@@ -809,9 +791,9 @@ namespace VFS.ModifiedVFS
                                 Progress.Register(++currentCounter / (double)steps, Methods.EXTRACT_DIR, true);
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            this.lgInstance.Add(Localization.IO_ERROR, new string[] { "DIR Path: " + dirPath }, e.Message);
+
                         }
                         passDirs(subDir);
                     }
@@ -830,13 +812,13 @@ namespace VFS.ModifiedVFS
         public override void ExtractDirectory(string path, string filePath)
         {
             string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-            ModifiedDirectory currentNode = this.RootDirectory;
+            ExtendedDirectory currentNode = this.RootDirectory as ExtendedDirectory;
 
             for (int i = 0; i <= segments.Length - 1; i++)
             {
                 string currentSegment = segments[i];
                 if (currentNode.Contains(currentSegment))
-                    currentNode = (ModifiedDirectory)currentNode.GetSubDirectories()[currentNode.IndexOf(currentSegment)];
+                    currentNode = (ExtendedDirectory)currentNode.GetSubDirectories()[currentNode.IndexOf(currentSegment)];
                 else
                 {
                     currentNode = null;
@@ -856,7 +838,7 @@ namespace VFS.ModifiedVFS
         public override void ExtractFiles(string[] files, string directoryPath)
         {
             // Gathering files as ModifiedFile-Array
-            ModifiedFile[] nFiles = new ModifiedFile[files.Length];
+            ExtendedFile[] nFiles = new ExtendedFile[files.Length];
 
             for (int i = 0; i <= files.Length - 1; i++)
             {
@@ -867,9 +849,9 @@ namespace VFS.ModifiedVFS
                 for (int s = 0; s <= segements.Length - 2; s++)
                     newFile += segements[s] + @"\";
 
-                ModifiedDirectory node = (ModifiedDirectory)this.RootDirectory.CalculateLastNode(newFile);
+                ExtendedDirectory node = (ExtendedDirectory)this.RootDirectory.CalculateLastNode(newFile);
                 if (NULLFILE.Contains(node.GetFiles(), currentFile))
-                    nFiles[i] = (ModifiedFile)NULLFILE.ByPath(node.GetFiles(), currentFile);
+                    nFiles[i] = (ExtendedFile)NULLFILE.ByPath(node.GetFiles(), currentFile);
             }
 
             this.ExtractFiles(nFiles, directoryPath);
@@ -890,7 +872,7 @@ namespace VFS.ModifiedVFS
             int steps = files.Length;
             int currentStep = 0;
 
-            foreach (ModifiedFile currentFile in files)
+            foreach (ExtendedFile currentFile in files)
             {
                 string[] segments = currentFile.Path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 if (segments.Length > 0)
@@ -909,17 +891,6 @@ namespace VFS.ModifiedVFS
         }
 
         /// <summary>
-        /// Returns true if a file is already existing
-        /// </summary>
-        /// <param name="path">Path of the virtual file</param>
-        /// <param name="startNode">The directory where the path is beginning</param>
-        /// <returns></returns>
-        public override bool FileExists(string path, IDirectory startNode)
-        {
-            return base.FileExists(path, startNode);
-        }
-
-        /// <summary>
         /// Removes a virtual file
         /// </summary>
         /// <param name="path">Path of the virtual file</param>
@@ -928,7 +899,7 @@ namespace VFS.ModifiedVFS
         public override bool RemoveFile(string path, IDirectory startNode)
         {
             bool result = base.RemoveFile(path, startNode);
-
+            
             if (this.SaveAfterChange)
                 this.Save();
 
@@ -953,7 +924,7 @@ namespace VFS.ModifiedVFS
             // Check if the file is already there
             if (!overrideExisting)
             {
-                foreach (ModifiedFile ms in dir.GetFiles())
+                foreach (ExtendedFile ms in dir.GetFiles())
                 {
                     if (ms.GetName() == name)
                         return false;
@@ -965,7 +936,7 @@ namespace VFS.ModifiedVFS
             {
                 System.IO.Directory.CreateDirectory(dirToCreate);
             }
-            catch
+            catch (Exception)
             {
                 return false;
             }
@@ -973,8 +944,21 @@ namespace VFS.ModifiedVFS
             Progress.Register(0.0, 0.0, Methods.WRITE_ALL_BYTES);
 
             // CreateFile
-            ModifiedFile mf = new ModifiedFile(new HeaderInfo(dir.ToFullPath() + @"\" + name, -data.Length, 0, false), dir as ModifiedDirectory);
+            ExtendedFile mf = new ExtendedFile(new HeaderInfo(dir.ToFullPath() + @"\" + name, -data.Length, 0, false), dir as ExtendedDirectory);
             mf.IsInvalid = true;
+
+            ExtendedFile oldFile = null;
+            foreach (ExtendedFile ms in dir.GetFiles())
+            {
+                if (ms.GetName() == name)
+                {
+                    oldFile = ms;
+                    break;
+                }
+            }
+
+            if (oldFile != null)
+                dir.GetFiles().Remove(oldFile);
             dir.GetFiles().Add(mf);
 
             // Write the bytes to dirsToCreate:
@@ -1092,7 +1076,7 @@ namespace VFS.ModifiedVFS
             // Check if the file is already there
             if (!overrideExisting)
             {
-                foreach (ModifiedFile ms in dir.GetFiles())
+                foreach (ExtendedFile ms in dir.GetFiles())
                 {
                     if (ms.GetName() == name)
                         return false;
@@ -1112,7 +1096,7 @@ namespace VFS.ModifiedVFS
             }
 
             // CreateFile
-            ModifiedFile mf = new ModifiedFile(new HeaderInfo(dir.ToFullPath() + @"\" + name, -stream.Length, 0, false), dir as ModifiedDirectory);
+            ExtendedFile mf = new ExtendedFile(new HeaderInfo(dir.ToFullPath() + @"\" + name, -stream.Length, 0, false), dir as ExtendedDirectory);
             mf.IsInvalid = true;
             dir.GetFiles().Add(mf);
 
@@ -1207,7 +1191,7 @@ namespace VFS.ModifiedVFS
                     files.Add(fi.FullName);
 
                 // VHP without directories, just with these files.
-                this.CreateVHP(new string[] { }, files.ToArray());
+                this.Create(new string[] { }, files.ToArray());
 
                 Progress.Register(1.0, 0.75, Methods.SAVE);
                 this.Read(this.savePath);
@@ -1236,7 +1220,7 @@ namespace VFS.ModifiedVFS
             foreach (System.IO.DirectoryInfo di in new System.IO.DirectoryInfo(this.WorkSpacePath).GetDirectories("*.*", SearchOption.TopDirectoryOnly))
                 directories.Add(di.FullName);
 
-            this.CreateVHP(directories.ToArray(), files1.ToArray());
+            this.Create(directories.ToArray(), files1.ToArray());
 
             // Step 3
             Progress.Register(1.0, 0.75, Methods.SAVE);

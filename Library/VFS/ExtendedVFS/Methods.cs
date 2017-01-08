@@ -2,11 +2,11 @@
 // Methods.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      29.12.2016
-// Last update on:  30.12.2016
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 
-namespace VFS.ModifiedVFS
+namespace VFS.ExtendedVFS
 {
     /// <summary>
     /// Identfies the methods (MVFS or MVFST)

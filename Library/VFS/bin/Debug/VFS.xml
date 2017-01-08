@@ -4,32 +4,198 @@
         <name>VFS</name>
     </assembly>
     <members>
-        <member name="T:VFS.ModifiedVFS.HeaderInfo">
+        <member name="T:VFS.VFS">
+            <summary>
+            Represents the base of a virtual file system
+            </summary>
+        </member>
+        <member name="F:VFS.VFS.DirIndex">
+            <summary>
+            The unique directory index, e.g. if the name of to directories are the same (but different path)
+            </summary>
+        </member>
+        <member name="P:VFS.VFS.RootDirectory">
+            <summary>
+            Root Directory - Name: ""
+            </summary>
+        </member>
+        <member name="P:VFS.VFS.NULLFILE">
+            <summary>
+            A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
+            </summary>
+        </member>
+        <member name="F:VFS.VFS.savePath">
+            <summary>
+            The path where the VFS-file is stored
+            </summary>
+        </member>
+        <member name="M:VFS.VFS.FormatPath(System.String)">
+            <summary>
+            Formatting the path to the right format
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.Create(System.String)">
+            <summary>
+            Creates a new VFS
+            </summary>
+            <param name="directory">All files and folders in this directory are used</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.Create(System.String[],System.String[])">
+            <summary>
+            Creates a new VFS
+            </summary>
+            <param name="files">Files which will be processed</param>
+            <param name="directories">Directories which will be processed</param>
+        </member>
+        <member name="M:VFS.VFS.Read(System.String)">
+            <summary>
+            Loads a VHP-File into the RAM (just header-content)
+            </summary>
+            <param name="filePath">The path where the vhp-file is stored</param>
+        </member>
+        <member name="M:VFS.VFS.FileExists(System.String,VFS.Interfaces.IDirectory)">
+            <summary>
+            Returns true if a file is already existing
+            </summary>
+            <param name="path">Path of the virtual file</param>
+            <param name="startNode">The directory where the path is beginning</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.RemoveFile(System.String,VFS.Interfaces.IDirectory)">
+            <summary>
+            Removes a virtual file
+            </summary>
+            <param name="path">Path of the virtual file</param>
+            <param name="startNode">The directory where the path is beginning</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.Extract(System.String)">
+            <summary>
+            Extract all files and directories to the given path
+            </summary>
+            <param name="filePath">Path where the content will be extracted</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.ExtractFiles(System.String[],System.String)">
+            <summary>
+            Extracts the given files to the given path
+            </summary>
+            <param name="files">The files which should be extracted</param>
+            <param name="directoryPath">Path where the files will be extracted</param>
+        </member>
+        <member name="M:VFS.VFS.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
+            <summary>
+            Extracts the given files to the given path
+            </summary>
+            <param name="files">The files which should be extracted</param>
+            <param name="directoryPath">Path where the files will be extracted</param>
+        </member>
+        <member name="M:VFS.VFS.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
+            <summary>
+            Extracts the given directory to the given path
+            </summary>
+            <param name="currentDir">The virutal directory which should be extracted</param>
+            <param name="toPath">Path where the virtual directory will be extracted</param>
+        </member>
+        <member name="M:VFS.VFS.ExtractDirectory(System.String,System.String)">
+            <summary>
+            Extract the directory to a given path
+            </summary>
+            <param name="path">The virutal path where the directory is stored</param>
+            <param name="filePath">Path where the directory will be extracted</param>
+        </member>
+        <member name="M:VFS.VFS.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
+            <summary>
+            Returns the content of a virtual file as a string (Max: 1 GB)
+            </summary>
+            <param name="path">Path of the virtual file</param>
+            <param name="startNode">The directory where the path is beginning</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+            <summary>
+            Returns the bytes of a virutal files (reading from originial file) (Max: 1 GB)
+            </summary>
+            <param name="path">Path of the virtual file</param>
+            <param name="startNode">The directory where the path is beginning</param>
+            <param name="different">Just to differniate between these methods (not used in this method)</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+            <summary>
+            Writes bytes into a file in the workspace directory (while saving the file will be saved too)
+            </summary>
+            <param name="data">The bytes to write</param>
+            <param name="name">The name of the file</param>
+            <param name="dir">The directory where the file is stored in</param>
+            <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
+            <summary>
+            Writes bytes into a file in the workspace directory (while saving the file will be saved too)
+            </summary>
+            <param name="data">The bytes to write</param>
+            <param name="path">The path where the file is stored in</param>
+            <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+            <summary>
+            Writes bytes into a file in the workspace directory (while saving the file will be saved too)
+            </summary>
+            <param name="content">The string which should be written into the file</param>
+            <param name="name">The name of the file</param>
+            <param name="dir">The directory where the file is stored in</param>
+            <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
+            <summary>
+            Writes a stream (file) into a file in the workspace directory (while saving the file will be saved too)
+            </summary>
+            <param name="name">The name of the file</param>
+            <param name="dir">The directory where the file is stored in</param>
+            <param name="stream">The stream which will be written to a file stream</param>
+            <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.Save">
+            <summary>
+            Automatically called when SaveAfterChange is true.
+            This method is for saving changes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:VFS.ExtendedVFS.HeaderInfo">
             <summary>
             Struct that contains and can processing path, start - and end - position
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.HeaderInfo.StartPosition">
+        <member name="F:VFS.ExtendedVFS.HeaderInfo.StartPosition">
             <summary>
             The position where the file starts
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.HeaderInfo.EndPosition">
+        <member name="F:VFS.ExtendedVFS.HeaderInfo.EndPosition">
             <summary>
             The position where the file ends
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.HeaderInfo.Path">
+        <member name="F:VFS.ExtendedVFS.HeaderInfo.Path">
             <summary>
             The virutal path of the file
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.HeaderInfo.Failed">
+        <member name="F:VFS.ExtendedVFS.HeaderInfo.Failed">
             <summary>
             Input validation if it's true something went wrong
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.HeaderInfo.#ctor(System.String,System.Int64,System.Int64,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.HeaderInfo.#ctor(System.String,System.Int64,System.Int64,System.Boolean)">
             <summary>
             Instantiates a new HeaderInfo
             </summary>
@@ -38,136 +204,136 @@
             <param name="EndPosition">The position where the file ends</param>
             <param name="Failed">Input validation</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.HeaderInfo.FromString(System.String)">
+        <member name="M:VFS.ExtendedVFS.HeaderInfo.FromString(System.String)">
             <summary>
             Returns a HeaderInfo generated from the given string
             </summary>
             <param name="headerItem">The string which will be used to create HeaderInfo</param>
             <returns></returns>
         </member>
-        <member name="T:VFS.ModifiedVFS.Methods">
+        <member name="T:VFS.ExtendedVFS.Methods">
             <summary>
             Identfies the methods (MVFS or MVFST)
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.DEFAULT">
+        <member name="F:VFS.ExtendedVFS.Methods.DEFAULT">
             <summary>
             Method identifier - Default
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.EXTRACT">
+        <member name="F:VFS.ExtendedVFS.Methods.EXTRACT">
             <summary>
             Method identifier - Extract
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.EXTRACT_DIR">
+        <member name="F:VFS.ExtendedVFS.Methods.EXTRACT_DIR">
             <summary>
             Method identifier - ExtractDirectory
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.EXTRACT_FILES">
+        <member name="F:VFS.ExtendedVFS.Methods.EXTRACT_FILES">
             <summary>
             Method identifier - ExtractFiles
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.READ">
+        <member name="F:VFS.ExtendedVFS.Methods.READ">
             <summary>
             Method identifier - Read
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.READ_ALL_BYTES">
+        <member name="F:VFS.ExtendedVFS.Methods.READ_ALL_BYTES">
             <summary>
             Method identifier - ReadAllBytes
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.READ_ALL_TEXT">
+        <member name="F:VFS.ExtendedVFS.Methods.READ_ALL_TEXT">
             <summary>
             Method identifier - ReadAllText
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.REMOVE_FILE">
+        <member name="F:VFS.ExtendedVFS.Methods.REMOVE_FILE">
             <summary>
             Method identifier - RemoveFile
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.WRITE_ALL_BYTES">
+        <member name="F:VFS.ExtendedVFS.Methods.WRITE_ALL_BYTES">
             <summary>
             Method identifier - WriteAllBytes
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.WRITE_ALL_TEXT">
+        <member name="F:VFS.ExtendedVFS.Methods.WRITE_ALL_TEXT">
             <summary>
             Method identifier - WriteAllText
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.WRITE_STREAM">
+        <member name="F:VFS.ExtendedVFS.Methods.WRITE_STREAM">
             <summary>
             Method identifier - WriteStream
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.CREATE">
+        <member name="F:VFS.ExtendedVFS.Methods.CREATE">
             <summary>
             Method identifier - CreateVHP
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Methods.SAVE">
+        <member name="F:VFS.ExtendedVFS.Methods.SAVE">
             <summary>
             Method identifier - Save
             </summary>
         </member>
-        <member name="T:VFS.ModifiedVFS.ModifiedDirectory">
+        <member name="T:VFS.ExtendedVFS.ExtendedDirectory">
             <summary>
             Directory which is modified to store instances of ModifiedFiles
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedDirectory.NULLFILE">
+        <member name="F:VFS.ExtendedVFS.ExtendedDirectory.NULLFILE">
             <summary>
             An empty file to use the instance-methods which are non-static
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.#ctor">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.#ctor">
             <summary>
             Instantiates a new ModifiedDirectory
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.#ctor(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.#ctor(System.String)">
             <summary>
             Instantiates a new ModifiedDirectory
             </summary>
             <param name="name">The name of the virtual directory which will be created</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.AddFile(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.AddFile(System.String)">
             <summary>
             Adds a file to this directory - without any content
             </summary>
             <param name="fileName">The filename which will be used to added this file to this directory</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.AddFiles(System.String[])">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.AddFiles(System.String[])">
             <summary>
             Add files to this directory - without any content
             </summary>
             <param name="fileNames">The filesname which will be used to added these files to this directory</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.AddPathes(System.String[])">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.AddPathes(System.String[])">
             <summary>
             Create the virtual directories from the pathes given in data-array
             </summary>
             <param name="data">String-array that contains pathes</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.AddPathesWithFiles(System.String[])">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.AddPathesWithFiles(System.String[])">
             <summary>
             Create virtual directories and files
             </summary>
             <param name="data">String-Array which contains pathes of the directories and files</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.CalculateLastNode(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.CalculateLastNode(System.String)">
             <summary>
             Returns the last directory of the path (directory after last "backslash" ("\"))
             </summary>
             <param name="path">The path to work with</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.CalculateLastNode(VFS.Interfaces.IDirectory,System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.CalculateLastNode(VFS.Interfaces.IDirectory,System.String)">
             <summary>
             /// Returns the last directory of the path (directory after last "backslash" ("\"))
             </summary>
@@ -175,96 +341,96 @@
             <param name="path">The path to work with</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.Contains(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.Contains(System.String)">
             <summary>
             Returns true if this directory contains a subdirectory with the given name
             </summary>
             <param name="dir">Name of the subdirectory</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.GetFiles">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.GetFiles">
             <summary>
             Returns the files the directory has
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.GetIndex">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.GetIndex">
             <summary>
             Returns the unique index of this directory
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.GetName">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.GetName">
             <summary>
             Returns the name of this directory
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.GetParent">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.GetParent">
             <summary>
             Returns the parent directory
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.GetSubDirectories">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.GetSubDirectories">
             <summary>
             Returns a list of all subdirectories (TopLevel)
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.IndexOf(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.IndexOf(System.String)">
             <summary>
             Returns the index of the given dir
             </summary>
             <param name="dir">The directory from which you want to get the index (Be careful: This is the index of the list not the unique index)</param>
             <returns>-1 if this directory doesn't contains the given directory </returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.Remove(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.Remove(System.String)">
             <summary>
             Removes a directroy
             </summary>
             <param name="path">The path where the directory is stored</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.Remove(VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.Remove(VFS.Interfaces.IDirectory)">
             <summary>
             Removes a directory
             </summary>
             <param name="dir">The instance of the directory</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.SetName(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.SetName(System.String)">
             <summary>
             Sets the name of the directory (Just necessary because of IDirectory)
             </summary>
             <param name="name">Name which will be set</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.SetParent(VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.SetParent(VFS.Interfaces.IDirectory)">
             <summary>
             You can set the owner of this directory
             </summary>
             <param name="parent">Direcotry instance which will be the owner of this directory</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.ToFileStringArray">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.ToFileStringArray">
             <summary>
             Returns ALL files in each and every directory
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.ToFullPath(VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.ToFullPath(VFS.Interfaces.IDirectory)">
             <summary>
             Creates the full path till parent, if parent == null, then till start
             </summary>
             <param name="parent">The directory instance to get a special path from end to parent</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.ToStringArray">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.ToStringArray">
             <summary>
             Returns all pathes of ALL directories in each and every directory
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedDirectory.ByPath(System.String,VFS.ModifiedVFS.ModifiedDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedDirectory.ByPath(System.String,VFS.ExtendedVFS.ExtendedDirectory)">
             <summary>
             Returns the file instance by path
             </summary>
@@ -272,59 +438,59 @@
             <param name="rootDir">The main directory (necessary, because static)</param>
             <returns></returns>
         </member>
-        <member name="T:VFS.ModifiedVFS.ModifiedFile">
+        <member name="T:VFS.ExtendedVFS.ExtendedFile">
             <summary>
             Represents a file with additonally StartPosition, EndPosition and Size
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedFile.OrgPath">
+        <member name="F:VFS.ExtendedVFS.ExtendedFile.OrgPath">
             <summary>
             The path on the local harddrive (e.g. when you call CreateVHP, the original path will be stored here)
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedFile.Parent">
+        <member name="F:VFS.ExtendedVFS.ExtendedFile.Parent">
             <summary>
             The owner directory of this file
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedFile.Size">
+        <member name="F:VFS.ExtendedVFS.ExtendedFile.Size">
             <summary>
             The length of this file
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedFile.StartPosition">
+        <member name="F:VFS.ExtendedVFS.ExtendedFile.StartPosition">
             <summary>
             The position where the file starts
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedFile.IsInvalid">
+        <member name="F:VFS.ExtendedVFS.ExtendedFile.IsInvalid">
             <summary>
             Is written in workspace directory and doesn't contain positions yet. Call yourVFS.Save() to change this state.
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.ModifiedFile.EndPosition">
+        <member name="P:VFS.ExtendedVFS.ExtendedFile.EndPosition">
             <summary>
             Returns the position where the file ends (dependend from StartPosition and Size)
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.ModifiedFile.Path">
+        <member name="P:VFS.ExtendedVFS.ExtendedFile.Path">
             <summary>
             The virtual path of this file
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.ModifiedFile.FileName">
+        <member name="P:VFS.ExtendedVFS.ExtendedFile.FileName">
             <summary>
             The filename of the original path
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.#ctor(VFS.ModifiedVFS.HeaderInfo,VFS.ModifiedVFS.ModifiedDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.#ctor(VFS.ExtendedVFS.HeaderInfo,VFS.ExtendedVFS.ExtendedDirectory)">
             <summary>
             Creates a new virtual file
             </summary>
             <param name="hi">Header-Information</param>
             <param name="Parent">The owner of this file</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.ByPath(System.Collections.Generic.List{VFS.Interfaces.IFile},System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.ByPath(System.Collections.Generic.List{VFS.Interfaces.IFile},System.String)">
             <summary>
             Returns a file instance by path
             </summary>
@@ -332,13 +498,13 @@
             <param name="path">The path of the file</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.CalculateLength">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.CalculateLength">
             <summary>
             Returns the length of this file with the right unit prefix
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.Contains(System.Collections.Generic.List{VFS.Interfaces.IFile},System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.Contains(System.Collections.Generic.List{VFS.Interfaces.IFile},System.String)">
             <summary>
             Proves if the list contains a file with the given path
             </summary>
@@ -346,131 +512,120 @@
             <param name="path">The path of the file</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.GetBytes">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.GetBytes">
             <summary>
             Returns a list of the bytes which are stored in RAM - useless here, but necessary for implenting the interface
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.GetName">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.GetName">
             <summary>
             Returns the name of this file
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.GetParentDirectory">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.GetParentDirectory">
             <summary>
             Returns the owner of this file
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.GetPath">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.GetPath">
             <summary>
             Returns the path of this file
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.SetByes(System.Collections.Generic.List{System.Byte})">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.SetByes(System.Collections.Generic.List{System.Byte})">
             <summary>
             Sets the bytes of this file - useless, nothing will be done when calling this method
             </summary>
             <param name="bytes"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.SetName(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.SetName(System.String)">
             <summary>
             Sets the name of the file
             </summary>
             <param name="Name">The filename</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.SetParentDirectory(VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.SetParentDirectory(VFS.Interfaces.IDirectory)">
             <summary>
             Sets the owner of this file
             </summary>
             <param name="parentDir"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedFile.ToString">
+        <member name="M:VFS.ExtendedVFS.ExtendedFile.ToString">
             <summary>
             Returns e.g. \Path:0:500 for easier creating a header
             </summary>
             <returns></returns>
         </member>
-        <member name="T:VFS.ModifiedVFS.ModifiedVFS">
+        <member name="T:VFS.ExtendedVFS.ExtendedVFS">
             <summary>
             Represents a VFS which is more efficent and can reduce the amount of bytes to save
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedVFS.rootDir">
+        <member name="F:VFS.ExtendedVFS.ExtendedVFS.rootDir">
             <summary>
             The root directory
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedVFS.WorkSpacePath">
+        <member name="F:VFS.ExtendedVFS.ExtendedVFS.WorkSpacePath">
             <summary>
             The path as a cliboard which is needed to work - It's like the temp-directory
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedVFS.NULLFILE">
+        <member name="P:VFS.ExtendedVFS.ExtendedVFS.NULLFILE">
             <summary>
             A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedVFS.StartSequence">
+        <member name="F:VFS.ExtendedVFS.ExtendedVFS.StartSequence">
             <summary>
             The sequence to identfy file format [{***VHP***}]
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedVFS.READ_RESTRICTION">
+        <member name="F:VFS.ExtendedVFS.ExtendedVFS.READ_RESTRICTION">
             <summary>
             The restriction if you can read the file or not. It's set to 1 GB
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.ModifiedVFS.BUFFER_SIZE">
+        <member name="F:VFS.ExtendedVFS.ExtendedVFS.BUFFER_SIZE">
             <summary>
             Determines how much bytes does the buffer-array contains.
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.ModifiedVFS.Offset">
+        <member name="P:VFS.ExtendedVFS.ExtendedVFS.Offset">
             <summary>
             Returns the length of the header to adjust the start and end position of a file
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.ModifiedVFS.RootDirectory">
+        <member name="P:VFS.ExtendedVFS.ExtendedVFS.RootDirectory">
             <summary>
             Root Directory - Name: ""
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.ModifiedVFS.SaveAfterChange">
+        <member name="P:VFS.ExtendedVFS.ExtendedVFS.SaveAfterChange">
             <summary>
             If true, creates the file completly new after a change like calling WriteAllText or WriteAllBytes
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.#ctor(System.String,System.String,System.String,System.Int32,System.Int32,System.Int64)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.#ctor(System.String,System.String,System.Int64)">
             <summary>
             Instantiate a new ModifiedVFS (Version 2)
             </summary>
-            <param name="logPath"></param>
-            <param name="savePath"></param>
-            <param name="workSpacePath"></param>
-            <param name="MainCounter"></param>
-            <param name="PackByte"></param>
-            <param name="BufferSize"></param>
+            <param name="savePath">The path where the VFS file is stored</param>
+            <param name="workSpacePath">The path of the temp directory</param>
+            <param name="BufferSize">The size of the buffer</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.CreateVHP(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.Create(System.String)">
             <summary>
             Creates a new VHP (Version 2)
             </summary>
-            <param name="directory"></param>
+            <param name="directory">All files and folders in this directory are used</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.CreateVHP(System.String,System.Boolean)">
-            <summary>
-            Creates a new VHP (Version 2)
-            </summary>
-            <param name="file">The file you want to include</param>
-            <param name="f">Additionally to differentiate between this and CreateVHP(string directory)</param>
-            <returns></returns>
-        </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.CreateVHP(System.String[],System.String[])">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.Create(System.String[],System.String[])">
             <summary>
             Creates a new VHP (Version 2)
             </summary>
@@ -478,13 +633,13 @@
             <param name="files">The files which you want to include</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.Read(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.Read(System.String)">
             <summary>
             Loads a VHP-File into the RAM (just header-content)
             </summary>
             <param name="filePath">The path where the vhp-file is stored</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
             <summary>
             Returns the content of a virtual file as a string (Max: 1 GB)
             </summary>
@@ -492,7 +647,7 @@
             <param name="startNode">The directory where the path is beginning</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Returns the bytes of a virutal files (reading from originial file) (Max: 1 GB)
             </summary>
@@ -501,57 +656,49 @@
             <param name="different">Just to differniate between these methods (not used in this method)</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.IsNewVersion(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.IsNewVersion(System.String)">
             <summary>
             Returns if the file contains the version 2
             </summary>
             <param name="path">The file to read in</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.Extract(System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.Extract(System.String)">
             <summary>
             Extract all files and directories to the given path
             </summary>
             <param name="filePath">Path where the content will be extracted</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
             <summary>
             Extracts the given directory to the given path
             </summary>
             <param name="currentDir">The virutal directory which should be extracted</param>
             <param name="toPath">Path where the virtual directory will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ExtractDirectory(System.String,System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ExtractDirectory(System.String,System.String)">
             <summary>
             Extract the directory to a given path
             </summary>
             <param name="path">The virutal path where the directory is stored</param>
             <param name="filePath">Path where the directory will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ExtractFiles(System.String[],System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ExtractFiles(System.String[],System.String)">
             <summary>
             Extracts the given files to the given path
             </summary>
             <param name="files">The files which should be extracted</param>
             <param name="directoryPath">Path where the files will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
             <summary>
             Extracts the given files to the given path
             </summary>
             <param name="files">The files which should be extracted</param>
             <param name="directoryPath">Path where the files will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.FileExists(System.String,VFS.Interfaces.IDirectory)">
-            <summary>
-            Returns true if a file is already existing
-            </summary>
-            <param name="path">Path of the virtual file</param>
-            <param name="startNode">The directory where the path is beginning</param>
-            <returns></returns>
-        </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.RemoveFile(System.String,VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.RemoveFile(System.String,VFS.Interfaces.IDirectory)">
             <summary>
             Removes a virtual file
             </summary>
@@ -559,7 +706,7 @@
             <param name="startNode">The directory where the path is beginning</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Writes bytes into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -569,7 +716,7 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
             <summary>
             Writes bytes into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -578,7 +725,7 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Writes bytes into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -588,7 +735,7 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
             <summary>
             Writes a stream (file) into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -598,69 +745,82 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.ClearWorkspaceDirectory">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.ClearWorkspaceDirectory">
             <summary>
             Clears the content of the workspace-directory
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.ModifiedVFS.Save">
+        <member name="M:VFS.ExtendedVFS.ExtendedVFS.Save">
             <summary>
             Automatically called when SaveAfterChange is true.
             This method is for saving changes.
             </summary>
             <returns></returns>
         </member>
-        <member name="T:VFS.ModifiedVFS.Wrapper.ModifiedVFST">
+        <member name="T:VFS.ExtendedVFS.Wrapper.ExtendedVFST">
             <summary>
             Thread-based and exception handling ModifiedVFS
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.ModifiedVFST.defaultResult">
+        <member name="F:VFS.ExtendedVFS.Wrapper.ExtendedVFST.defaultResult">
             <summary>
             A result which is false - no need to create a false result every time when needed a false result
             </summary>
         </member>
-        <member name="T:VFS.ModifiedVFS.Wrapper.ModifiedVFST.onFinishedEvent">
+        <member name="T:VFS.ExtendedVFS.Wrapper.ExtendedVFST.onFinishedEvent">
             <summary>
             This event is called when the method is finishing the progress
             </summary>
             <param name="result">The result information from the method</param>
         </member>
-        <member name="E:VFS.ModifiedVFS.Wrapper.ModifiedVFST.OnFinished">
+        <member name="E:VFS.ExtendedVFS.Wrapper.ExtendedVFST.OnFinished">
             <summary>
             This event is called when the method is finishing the progress (Be careful with calling another method, because it will be called every time when onFinished is fired)
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.Wrapper.ModifiedVFST.CurrentStopWatch">
+        <member name="P:VFS.ExtendedVFS.Wrapper.ExtendedVFST.CurrentStopWatch">
             <summary>
             Returns the StopWatch-Instance of the current process
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.#ctor(System.String,System.String,System.String,System.Int64)">
+        <member name="P:VFS.ExtendedVFS.Wrapper.ExtendedVFST.SaveAfterChange">
+            <summary>
+            If true, creates the file completly new after a change like calling WriteAllText or WriteAllBytes
+            </summary>
+        </member>
+        <member name="P:VFS.ExtendedVFS.Wrapper.ExtendedVFST.RootDirectory">
+            <summary>
+            Root Directory - Name: ""
+            </summary>
+        </member>
+        <member name="P:VFS.ExtendedVFS.Wrapper.ExtendedVFST.NULLFILE">
+            <summary>
+            A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
+            </summary>
+        </member>
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.#ctor(System.String,System.String,System.Boolean,System.Int64)">
             <summary>
             Instantiate a new VFS which is modified and thread-based
             </summary>
-            <param name="logPath">The path for the logging-file</param>
             <param name="savePath">The path where the file will be created</param>
             <param name="workSpacePath">The path of the cliboard (Please do not save an files or directories there!)</param>
+            <param name="saveAfterChanged">Determines if the system should save after a change</param>
             <param name="BufferSize">The size of the file-buffer in bytes</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.CreateVHP(System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.CancelThread(VFS.ExtendedVFS.Methods)">
+            <summary>
+            Cancels the current thread
+            </summary>
+            <param name="currentAction">The method which is working currently</param>
+        </member>
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.Create(System.String)">
             <summary>
             Creates a new VHP
             </summary>
             <param name="directory">All files and directories of this directory will be progressed into the VHP</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.CreateVHP(System.String,System.Boolean)">
-            <summary>
-            Creates a new VHP
-            </summary>
-            <param name="file">Just this one file will be taken to be progressed</param>
-            <param name="f">Just for differnitate the methods</param>
-            <returns></returns>
-        </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.CreateVHP(System.String[],System.String[])">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.Create(System.String[],System.String[])">
             <summary>
             Creates a new VHP
             </summary>
@@ -668,42 +828,42 @@
             <param name="files">This files will be taken to be progressed</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.Extract(System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.Extract(System.String)">
             <summary>
             Extract all files and directories to the given path
             </summary>
             <param name="filePath">Path where the content will be extracted</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.ExtractDirectory(System.String,System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.ExtractDirectory(System.String,System.String)">
             <summary>
             Extract the directory to a given path
             </summary>
             <param name="path">The virutal path where the directory is stored</param>
             <param name="filePath">Path where the directory will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
             <summary>
             Extracts the given directory to the given path
             </summary>
             <param name="currentDir">The virutal directory which should be extracted</param>
             <param name="toPath">Path where the virtual directory will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
             <summary>
             Extracts the given files to the given path
             </summary>
             <param name="files">The files which should be extracted</param>
             <param name="directoryPath">Path where the files will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.ExtractFiles(System.String[],System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.ExtractFiles(System.String[],System.String)">
             <summary>
             Extracts the given files to the given path
             </summary>
             <param name="files">The files which should be extracted</param>
             <param name="directoryPath">Path where the files will be extracted</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.FileExists(System.String,VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.FileExists(System.String,VFS.Interfaces.IDirectory)">
             <summary>
             Returns true if a file is already existing
             </summary>
@@ -711,7 +871,7 @@
             <param name="startNode">The directory where the path is beginning</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.RemoveFile(System.String,VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.RemoveFile(System.String,VFS.Interfaces.IDirectory)">
             <summary>
             Removes a virtual file
             </summary>
@@ -719,13 +879,13 @@
             <param name="startNode">The directory where the path is beginning</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.Read(System.String)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.Read(System.String)">
             <summary>
             Loads a VHP-File into the RAM (just header-content)
             </summary>
             <param name="filePath">The path where the vhp-file is stored</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Returns the bytes of a virutal files (reading from originial file) (Max: 1 GB)
             </summary>
@@ -734,7 +894,7 @@
             <param name="different">Just to differniate between these methods (not used in this method)</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
             <summary>
             Returns the content of a virtual file as a string (Max: 1 GB)
             </summary>
@@ -742,7 +902,7 @@
             <param name="startNode">The directory where the path is beginning</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
             <summary>
             Writes a stream (file) into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -752,7 +912,7 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Writes bytes into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -762,7 +922,7 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
             <summary>
             Writes bytes into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -771,7 +931,7 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Writes bytes into a file in the workspace directory (while saving the file will be saved too)
             </summary>
@@ -781,61 +941,61 @@
             <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.ModifiedVFST.Save">
+        <member name="M:VFS.ExtendedVFS.Wrapper.ExtendedVFST.Save">
             <summary>
             Automatically called when SaveAfterChange is true.
             This method is for saving changes.
             </summary>
             <returns></returns>
         </member>
-        <member name="T:VFS.ModifiedVFS.Wrapper.Progress">
+        <member name="T:VFS.ExtendedVFS.Wrapper.Progress">
             <summary>
             Describes the method of a method in ModifiedVFS
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Progress.SpecialCode">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Progress.SpecialCode">
             <summary>
             Code to identfy the method
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.Wrapper.Progress.Value">
+        <member name="P:VFS.ExtendedVFS.Wrapper.Progress.Value">
             <summary>
             The value of of the current progress
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.Wrapper.Progress.EntireValue">
+        <member name="P:VFS.ExtendedVFS.Wrapper.Progress.EntireValue">
             <summary>
             The value of the main-progress
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Progress.LstProgress">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Progress.LstProgress">
             <summary>
             List which contains each progress to calculate the final value if there is more than one progress at the same time
             </summary>
         </member>
-        <member name="T:VFS.ModifiedVFS.Wrapper.Progress.onValueChanged">
+        <member name="T:VFS.ExtendedVFS.Wrapper.Progress.onValueChanged">
             <summary>
             onValueChanged is called when the value or the main-progress is changed
             </summary>
             <param name="value">T</param>
             <param name="step"></param>
         </member>
-        <member name="E:VFS.ModifiedVFS.Wrapper.Progress.OnValueChanged">
+        <member name="E:VFS.ExtendedVFS.Wrapper.Progress.OnValueChanged">
             <summary>
             OnValueChanged is called when the value or the main-progress is changed
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.Wrapper.Progress.MainValue">
+        <member name="P:VFS.ExtendedVFS.Wrapper.Progress.MainValue">
             <summary>
             The calculated value of all progress-instances
             </summary>
         </member>
-        <member name="P:VFS.ModifiedVFS.Wrapper.Progress.MainEntireValue">
+        <member name="P:VFS.ExtendedVFS.Wrapper.Progress.MainEntireValue">
             <summary>
             The calculatet value of all progress-instances which describes the main-progress
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Progress.#ctor(System.Double,System.Double,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Progress.#ctor(System.Double,System.Double,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiates a new progress and adds this progress to the list of all progresses
             </summary>
@@ -843,19 +1003,19 @@
             <param name="EntireValue">Value of the main progress</param>
             <param name="SpecialCode">Code to identify the method</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Progress.#ctor">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Progress.#ctor">
             <summary>
             Instantiate a new progress and adds this progress to the list of all progresses
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Progress.GetProgress(VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Progress.GetProgress(VFS.ExtendedVFS.Methods)">
             <summary>
             Get the progress by the method identifier
             </summary>
             <param name="SpecialCode">Code to identify the code</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Progress.Register(System.Double,System.Double,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Progress.Register(System.Double,System.Double,VFS.ExtendedVFS.Methods)">
             <summary>
             Creates a new progress with the values or change the values of an existing progress
             </summary>
@@ -863,14 +1023,14 @@
             <param name="entireValue">The value of the main progress</param>
             <param name="SpecialCode">The code to identify the method</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Progress.Register(System.Double,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Progress.Register(System.Double,VFS.ExtendedVFS.Methods)">
             <summary>
             Creates a new progress with the values or change the values of an existing progress
             </summary>
             <param name="value">The value of the current progress</param>
             <param name="SpecialCode">The code to identify the method</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Progress.Register(System.Double,VFS.ModifiedVFS.Methods,System.Boolean)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Progress.Register(System.Double,VFS.ExtendedVFS.Methods,System.Boolean)">
             <summary>
             Creates a new progress with the values or change the values of an existing progress
             </summary>
@@ -878,37 +1038,37 @@
             <param name="SpecialCode">The code to identify the method</param>
             <param name="different">Just to differentiate between the other method (not used in the method)</param>
         </member>
-        <member name="T:VFS.ModifiedVFS.Wrapper.Result">
+        <member name="T:VFS.ExtendedVFS.Wrapper.Result">
             <summary>
             Describes a result which contains information about the running of a method in ModifiedVFS
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Result.Success">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Result.Success">
             <summary>
             Determines whether the methods fails or not
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Result.Value">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Result.Value">
             <summary>
             The return-value of the method
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Result.Typ">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Result.Typ">
             <summary>
             The type of return-value of the method
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Result.CurrentException">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Result.CurrentException">
             <summary>
             An exception, if there is one
             </summary>
         </member>
-        <member name="F:VFS.ModifiedVFS.Wrapper.Result.SpecialCode">
+        <member name="F:VFS.ExtendedVFS.Wrapper.Result.SpecialCode">
             <summary>
             Code to identify the method
             </summary>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Object,System.Type,System.Exception,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Object,System.Type,System.Exception,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiates a new result
             </summary>
@@ -918,7 +1078,7 @@
             <param name="CurrentException"> An exception, if there is one</param>
             <param name="SpecialCode">Code to identify the method</param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Object,System.Type,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Object,System.Type,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -927,7 +1087,7 @@
             <param name="Typ"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.String,System.Exception,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.String,System.Exception,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -936,7 +1096,7 @@
             <param name="CurrentException"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Byte[],System.Exception,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Byte[],System.Exception,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -945,7 +1105,7 @@
             <param name="CurrentException"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Boolean,System.Exception,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Boolean,System.Exception,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -954,7 +1114,7 @@
             <param name="CurrentException"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.String,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.String,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -962,7 +1122,7 @@
             <param name="Value"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Byte[],VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Byte[],VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -970,7 +1130,7 @@
             <param name="Value"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Boolean,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Boolean,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -978,14 +1138,14 @@
             <param name="Value"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
             <param name="Success"></param>
             <param name="SpecialCode"></param>
         </member>
-        <member name="M:VFS.ModifiedVFS.Wrapper.Result.#ctor(System.Boolean,System.Exception,VFS.ModifiedVFS.Methods)">
+        <member name="M:VFS.ExtendedVFS.Wrapper.Result.#ctor(System.Boolean,System.Exception,VFS.ExtendedVFS.Methods)">
             <summary>
             Instantiate a new result
             </summary>
@@ -1660,241 +1820,86 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="T:VFS.Language.Localization">
-            <summary>
-            Constitudes a possiblity to easier translate consts into different language
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.INIT">
-            <summary>
-            Code: file is read and now further processes can work
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.ADDED_FILE">
-            <summary>
-            Code: File was added 
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.FILE_EXISTS">
-            <summary>
-            Code: It's just an info that the file already exists
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.FILE_BYTES_EMPTY">
-            <summary>
-            Code: File exists but is empty. Process is going on
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.ADD_FILES_TO_BYTE">
-            <summary>
-            Code: After override existing file
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.OVERRIDE_FLAG_NOT_SET">
-            <summary>
-            Code: File exists and flag to override is set to false
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.PATH_NOT_EXISTS">
-            <summary>
-            Code: Path is invalid
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.RECIEVED_CHANGE">
-            <summary>
-            Code: A change was detected
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.FILE_NOT_EXISTS">
-            <summary>
-            Code: File doesn't exists
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.FILE_ERROR">
-            <summary>
-            Code: File to read is in an invalid format
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.IO_ERROR">
-            <summary>
-            Code: Problems with reading/writing to SSD/HDD
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.FAILS">
-            <summary>
-            All fails gathered in an array 
-            </summary>
-        </member>
-        <member name="F:VFS.Language.Localization.WARNING">
-            <summary>
-            All warnings gathered in an array
-            </summary>
-        </member>
-        <member name="M:VFS.Language.Localization.#ctor">
-            <summary>
-            Creates a new instance
-            </summary>
-        </member>
-        <member name="M:VFS.Language.Localization.GetRessource(System.Int32)">
-            <summary>
-            Translates a code into the right language - dependend of your culture
-            </summary>
-            <param name="index">The code</param>
-            <returns></returns>
-        </member>
-        <member name="T:VFS.Log">
-            <summary>
-            Represents the information for logging
-            </summary>
-        </member>
-        <member name="T:VFS.Log.Priority">
-            <summary>
-            The log priority
-            </summary>
-        </member>
-        <member name="F:VFS.Log.Priority.ALL">
-            <summary>
-            All messages
-            </summary>
-        </member>
-        <member name="F:VFS.Log.Priority.JustFails">
-            <summary>
-            Just fail messages
-            </summary>
-        </member>
-        <member name="F:VFS.Log.Priority.JustWarnings">
-            <summary>
-            Just warnings
-            </summary>
-        </member>
-        <member name="M:VFS.Log.#ctor(System.String,VFS.Log.Priority)">
-            <summary>
-            Initates a new log
-            </summary>
-            <param name="fPath">The path of the text-file</param>
-            <param name="priorty">The log priority</param>
-        </member>
-        <member name="M:VFS.Log.Add(System.Int32,System.String[],System.String)">
-            <summary>
-            Adds an entry to the log file
-            </summary>
-            <param name="index">The message itself (see consts above)</param>
-            <param name="param">Additional params for analysis</param>
-            <param name="fail">The text of the exception - if one exists</param>
-        </member>
-        <member name="T:VFS.VFS">
+        <member name="T:VFS.SplitVFS">
             <summary>
             Represents the Virtual File System which consists of File and Directory-class
             </summary>
         </member>
-        <member name="F:VFS.VFS.rootDir">
-            <summary>
-            The root directory
-            </summary>
-        </member>
-        <member name="F:VFS.VFS.logPath">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:VFS.VFS.savePath">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:VFS.VFS.lgInstance">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:VFS.VFS.MainCounter">
+        <member name="F:VFS.SplitVFS.MainCounter">
             <summary>
             This counter describes how many PackBytes are used to identify files
             </summary>
         </member>
-        <member name="F:VFS.VFS.PackByte">
+        <member name="F:VFS.SplitVFS.PackByte">
             <summary>
             The byte ("-") which is needed for wrapping files and directories in one file
             </summary>
         </member>
-        <member name="F:VFS.VFS.DirIndex">
-            <summary>
-            The unique directory index, e.g. if the name of to directories are the same (but different path)
-            </summary>
-        </member>
-        <member name="F:VFS.VFS.NULLFILE">
-            <summary>
-            A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
-            </summary>
-        </member>
-        <member name="P:VFS.VFS.RootDirectory">
+        <member name="P:VFS.SplitVFS.RootDirectory">
             <summary>
             Root directory of the currentFile-System
             </summary>
         </member>
-        <member name="M:VFS.VFS.#ctor(System.String,System.String,System.Int32,System.Int32)">
+        <member name="P:VFS.SplitVFS.NULLFILE">
+            <summary>
+            A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
+            </summary>
+        </member>
+        <member name="M:VFS.SplitVFS.#ctor(System.String,System.Int32,System.Int32)">
             <summary>
             Creates a new virtual file system.
             </summary>
-            <param name="logPath">Path for file where the log should be</param>
             <param name="savePath">Path for storing the VFS</param>
             /// <param name="MainCounter">The amout of seperator chars</param>
             /// <param name="PackByte">Char type from 1 to 255 for seperator</param>
         </member>
-        <member name="T:VFS.VFS.onReady">
+        <member name="T:VFS.SplitVFS.onReady">
             <summary>
             This event is called when thread finishes.
             </summary>
         </member>
-        <member name="E:VFS.VFS.OnReady">
+        <member name="E:VFS.SplitVFS.OnReady">
             <summary>
             This event is called when thread finishes.
             </summary>
         </member>
-        <member name="T:VFS.VFS.onSaved">
+        <member name="T:VFS.SplitVFS.onSaved">
             <summary>
             This event is called when a change was done in the system
             </summary>
         </member>
-        <member name="E:VFS.VFS.OnSaved">
+        <member name="E:VFS.SplitVFS.OnSaved">
             <summary>
             This event is called when a change was done in the system
             </summary>
         </member>
-        <member name="M:VFS.VFS.calculateFrom(System.String)">
+        <member name="M:VFS.SplitVFS.calculateFrom(System.String)">
             <summary>
             Returns a byte-array from input string with default encoding
             </summary>
             <param name="data">The input string</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.calculateFrom(System.Byte[])">
+        <member name="M:VFS.SplitVFS.calculateFrom(System.Byte[])">
             <summary>
             Returns a string from byte-array with default encoding
             </summary>
             <param name="data">The input byte-array</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.generateString">
+        <member name="M:VFS.SplitVFS.generateString">
             <summary>
             Generates a string - based on MainCounter and PackByte to separate the files
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.generateBytes">
+        <member name="M:VFS.SplitVFS.generateBytes">
             <summary>
             Generates a byte-array - based on MainCounter and PackByte to separate the files
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.FormatPath(System.String)">
-            <summary>
-            Formatting the path to the right format
-            </summary>
-            <param name="path"></param>
-            <returns></returns>
-        </member>
-        <member name="M:VFS.VFS.checkNextItems(System.Int32,System.Int32,System.Int32,System.Byte[])">
+        <member name="M:VFS.SplitVFS.checkNextItems(System.Int32,System.Int32,System.Int32,System.Byte[])">
             <summary>
             Returns true if the next count-bytes are all equal to PackByte
             </summary>
@@ -1904,7 +1909,7 @@
             <param name="btArray"></param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.SplitVFS.WriteAllText(System.String,System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Creates a file
             </summary>
@@ -1914,7 +1919,7 @@
             <param name="overrideExisting">Determines whether a file which exists should be overriden or not</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.SplitVFS.WriteAllBytes(System.Byte[],System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Creates a file
             </summary>
@@ -1924,7 +1929,7 @@
             <param name="overrideExisting">Determines whether a file which exists should be overriden or not</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
+        <member name="M:VFS.SplitVFS.WriteAllBytes(System.Byte[],System.String,System.Boolean)">
             <summary>
             Writes file with full path starting from root-directory.
             </summary>
@@ -1933,15 +1938,7 @@
             <param name="overrideExisting">Whether an existing file should be replaced by another one</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.RemoveFile(System.String,VFS.Interfaces.IDirectory)">
-            <summary>
-            Removes a file
-            </summary>
-            <param name="path">The virtual path where the file is stored</param>
-            <param name="startNode">The directory where the path is beginning</param>
-            <returns></returns>
-        </member>
-        <member name="M:VFS.VFS.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
+        <member name="M:VFS.SplitVFS.WriteStream(System.String,VFS.Interfaces.IDirectory,System.IO.Stream,System.Boolean)">
             <summary>
             Writes a file from a stream
             </summary>
@@ -1951,7 +1948,7 @@
             <param name="overrideExisting">Whether a file should be replaced, if it exists already</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+        <member name="M:VFS.SplitVFS.ReadAllBytes(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
             <summary>
             Returns the file content in byte-Array
             </summary>
@@ -1960,7 +1957,7 @@
             <param name="different">Just to differentiate between the methods - no usage in in this method</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
+        <member name="M:VFS.SplitVFS.ReadAllText(System.String,VFS.Interfaces.IDirectory)">
             <summary>
             Returns the file content
             </summary>
@@ -1968,60 +1965,66 @@
             <param name="startNode">Directory where the path is beginning at</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.FileExists(System.String,VFS.Interfaces.IDirectory)">
-            <summary>
-            Returns true if the file is in the RAM.
-            </summary>
-            <param name="path">If the path doesn't contains a \, it's just a file name</param>
-            <param name="startNode">When you choose full path, you have to use root-Dir</param>
-            <returns></returns>
-        </member>
-        <member name="M:VFS.VFS.Save">
+        <member name="M:VFS.SplitVFS.Save">
             <summary>
             Writes filesystem to physical file
             </summary>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.Read(System.String)">
+        <member name="M:VFS.SplitVFS.Read(System.String)">
             <summary>
             Loads the content of the file into this instance
             </summary>
             <param name="filePath">The path where the file is stored</param>
         </member>
-        <member name="M:VFS.VFS.Extract(System.String)">
+        <member name="M:VFS.SplitVFS.Extract(System.String)">
             <summary>
             Extracts the RAM content to a physical file like Archiv does.
             </summary>
             <param name="filePath">The path of the physical file</param>
             <returns></returns>
         </member>
-        <member name="M:VFS.VFS.ExtractFiles(System.String[],System.String)">
+        <member name="M:VFS.SplitVFS.ExtractFiles(System.String[],System.String)">
             <summary>
             Extract files - but not all like .Extract(string path) does
             </summary>
             <param name="path">All file pathes</param>
             <param name="directoryPath">The physical directory where you want to write in</param>
         </member>
-        <member name="M:VFS.VFS.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
+        <member name="M:VFS.SplitVFS.ExtractDirectory(VFS.Interfaces.IDirectory,System.String)">
             <summary>
             Extracts a directory full with content to toPath
             </summary>
             <param name="currentDir">The direcotry</param>
             <param name="toPath">A vaild file path</param>
         </member>
-        <member name="M:VFS.VFS.ExtractDirectory(System.String,System.String)">
+        <member name="M:VFS.SplitVFS.ExtractDirectory(System.String,System.String)">
             <summary>
             Extracts the directory by the given path
             </summary>
             <param name="path">The virutal path</param>
             <param name="filePath">The path where do you want to extract the directory</param>
         </member>
-        <member name="M:VFS.VFS.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
+        <member name="M:VFS.SplitVFS.ExtractFiles(VFS.Interfaces.IFile[],System.String)">
             <summary>
             Extract files
             </summary>
             <param name="files">Array of files</param>
             <param name="directoryPath">Path to extract in</param>
+        </member>
+        <member name="M:VFS.SplitVFS.Create(System.String)">
+            <summary>
+            Creates a new VFS
+            </summary>
+            <param name="directory">All files and folders in this directory are used</param>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.SplitVFS.Create(System.String[],System.String[])">
+            <summary>
+            Creates a new VFS
+            </summary>
+            <param name="files">Files which will be processed</param>
+            <param name="directories">Directories which will be processed</param>
         </member>
     </members>
 </doc>

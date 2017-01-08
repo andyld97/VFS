@@ -2,14 +2,14 @@
 // Result.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      28.12.2016
-// Last update on:  29.12.2016
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace VFS.ModifiedVFS.Wrapper
+namespace VFS.ExtendedVFS.Wrapper
 {
     /// <summary>
     /// Describes a result which contains information about the running of a method in ModifiedVFS

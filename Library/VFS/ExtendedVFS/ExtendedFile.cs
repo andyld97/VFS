@@ -1,8 +1,8 @@
 ﻿// ------------------------------------------------------------------------
-// ModifiedFile.cs written by Code A Software (http://www.code-a-software.net)
+// ExtendedFile.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      17.12.2016
-// Last update on:  30.12.2016
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -11,12 +11,12 @@ using System.Text;
 using VFS.Interfaces;
 using VFS.Extensions;
 
-namespace VFS.ModifiedVFS
+namespace VFS.ExtendedVFS
 {
     /// <summary>
     /// Represents a file with additonally StartPosition, EndPosition and Size
     /// </summary>
-    public class ModifiedFile : IFile
+    public class ExtendedFile : IFile
     {
         /// <summary>
         /// The path on the local harddrive (e.g. when you call CreateVHP, the original path will be stored here)
@@ -87,7 +87,7 @@ namespace VFS.ModifiedVFS
         /// </summary>
         /// <param name="hi">Header-Information</param>
         /// <param name="Parent">The owner of this file</param>
-        public ModifiedFile(HeaderInfo hi, ModifiedDirectory Parent)
+        public ExtendedFile(HeaderInfo hi, ExtendedDirectory Parent)
         {
             this.Size = Math.Abs(hi.StartPosition - hi.EndPosition);
             this.OrgPath = hi.Path;
@@ -135,7 +135,7 @@ namespace VFS.ModifiedVFS
         /// <returns></returns>
         public ConvertLength.Item CalculateLength()
         {
-            return new ConvertLength.Item(Convert.ToDouble(this.Size), ConvertLength.Type_.B);
+            return ConvertLength.Calculate(this.Size);
         }
 
         /// <summary>

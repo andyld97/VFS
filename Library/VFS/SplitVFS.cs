@@ -2,45 +2,26 @@
 // VFS.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      11.04.2016
-// Last update on:  01.01.2017
+// Last update on:  08.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using VFS.Interfaces;
-using VFS.Language;
 
 namespace VFS
 {
     /// <summary>
     /// Represents the Virtual File System which consists of File and Directory-class
     /// </summary>
-    public class VFS
+    public class SplitVFS : VFS
     {
         #region VAR
-
-        #region Private
         private List<byte> data = new List<byte>();
-        #endregion
-
-        #region Protected
-        /// <summary>
-        /// The root directory
-        /// </summary>
-        protected IDirectory rootDir = new Directory("");
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected string logPath = string.Empty, savePath = string.Empty;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected Log lgInstance = null;
-        #endregion
+        private IDirectory rootDir = new Directory("");
 
         #region Public
 
@@ -53,16 +34,6 @@ namespace VFS
         /// The byte ("-") which is needed for wrapping files and directories in one file
         /// </summary>
         public readonly int PackByte = 45;
-
-        /// <summary>
-        /// The unique directory index, e.g. if the name of to directories are the same (but different path)
-        /// </summary>
-        public static int DirIndex = 0;
-
-        /// <summary>
-        /// A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
-        /// </summary>
-        public static readonly Interfaces.IFile NULLFILE = new File(string.Empty, null);
         #endregion
 
 
@@ -72,28 +43,28 @@ namespace VFS
         /// <summary>
         /// Root directory of the currentFile-System
         /// </summary>
-        public IDirectory RootDirectory
+        public override IDirectory RootDirectory
         {
             get
             {
                 return rootDir;
             }
-            set
-            {
-                rootDir = value;
-            }
         }
+
+        /// <summary>
+        /// A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
+        /// </summary>
+        public override IFile NULLFILE => new File(string.Empty, new Directory(string.Empty));
         #endregion
 
         #region Ctor
         /// <summary>
         /// Creates a new virtual file system.
         /// </summary>
-        /// <param name="logPath">Path for file where the log should be</param>
         /// <param name="savePath">Path for storing the VFS</param>
         /// /// <param name="MainCounter">The amout of seperator chars</param>
         /// /// <param name="PackByte">Char type from 1 to 255 for seperator</param>
-        public VFS(string logPath, string savePath, int MainCounter = 128, int PackByte = 45)
+        public SplitVFS(string savePath, int MainCounter = 128, int PackByte = 45)
         {
             // bootSect contains the first two items of the array.
             // bootSect[FS_DIR] contains all directorys and bootSect[FS_FILE] all files.
@@ -101,15 +72,8 @@ namespace VFS
             this.MainCounter = MainCounter;
             this.PackByte = PackByte;
 
-            // Init log!
-            this.logPath = logPath;
-            this.lgInstance = new Log(this.logPath, Log.Priority.ALL);
-
             // Reset dirIndex!
             VFS.DirIndex = 0;
-
-            // Add event
-            (this.rootDir as Directory).OnChanged += RootDir_OnChanged;
         }
         #endregion
 
@@ -133,12 +97,6 @@ namespace VFS
         /// This event is called when a change was done in the system
         /// </summary>
         public event onSaved OnSaved;
-
-        private void RootDir_OnChanged(Directory.Type action)
-        {
-            //    this.Save();
-            this.lgInstance.Add(Localization.RECIEVED_CHANGE, new string[] { "Action: " + action }, string.Empty);
-        }
         #endregion
 
         #region Methods
@@ -189,25 +147,6 @@ namespace VFS
         }
 
         /// <summary>
-        /// Formatting the path to the right format
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public string FormatPath(string path)
-        {
-            if (path[0] == '\\')
-            {
-                string nPath = string.Empty;
-                for (int i = 1; i <= path.Length - 1; i++)
-                    nPath += path[i];
-
-                return nPath;
-            }
-            else
-                return path;
-        }
-
-        /// <summary>
         /// Returns true if the next count-bytes are all equal to PackByte
         /// </summary>
         /// <param name="count"></param>
@@ -215,7 +154,7 @@ namespace VFS
         /// <param name="index"></param>
         /// <param name="btArray"></param>
         /// <returns></returns>
-        protected bool checkNextItems(int count, int byte_, int index, byte[] btArray)
+        private bool checkNextItems(int count, int byte_, int index, byte[] btArray)
         {
             bool check = false;
             int x = 0;
@@ -246,7 +185,7 @@ namespace VFS
         /// <param name="dir">Stored directory</param>
         /// <param name="overrideExisting">Determines whether a file which exists should be overriden or not</param>
         /// <returns></returns>
-        public virtual bool WriteAllText(string content, string name, IDirectory dir, bool overrideExisting = false)
+        public override bool WriteAllText(string content, string name, IDirectory dir, bool overrideExisting = false)
         {
             return this.WriteAllBytes(this.calculateFrom(content), name, dir, overrideExisting);
         }
@@ -259,7 +198,7 @@ namespace VFS
         /// <param name="dir">Stored directory</param>
         /// <param name="overrideExisting">Determines whether a file which exists should be overriden or not</param>
         /// <returns></returns>
-        public virtual bool WriteAllBytes(byte[] data, string name, IDirectory dir, bool overrideExisting = false)
+        public override bool WriteAllBytes(byte[] data, string name, IDirectory dir, bool overrideExisting = false)
         {
             bool condition = (data != null && !string.IsNullOrEmpty(name) && dir != null && dir.GetFiles() != null);
             string filePath = dir.ToFullPath() + @"\" + name;
@@ -271,20 +210,15 @@ namespace VFS
                     IFile currentFile = new File(name, dir);
                     currentFile.SetByes(data.ToList<byte>());
                     dir.GetFiles().Add(currentFile);
-
-                    this.lgInstance.Add(Localization.ADDED_FILE, new string[] { "File: " + name, "Path: " + filePath }, string.Empty);
                 }
                 else
                 {
                     IFile currentFile = NULLFILE.ByPath(dir.GetFiles(), filePath);
                     if (currentFile != null)
                     {
-                        this.lgInstance.Add(Localization.FILE_EXISTS, new string[] { "File: " + name, "Path: " + filePath }, string.Empty);
                         if (currentFile.GetBytes().Count == 0)
                         {
                             currentFile.SetByes(data.ToList<byte>());
-                            if (data.Length != 0)
-                                this.lgInstance.Add(Localization.FILE_BYTES_EMPTY, new string[] { "Bytes:" + this.calculateFrom(new byte[] { data[0] }) + this.calculateFrom(new byte[] { data[1] }), string.Empty }, string.Empty);
                             return true;
                         }
                         else
@@ -292,24 +226,14 @@ namespace VFS
                             if (overrideExisting)
                             {
                                 currentFile.SetByes(data.ToList<byte>());
-                                string param = string.Empty;
-                                if (data.Count() >= 2)
-                                    param = this.calculateFrom(new byte[] { data[0] }) + this.calculateFrom(new byte[] { data[1] });
-                                this.lgInstance.Add(Localization.ADD_FILES_TO_BYTE, new string[] { "Bytes:" + param }, string.Empty);
                                 return true;
                             }
                             else
-                            {
-                                this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "File: " + name, "Path: " + filePath }, string.Empty);
                                 return false;
-                            }
                         }
                     }
                     else
-                    {
-                        this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] {  }, string.Empty);
                         return false;
-                    }
                 }
             }
 
@@ -323,7 +247,7 @@ namespace VFS
         /// <param name="path">Full path</param>
         /// <param name="overrideExisting">Whether an existing file should be replaced by another one</param>
         /// <returns></returns>
-        public virtual bool WriteAllBytes(byte[] data, string path, bool overrideExisting = false)
+        public override bool WriteAllBytes(byte[] data, string path, bool overrideExisting = false)
         {
             IDirectory currentNode = this.rootDir;
 
@@ -351,78 +275,7 @@ namespace VFS
                 return true;
             }
             else
-            {
-                this.lgInstance.Add(Localization.PATH_NOT_EXISTS, new string[] { }, string.Empty);
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Removes a file
-        /// </summary>
-        /// <param name="path">The virtual path where the file is stored</param>
-        /// <param name="startNode">The directory where the path is beginning</param>
-        /// <returns></returns>
-        public virtual bool RemoveFile(string path, IDirectory startNode)
-        {
-            // Search suitable Directory instance and check if the file is there and then delete it.
-            if (!path.Contains(@"\"))
-            {
-                string nPath = startNode.ToFullPath() + @"\" + path;
-                if (NULLFILE.Contains(startNode.GetFiles(), nPath))
-                {
-                    IFile currentFile = NULLFILE.ByPath(startNode.GetFiles(), nPath);
-                    if (currentFile != null)
-                    {
-                        startNode.GetFiles().Remove(currentFile);
-                        return true;
-                    }
-                    else
-                    {
-                        this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + startNode.ToFullPath() }, string.Empty);
-                        return false;
-                    }
-                }
-                else
-                {
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + startNode.ToFullPath() }, string.Empty);
-                    return false;
-                }
-            }
-
-            string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-            IDirectory currentNode = startNode;
-
-            for (int i = 0; i <= segments.Length - 2; i++)
-            {
-                if (currentNode.Contains(segments[i]))
-                    currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(segments[i])];
-                else
-                {
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + currentNode.ToFullPath() }, string.Empty);
-                    return false;
-                }
-            }
-
-            if (NULLFILE.Contains(currentNode.GetFiles(), path))
-            {
-                IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
-                if (currentFile != null)
-                {
-                    currentNode.GetFiles().Remove(currentFile);
-                    return true;
-                }
-                else
-                {
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + currentNode.ToFullPath() }, string.Empty);
-                    return false;
-                }
-            }
-            else
-            {
-                this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + currentNode.ToFullPath() }, string.Empty);
-                return false;
-            }
         }
 
         /// <summary>
@@ -433,7 +286,7 @@ namespace VFS
         /// <param name="stream">Input stream</param>
         /// <param name="overrideExisting">Whether a file should be replaced, if it exists already</param>
         /// <returns></returns>
-        public virtual bool WriteStream(string name, IDirectory dir, System.IO.Stream stream, bool overrideExisting = false)
+        public override bool WriteStream(string name, IDirectory dir, System.IO.Stream stream, bool overrideExisting = false)
         {
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
             {
@@ -449,7 +302,7 @@ namespace VFS
         /// <param name="startNode">Dir, where you want to start at. It's well to use the root-Dir here!</param>
         /// <param name="different">Just to differentiate between the methods - no usage in in this method</param>
         /// <returns></returns>
-        public virtual byte[] ReadAllBytes(string path, IDirectory startNode, bool different = false)
+        public override byte[] ReadAllBytes(string path, IDirectory startNode, bool different = false)
         {
             IDirectory currentNode = startNode;
             if (!path.Contains(@"\"))
@@ -460,13 +313,8 @@ namespace VFS
                     if (currentNode != null)
                         return currentFile.GetBytes().ToArray();
                     else
-                    {
-                        this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + path }, string.Empty);
                         return null;
-                    }
                 }
-                else
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + path }, string.Empty);
             }
             string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i <= segments.Length - 2; i++)
@@ -477,10 +325,7 @@ namespace VFS
                 if (nIndex != -1)
                     currentNode = currentNode.GetSubDirectories()[nIndex];
                 else
-                {
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + path }, string.Empty);
                     return null;
-                }
             }
 
             if (currentNode != null)
@@ -491,8 +336,6 @@ namespace VFS
                     return currentFile.GetBytes().ToArray();
                 }
             }
-
-            this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "Path: " + path }, string.Empty);
             return null;
         }
 
@@ -502,44 +345,16 @@ namespace VFS
         /// <param name="path">Filename</param>
         /// <param name="startNode">Directory where the path is beginning at</param>
         /// <returns></returns>
-        public virtual string ReadAllText(string path, IDirectory startNode)
+        public override string ReadAllText(string path, IDirectory startNode)
         {
             return this.calculateFrom(this.ReadAllBytes(path, startNode, true));
-        }
-
-        /// <summary>
-        /// Returns true if the file is in the RAM.
-        /// </summary>
-        /// <param name="path">If the path doesn't contains a \, it's just a file name</param>
-        /// <param name="startNode">When you choose full path, you have to use root-Dir</param>
-        /// <returns></returns>
-        public virtual bool FileExists(string path, IDirectory startNode)
-        {
-            if (!path.Contains(@"\"))
-                return NULLFILE.ByPath(startNode.GetFiles(), path) != null;
-            else
-            {
-                IDirectory currentNode = startNode;
-                string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-
-                for (int i = 0; i <= segments.Length - 2; i++)
-                {
-                    string currentSegment = segments[i];
-
-                    if (currentNode.Contains(currentSegment))
-                        currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(currentSegment)];
-                    else
-                        return false;
-                }
-                return NULLFILE.ByPath(currentNode.GetFiles(), currentNode.ToFullPath() + @"\" + segments[segments.Length - 1]) != null;
-            }
         }
 
         /// <summary>
         /// Writes filesystem to physical file
         /// </summary>
         /// <returns></returns>
-        public virtual bool Save()
+        public override bool Save()
         {
             // Refresh byte array // | // <,
             string bootSector = String.Join("|", this.RootDirectory.ToFileStringArray()) + "|<" + String.Join(",", this.RootDirectory.ToStringArray()) + ",>" + this.generateString();
@@ -595,7 +410,7 @@ namespace VFS
         /// Loads the content of the file into this instance
         /// </summary>
         /// <param name="filePath">The path where the file is stored</param>
-        public virtual void Read(string filePath)
+        public override void Read(string filePath)
         {
             // Read archiv format.
             // Doing this in a thread
@@ -621,11 +436,8 @@ namespace VFS
                     }
 
                     string[] files = this.calculateFrom(getBytes[0].ToArray()).Split(new string[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (getBytes.Count == 1 && files.Length != 1)
-                    {
-                        this.lgInstance.Add(Localization.FILE_ERROR, new string[] { "FILE Path: " + filePath }, string.Empty);
+                    if (getBytes.Count == 1 && files.Length != 1)                   
                         return;
-                    }
 
                     string[] rFiles = new string[] { };
                     string[] rFolders = new string[] { };
@@ -643,10 +455,6 @@ namespace VFS
                     if (paths.Length - 1 == getBytes.Count() - 2)
                         for (int i = 0; i <= paths.Length - 1; i++)
                             this.WriteAllBytes(getBytes[i + 1].ToArray(), paths[i], true);
-                    else
-                    {
-                        this.lgInstance.Add(Localization.FILE_ERROR, new string[] { "FILE Path: " + filePath }, string.Empty);
-                    }
                 }
                 if (this.OnReady != null)
                     this.OnReady();
@@ -659,7 +467,7 @@ namespace VFS
         /// </summary>
         /// <param name="filePath">The path of the physical file</param>
         /// <returns></returns>
-        public virtual bool Extract(string filePath)
+        public override bool Extract(string filePath)
         {
             if (System.IO.Directory.Exists(filePath))
             {
@@ -676,9 +484,8 @@ namespace VFS
                         {
                             System.IO.Directory.CreateDirectory(path);
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            this.lgInstance.Add(Localization.IO_ERROR, new string[] { "DIR Path: " + path }, e.Message);
                         }
                         passDirs(currentDir);
                     }
@@ -694,9 +501,9 @@ namespace VFS
                     {
                         System.IO.File.WriteAllBytes(path, currentFile.Bytes.ToArray());
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + path }, e.Message);
+                        
                     }
                 }
 
@@ -712,9 +519,9 @@ namespace VFS
                             {
                                 System.IO.File.WriteAllBytes(path, currentFile.GetBytes().ToArray());
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
-                                this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + path }, e.Message);
+
                             }
                         }
                         passFiles(currentDir);
@@ -726,7 +533,6 @@ namespace VFS
             }
             else
             {
-                this.lgInstance.Add(Localization.PATH_NOT_EXISTS, new string[] { "FILE Path: " + filePath }, string.Empty);
                 return false;
             }
         }
@@ -736,7 +542,7 @@ namespace VFS
         /// </summary>
         /// <param name="path">All file pathes</param>
         /// <param name="directoryPath">The physical directory where you want to write in</param>
-        public virtual void ExtractFiles(string[] path, string directoryPath)
+        public override void ExtractFiles(string[] path, string directoryPath)
         {
             string[] dirs = new string[path.Length];
             for (int i = 0; i <= path.Length - 1; i++)
@@ -759,13 +565,11 @@ namespace VFS
                         {
                             System.IO.File.WriteAllBytes(p, _currentFile.GetBytes().ToArray());
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + p }, e.Message);
+                     
                         }
                     }
-                    else
-                        this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + p }, string.Empty);
                     continue;
                 }
                 string currentPath = dirs[y];
@@ -782,13 +586,10 @@ namespace VFS
                     {
                         System.IO.File.WriteAllBytes(pa, currentFile.GetBytes().ToArray());
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + pa }, e.Message);
                     }
                 }
-                else
-                    this.lgInstance.Add(Localization.FILE_NOT_EXISTS, new string[] { "FILE Path: " + pa }, string.Empty);
             }
         }
 
@@ -798,7 +599,7 @@ namespace VFS
         /// </summary>
         /// <param name="currentDir">The direcotry</param>
         /// <param name="toPath">A vaild file path</param>
-        public virtual void ExtractDirectory(IDirectory currentDir, string toPath)
+        public override void ExtractDirectory(IDirectory currentDir, string toPath)
         {
             if (System.IO.Directory.Exists(toPath))
             {
@@ -809,9 +610,9 @@ namespace VFS
                 {
                     System.IO.Directory.CreateDirectory(path);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    this.lgInstance.Add(Localization.IO_ERROR, new string[] { "DIR Path: " + path }, e.Message);
+                    
                 }
 
 
@@ -823,9 +624,9 @@ namespace VFS
                     {
                         System.IO.File.WriteAllBytes(p, currentFile.GetBytes().ToArray());
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + p }, e.Message);
+
                     }
                 }
 
@@ -846,13 +647,13 @@ namespace VFS
                                 }
                                 catch (Exception e)
                                 {
-                                    this.lgInstance.Add(Localization.IO_ERROR, new string[] { "FILE Path: " + p }, e.Message);
+                                    
                                 }
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            this.lgInstance.Add(Localization.IO_ERROR, new string[] { "DIR Path: " + dirPath }, e.Message);
+                            
                         }
                         passDirs(subDir);
                     }
@@ -866,7 +667,7 @@ namespace VFS
         /// </summary>
         /// <param name="path">The virutal path</param>
         /// <param name="filePath">The path where do you want to extract the directory</param>
-        public virtual void ExtractDirectory(string path, string filePath)
+        public override void ExtractDirectory(string path, string filePath)
         {
             string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
             IDirectory currentNode = this.RootDirectory;
@@ -892,7 +693,7 @@ namespace VFS
         /// </summary>
         /// <param name="files">Array of files</param>
         /// <param name="directoryPath">Path to extract in</param>
-        public virtual void ExtractFiles(IFile[] files, string directoryPath)
+        public override void ExtractFiles(IFile[] files, string directoryPath)
         {
             string[] fileArr = new string[files.Length];
             int index = 0;
@@ -901,6 +702,104 @@ namespace VFS
             this.ExtractFiles(fileArr, directoryPath);
         }
 
+        /// <summary>
+        /// Creates a new VFS
+        /// </summary>
+        /// <param name="directory">All files and folders in this directory are used</param>
+        /// <returns></returns>
+        public override void Create(string directory)
+        {
+            this.Create(new string[] { directory }, new string[] { });
+        }
+
+        /// <summary>
+        /// Creates a new VFS
+        /// </summary>
+        /// <param name="files">Files which will be processed</param>
+        /// <param name="directories">Directories which will be processed</param>
+        public override void Create(string[] files, string[] directories)
+        {
+            VFS currentSystem = new SplitVFS(this.savePath, MainCounter, PackByte);
+
+            Thread workingThread = null;
+            workingThread = new Thread(new ThreadStart(() => {
+                // Add files at first
+                foreach (string file in files)
+                {
+                    string[] segements = file.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (segements.Length > 0)
+                    {
+                        try
+                        {
+                            File currentFile = new File(segements[segements.Length - 1], currentSystem.RootDirectory);
+                            currentFile.Bytes = System.IO.File.ReadAllBytes(file).ToList();
+                            currentSystem.RootDirectory.GetFiles().Add(currentFile);
+                        }
+                        catch (Exception)
+                        {
+                            // Log exception
+                        }
+                    }
+                }
+
+                foreach (string dir in directories)
+                {
+                    System.IO.DirectoryInfo info = new System.IO.DirectoryInfo(dir);
+                    Directory vDir = new Directory(info.Name);
+
+                    Action<string> recurseDirs = null;
+                    recurseDirs = new Action<string>((string lastDir) => {
+                        System.IO.DirectoryInfo data = new System.IO.DirectoryInfo(lastDir);
+                        string[] segements = data.FullName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+
+                        string nPath = string.Empty;
+                        bool doAdding = false;
+
+                        for (int i = 0; i <= segements.Length - 1; i++)
+                        {
+                            if (segements[i] == vDir.Name)
+                            {
+                                doAdding = true;
+                                continue;
+                            }
+
+                            if (doAdding)
+                                nPath += segements[i] + @"\";
+                        }
+
+                        if (!string.IsNullOrEmpty(nPath))
+                            vDir.AddPathes(new string[] { nPath });
+
+                        Interfaces.IDirectory lastDirectory = (nPath == string.Empty ? vDir : vDir.CalculateLastNode(nPath));
+
+                        foreach (var fi in data.GetFiles())
+                        {
+                            File currentFile = new File(fi.Name, lastDirectory);
+                            try
+                            {
+                                currentFile.Bytes = System.IO.File.ReadAllBytes(fi.FullName).ToList();
+                            }
+                            catch (Exception)
+                            {
+                                // Log exception
+                            }
+                            lastDirectory.GetFiles().Add(currentFile);
+                        }
+
+                        foreach (var d in data.GetDirectories())
+                            recurseDirs(d.FullName);
+                    });
+
+                    recurseDirs(dir);
+                    currentSystem.RootDirectory.GetSubDirectories().Add(vDir);
+                }
+                currentSystem.Save();
+                workingThread.Abort();
+
+                this.OnReady?.Invoke();
+            }));
+            workingThread.Start();
+        }
 
         #endregion
         #endregion

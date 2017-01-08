@@ -2,42 +2,16 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="VFS.VFS">
     <Position X="6.25" Y="0.5" Width="3.25" />
-    <NestedTypes>
-      <Delegate Name="VFS.VFS.onReady" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>VFS.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-      <Delegate Name="VFS.VFS.onSaved" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>VFS.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-    </NestedTypes>
     <TypeIdentifier>
-      <HashCode>ADDAA4IDAEAAQAggBKAEAQEhCAAAAAFAACQQCAAQAAA=</HashCode>
+      <HashCode>ABBAAIADAAAAQAgABKAEAAAgCAAAAEEAAAQACAAQAAA=</HashCode>
       <FileName>VFS.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="VFS.ModifiedVFS.ModifiedVFS">
-    <Position X="1.5" Y="9" Width="3.5" />
+  <Class Name="VFS.ExtendedVFS.ExtendedVFS">
+    <Position X="1" Y="9" Width="3.5" />
     <TypeIdentifier>
-      <HashCode>ABDAAIgDIAAAQCgABCAEAAAgCgIAABEAAAQCDAAQgAA=</HashCode>
-      <FileName>ModifiedVFS\ModifiedVFS.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="VFS.ModifiedVFS.Wrapper.ModifiedVFST">
-    <Position X="5.75" Y="9" Width="3.5" />
-    <NestedTypes>
-      <Delegate Name="VFS.ModifiedVFS.Wrapper.ModifiedVFST.onFinishedEvent" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>ModifiedVFS\Wrapper\ModfiedVFST.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-    </NestedTypes>
-    <TypeIdentifier>
-      <HashCode>ABBEAIAjAAAAQAgABGAEAAAoBAAADCAAAAABCAAQAAA=</HashCode>
-      <FileName>ModifiedVFS\Wrapper\ModfiedVFST.cs</FileName>
+      <HashCode>ABDAAIgCIAAAQCgAACAEAAAgCgIAAFEAAAQCDAAQgAA=</HashCode>
+      <FileName>ExtendedVFS\ExtendedVFS.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="VFS.File">
@@ -68,21 +42,43 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="VFS.ModifiedVFS.ModifiedFile">
+  <Class Name="VFS.ExtendedVFS.ExtendedFile">
     <Position X="1.5" Y="17" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AACAAAEQEAgBgBoEAEAAQAAAAAACAAAAAAAAQABQBBA=</HashCode>
-      <FileName>ModifiedVFS\ModifiedFile.cs</FileName>
+      <FileName>ExtendedVFS\ExtendedFile.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="VFS.ModifiedVFS.ModifiedDirectory">
+  <Class Name="VFS.ExtendedVFS.ExtendedDirectory">
     <Position X="4.75" Y="17" Width="3" />
     <TypeIdentifier>
       <HashCode>QEAAAAAIIAACAALQCEAABAQAAAAAAAAAAEQAQAwQBSA=</HashCode>
-      <FileName>ModifiedVFS\ModifiedDirectory.cs</FileName>
+      <FileName>ExtendedVFS\ExtendedDirectory.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="VFS.ExtendedVFS.Wrapper.ExtendedVFST">
+    <Position X="5" Y="9" Width="3.25" />
+    <NestedTypes>
+      <Delegate Name="VFS.ExtendedVFS.Wrapper.ExtendedVFST.onFinishedEvent" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>ExtendedVFS\Wrapper\ExtendedVFST.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <InheritanceLine Type="VFS.VFS" FixedToPoint="true">
+      <Path>
+        <Point X="7.875" Y="5.391" />
+        <Point X="7.875" Y="8.625" />
+        <Point X="5" Y="8.625" />
+        <Point X="5" Y="9" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>EBBEAIAiAAAAQAgABGAEAAAoBAAADGEAAAQBCAAQAAA=</HashCode>
+      <FileName>ExtendedVFS\Wrapper\ExtendedVFST.cs</FileName>
+    </TypeIdentifier>
   </Class>
   <Interface Name="VFS.Interfaces.IDirectory">
     <Position X="13" Y="0.5" Width="2.75" />
