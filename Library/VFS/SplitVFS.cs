@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------
-// VFS.cs written by Code A Software (http://www.code-a-software.net)
+// SplitVFS.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      11.04.2016
 // Last update on:  08.01.2017

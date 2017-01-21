@@ -1,8 +1,8 @@
 ﻿// ------------------------------------------------------------------------
-// ModifiedVFST.cs written by Code A Software (http://www.code-a-software.net)
+// ExtendedVFST.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      27.12.2016
-// Last update on:  08.01.2017
+// Last update on:  21.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using VFS.Interfaces;
 using System.IO;
+using System.ComponentModel;
 
 namespace VFS.ExtendedVFS.Wrapper
 {
@@ -20,11 +21,14 @@ namespace VFS.ExtendedVFS.Wrapper
     /// </summary>
     public class ExtendedVFST : VFS
     {
-        private Thread currentThread = null;
+        private BackgroundWorker currentWorker = null;
         private bool isBusy = false;
         private Result result = null;
         private Stopwatch stw = null;
         private ExtendedVFS eVFS;
+
+        private Result currentResult = null;
+        private Action currentAction = null;
 
         /// <summary>
         /// A result which is false - no need to create a false result every time when needed a false result
@@ -74,7 +78,11 @@ namespace VFS.ExtendedVFS.Wrapper
             this.savePath = savePath;
             this.eVFS = new ExtendedVFS(savePath, workSpacePath, BufferSize);
             this.eVFS.SaveAfterChange = saveAfterChanged;
-        }
+
+            this.currentWorker = new BackgroundWorker();
+            this.currentWorker.DoWork += CurrentWorker_DoWork;
+            this.currentWorker.RunWorkerCompleted += CurrentWorker_RunWorkerCompleted;
+        }   
 
         #region Private
         private void endStopWatch()
@@ -105,8 +113,18 @@ namespace VFS.ExtendedVFS.Wrapper
             this.isBusy = true;
             return true;
         }
-        #endregion
 
+        private void CurrentWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.onFinished(this.currentResult);
+        }
+
+        private void CurrentWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            this.currentAction.Invoke();
+        }
+
+        #endregion
 
         /// <summary>
         /// Cancels the current thread
@@ -114,9 +132,7 @@ namespace VFS.ExtendedVFS.Wrapper
         /// <param name="currentAction">The method which is working currently</param>
         public void CancelThread(Methods currentAction)
         {
-            this.currentThread.Abort();
-            this.currentThread = null;
-
+            this.currentWorker.CancelAsync();
             this.onFinished(new Result(false, currentAction));
         }
 
@@ -130,21 +146,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = new Action(() =>
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.Create(directory);
-                    this.onFinished(new Result(true, Methods.CREATE));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, Methods.CREATE);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.CREATE));
+                    this.currentResult = new Result(false, e, Methods.CREATE);
                 }
-            }));
+                this.endStopWatch();
+            });
 
-            currentThread.Start();
+            this.currentWorker.RunWorkerAsync();
         }
 
 
@@ -159,21 +176,21 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.Create(directories, files);
-                    this.onFinished(new Result(true, Methods.CREATE));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, Methods.CREATE);                   
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.CREATE));
+                    this.currentResult = new Result(false, e, Methods.CREATE);
                 }
-            }));
+                this.endStopWatch();
+            };
 
-            currentThread.Start();
+            this.currentWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -186,21 +203,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return false;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     bool result = eVFS.Extract(filePath);
-                    this.onFinished(new Result(result, Methods.EXTRACT));
-                    this.endStopWatch();
+                    this.currentResult = new Result(result, Methods.EXTRACT);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.EXTRACT));
+                    this.currentResult = new Result(false, e, Methods.EXTRACT);
                 }
-            }));
+                this.endStopWatch();
+            };
 
-            currentThread.Start();
+            currentWorker.RunWorkerAsync();
             return true;
         }
 
@@ -214,21 +232,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
-
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.ExtractDirectory(path, filePath);
-                    this.onFinished(new Result(true, Methods.EXTRACT_DIR));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, Methods.EXTRACT_DIR);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.EXTRACT_DIR));
+                    this.currentResult = new Result(false, e, Methods.EXTRACT_DIR);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
+
+            currentWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -241,21 +260,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.ExtractDirectory(currentDir, toPath);
-                    this.onFinished(new Result(true, Methods.EXTRACT_DIR));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, Methods.EXTRACT_DIR);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.EXTRACT_DIR));
+                    this.currentResult = new Result(false, e, Methods.EXTRACT_DIR);
                 }
-            }));
+                this.endStopWatch();
+            };
 
-            currentThread.Start();
+            currentWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -268,21 +288,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.ExtractFiles(files, directoryPath);
-                    this.onFinished(new Result(true, Methods.EXTRACT_FILES));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, Methods.EXTRACT_FILES);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.EXTRACT_FILES));
+                    this.currentResult = new Result(false, e, Methods.EXTRACT_FILES);
                 }
-            }));
+                this.endStopWatch();
+            };
 
-            currentThread.Start();
+            currentWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -295,21 +316,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.ExtractFiles(files, directoryPath);
-                    this.onFinished(new Result(true, Methods.EXTRACT_FILES));
+                    this.currentResult = new Result(true, Methods.EXTRACT_FILES);
                     this.endStopWatch();
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.EXTRACT_FILES));
+                    this.currentResult = new Result(false, e, Methods.EXTRACT_FILES);
                 }
-            }));
+            };
 
-            currentThread.Start();
+            currentWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -342,23 +364,24 @@ namespace VFS.ExtendedVFS.Wrapper
                 if (!this.changeBusy())
                     return false;
 
-                this.currentThread = new Thread(new ParameterizedThreadStart(delegate
+                this.currentAction = delegate
                 {
+                    stw = Stopwatch.StartNew();
                     try
                     {
-                        stw = Stopwatch.StartNew();
                         bool result = eVFS.RemoveFile(path, startNode);
-                        this.onFinished(new Result(result, Methods.REMOVE_FILE));
-                        this.endStopWatch();
+                        this.currentResult = new Result(result, Methods.REMOVE_FILE);
                     }
                     catch (Exception e)
                     {
-                        this.onFinished(new Result(false, e, Methods.REMOVE_FILE));
+                        this.currentResult = new Result(false, e, Methods.REMOVE_FILE);
                     }
-                }));
-                currentThread.Start();
+                    this.endStopWatch();
+                };
+
+                currentWorker.RunWorkerAsync();
+                return true;
             }
-            return true;
         }
 
         /// <summary>
@@ -370,21 +393,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
-
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     eVFS.Read(filePath);
-                    this.onFinished(new Result(true, Methods.READ));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, Methods.READ);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.READ));
+                    this.currentResult = new Result(false, e, Methods.READ);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
+
+            currentWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -399,21 +423,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return null;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     byte[] temp = eVFS.ReadAllBytes(path, startNode, different);
-                    this.onFinished(new Result(true, temp, Methods.READ_ALL_BYTES));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, temp, Methods.READ_ALL_BYTES);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.READ_ALL_BYTES));
+                    this.currentResult = new Result(false, e, Methods.READ_ALL_BYTES);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
 
+            currentWorker.RunWorkerAsync();
             return null;
         }
 
@@ -428,21 +453,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return null;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     string temp = eVFS.ReadAllText(path, startNode);
-                    this.onFinished(new Result(true, temp, Methods.READ_ALL_TEXT));
-                    this.endStopWatch();
+                    this.currentResult = new Result(true, temp, Methods.READ_ALL_TEXT);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.READ_ALL_TEXT));
+                    this.currentResult = new Result(false, e, Methods.READ_ALL_TEXT);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
 
+            currentWorker.RunWorkerAsync();
             return null;
         }
 
@@ -459,21 +485,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return false;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     bool result = eVFS.WriteStream(name, dir, stream, overrideExisting);
-                    this.onFinished(new Result(result, Methods.WRITE_STREAM));
-                    this.endStopWatch();
+                    this.currentResult = new Result(result, Methods.WRITE_STREAM);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.WRITE_STREAM));
+                    this.currentResult = new Result(false, e, Methods.WRITE_STREAM);
                 }
-            }));
+                this.endStopWatch();
+            };
 
-            currentThread.Start();
+            currentWorker.RunWorkerAsync();
             return true;
         }
 
@@ -490,21 +517,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return false;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     bool result = eVFS.WriteAllBytes(data, name, dir, overrideExisting);
-                    this.onFinished(new Result(result, Methods.WRITE_ALL_BYTES));
-                    this.endStopWatch();
+                    this.currentResult = new Result(result, Methods.WRITE_ALL_BYTES);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.WRITE_ALL_BYTES));
+                    this.currentResult = new Result(false, e, Methods.WRITE_ALL_BYTES);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
 
+            this.currentWorker.RunWorkerAsync();
             return true;
         }
 
@@ -520,21 +548,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return false;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     bool result = eVFS.WriteAllBytes(data, path, overrideExisting);
-                    this.onFinished(new Result(result, Methods.WRITE_ALL_BYTES));
-                    this.endStopWatch();
+                    this.currentResult = new Result(result, Methods.WRITE_ALL_BYTES);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.WRITE_ALL_BYTES));
+                    this.currentResult = new Result(false, e, Methods.WRITE_ALL_BYTES);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
 
+            this.currentWorker.RunWorkerAsync();
             return true;
         }
 
@@ -551,21 +580,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return false;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     bool result = eVFS.WriteAllText(content, name, dir, overrideExisting);
-                    this.onFinished(new Result(result, Methods.WRITE_ALL_TEXT));
-                    this.endStopWatch();
+                    this.currentResult = new Result(result, Methods.WRITE_ALL_TEXT);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.WRITE_ALL_TEXT));
+                    this.currentResult = new Result(false, e, Methods.WRITE_ALL_TEXT);
                 }
-            }));
-            currentThread.Start();
+                this.endStopWatch();
+            };
 
+            this.currentWorker.RunWorkerAsync();
             return true;
         }
 
@@ -579,21 +609,22 @@ namespace VFS.ExtendedVFS.Wrapper
             if (!this.changeBusy())
                 return false;
 
-            this.currentThread = new Thread(new ParameterizedThreadStart(delegate {
+            this.currentAction = delegate
+            {
+                stw = Stopwatch.StartNew();
                 try
                 {
-                    stw = Stopwatch.StartNew();
                     bool result = eVFS.Save();
-                    this.onFinished(new Result(result, Methods.SAVE));
-                    this.endStopWatch();
+                    this.currentResult = new Result(result, Methods.SAVE);
                 }
                 catch (Exception e)
                 {
-                    this.onFinished(new Result(false, e, Methods.SAVE));
+                    this.currentResult = new Result(false, e, Methods.SAVE);
                 }
-            }));
+                this.endStopWatch();
+            };
 
-            currentThread.Start();
+            this.currentWorker.RunWorkerAsync();
             return true;
         }
     }

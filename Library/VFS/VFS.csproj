@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SearchResult.cs" />
     <Compile Include="VFS.cs" />
     <Compile Include="ExtendedVFS\HeaderInfo.cs" />
     <Compile Include="ExtendedVFS\Methods.cs" />

@@ -4,6 +4,28 @@
         <name>VFS</name>
     </assembly>
     <members>
+        <member name="T:VFS.SearchResult">
+            <summary>
+            Represents a result of a search
+            </summary>
+        </member>
+        <member name="F:VFS.SearchResult.Directories">
+            <summary>
+            All directories which match to search-string
+            </summary>
+        </member>
+        <member name="F:VFS.SearchResult.Files">
+            <summary>
+            All files which match to search-string
+            </summary>
+        </member>
+        <member name="M:VFS.SearchResult.#ctor(VFS.Interfaces.IDirectory[],VFS.Interfaces.IFile[])">
+            <summary>
+            Creates a new search result
+            </summary>
+            <param name="Directories">All directories which match to search-string</param>
+            <param name="Files">All files which match to search-string</param>
+        </member>
         <member name="T:VFS.VFS">
             <summary>
             Represents the base of a virtual file system
@@ -168,6 +190,15 @@
             Automatically called when SaveAfterChange is true.
             This method is for saving changes.
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:VFS.VFS.Search(System.String,VFS.Interfaces.IDirectory,System.Boolean)">
+            <summary>
+            Iterates all directories and searches for a special string
+            </summary>
+            <param name="searchString">The search value you want to find</param>
+            <param name="startNode">The dir where you want to start the search</param>
+            <param name="recurse">If false, just startNode is used not the sub-directories</param>
             <returns></returns>
         </member>
         <member name="T:VFS.ExtendedVFS.HeaderInfo">

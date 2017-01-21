@@ -2,7 +2,7 @@
 // VFS.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      07.01.2017
-// Last update on:  08.01.2017
+// Last update on:  14.01.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -261,5 +261,63 @@ namespace VFS
         /// </summary>
         /// <returns></returns>
         public abstract bool Save();
+
+        /// <summary>
+        /// Iterates all directories and searches for a special string
+        /// </summary>
+        /// <param name="searchString">The search value you want to find</param>
+        /// <param name="startNode">The dir where you want to start the search</param>
+        /// <param name="recurse">If false, just startNode is used not the sub-directories</param>
+        /// <returns></returns>
+        public virtual SearchResult Search(string searchString, IDirectory startNode, bool recurse)
+        {
+            SearchResult currentResult = new SearchResult();
+            List<IDirectory> lstDirs = new List<IDirectory>();
+            List<IFile> lstFiles = new List<IFile>();
+
+            if (!recurse)
+            {
+                foreach (IFile currentFile in startNode.GetFiles())
+                {
+                    if (currentFile.GetName().ToLower().Contains(searchString.ToLower()))
+                        lstFiles.Add(currentFile);
+                }
+
+                currentResult.Directories = lstDirs.ToArray();
+                currentResult.Files = lstFiles.ToArray();
+                return currentResult;
+            }
+
+            Action<IDirectory> passDirs = null;
+
+            passDirs = new Action<IDirectory>((IDirectory dir) => {
+
+                foreach (IDirectory currentDir in dir.GetSubDirectories())
+                {
+                    if (currentDir.GetName().ToLower().Contains(searchString.ToLower()))
+                        lstDirs.Add(currentDir);
+
+                    foreach (IFile currentFile in currentDir.GetFiles())
+                    {
+                       if (currentFile.GetName().ToLower().Contains(searchString.ToLower()))
+                            lstFiles.Add(currentFile);
+                    }
+
+                    passDirs(currentDir);
+                }
+
+            });
+            passDirs(startNode);
+
+            foreach (IFile currentFile in startNode.GetFiles())
+            {
+                if (currentFile.GetName().ToLower().Contains(searchString.ToLower()))
+                    lstFiles.Add(currentFile);
+            }
+
+            currentResult.Directories = lstDirs.ToArray();
+            currentResult.Files = lstFiles.ToArray();
+            return currentResult;
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// ------------------------------------------------------------------------
-// ModifiedVFS.cs written by Code A Software (http://www.code-a-software.net)
+// ExtendedVFS.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      17.12.2016
 // Last update on:  08.01.2017
