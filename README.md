@@ -128,5 +128,5 @@ In `ModifiedVFS` the actual logic is implemented and `ModifiedVFST` is basically
 a thread, a stopwatch and catches the exceptions. Consequently, I recommend to use `ModifiedVFST` instead of `ModifiedVFS`.
 
 I don't want to explain each method, because I've made XML-comments for each method and I think that these comments should
-epxpain enough. The naming is similar (not equal) to the `System.IO`-Methods.
+epxpain enough. The naming is similar (not equal) to the `System.IO`-Namespaces.
 Finally, I recommend taking a look at this [class diagram](https://github.com/andy123456789088/VFS/blob/master/Documentation/Overview.png). Of course you can also use IntelliSense.
