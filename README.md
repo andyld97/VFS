@@ -6,16 +6,23 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 - [ ] Implementing new version in `PHP` and `C++`
 - [ ] Extend the `PHP` and `QT C++` code with more features
 - [ ] Refresh the old format (working byte-wise with a buffer,
-                              integrating a possiblity to get the current progress,
                               adding support to create a file from a directory(-array))
 
 ## Changelog
+
+**Version 1.0.0.4 (09.07.2017)**
+- Replaced threads and BackgroundWorkers with async and await-task!
+- Revised structure (Usage of this code is now more comfortable then bevor)
+- Progress is now also available in SplitVFS
+- Cleaned README.md
+- Now .NET 4.6.2 is needed
+
 
 **Version 1.0.0.3**
 - Added new file format
 - New directory structure on GitHub
 - Renamed file extension from ".ap" to ".vhp"
-- Revising comments in VFS-Library
+- Revised comments in VFS-Library
 
 **Version 1.0.0.2**
 - A lot of bugfixes
@@ -44,88 +51,65 @@ I think that these explanations are enough to go on and use further methods.
 // MainCounter: 128 (how much bytes, see description)
 // PackByte:     45 (which byte, see description)
 
-SplitVFS currentVFS = new SplitVFS("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
-currentVFS.Create(@"C:\Data");
+public async Task CreateVFS()
+{
+  SplitVFS currentVFS = new SplitVFS("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
+  await currentVFS.Create(@"C:\Data");
+}
 ```
 It's of course very inconvenient. But currently this version doesn't have a method. But you can look [here](https://github.com/andy123456789088/VFS/blob/master/Applications/VFS/VFS/GUI/frmPack.cs#L60) how it works.
 
 **New Format (thread): General usage**
 ```csharp
-string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
-
-ExtendedVFST currentVFS = new ExtendedVFST(currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
-
-curentVFS.OnFinished += delegate (Result rst)
+public async Task CreateVFS()
 {
-      if (rst != null && rst.SpecialCode == Methods.CREATE)
-      {
-          // For instance extract the VFS
-          currentVFS.Read(currentPath);
-      }
-};
-currentVFS.Create(@"C:\Data");
-```
-Firstly, you can see it's much easier than bevor, but in the future I want to implement this into the old format.
-The OnFinished-event is called when a the methods achieve the finish and you get a [Result](https://github.com/andy123456789088/VFS/blob/master/Library/ExtendedVFS/Wrapper/Result.cs)-instance which delievers you information: 
-- Succeeded or not
-- The result as `object`
-- The type of the result for casting
-- And the code to identify which method has called this event
+  string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
+  ExtendedVFST currentVFS = new ExtendedVFST(currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
+  await currentVFS.Create(@"C:\Data");
+  await currentVFS.Read(currentPath);
+  
+  Result<string> rs = await currentVFS.ReadAllText(...);
+  if (rs.Success)
+  {
+      MessageBox.Show(rs.Value);
+  }
+}
 
-In this example there is a condition in the event which avoids a endless loop. So you have to be careful, if
-you just put another command in this event without preventing an endless loop you get an endless loop:
+```
+Now it's very easy to use this methods without any events or something, because await just waits for finishing.
+You can just disable your current window at the beginning and re-enable it at the end of this method.
+All methods returns an Result-instance, so you can see if this operation was successfully and you can also get the
+value.
+
+
+**New Format (thread): Getting the elapsed time/Showing a progress dialog**
+
+The class [Progress](https://github.com/andy123456789088/VFS/blob/master/Library/VFS/Progress.cs) has a static event that gets called if a method of `SplitVFS` or `ExtendedVFS` is called. See this implementation and read the comments:
 
 ```csharp
-curentVFS.OnFinished += delegate (Result rst)
+
+private void loadWindow()
 {
-    currentVFS.Read(currentPath); // Don't do this
-};
-currentVFS.CreateVHP(@"C:\Data");
-```
+     VFS.Progress.OnValueChanged += Progress_OnValueChanged;
+}
 
-**New Format (thread): Getting the elapsed time**
-
-You need to use a timer to to display the elapsed time:
-```csharp
-Timer tmr = new Timer();
-tmr.Interval = 1000;
-tmr.Tick += delegate {
-    if (currentVFS.CurrentStopWatch != null)
-    {
-        label1.Text = currentVFS.CurrentStopWatch.Elapsed.ToString();
-    }
-};
-tmr.Enabled = true;
-
-// Now you can call a method:
-currentVFS.Read("_FILE_");
-```
-
-**New Format (thread and non-thread): Getting the current progress**
-```csharp
-Progress.OnValueChanged += delegate (double s, double d)
+private void Progress_OnValueChanged(double value, double step, VFS.VFS handle)
 {
-    progressParticular.Invoke(new Action(() => { progressParticular.Value = Convert.ToInt32(s * 100); }));
-    progressGeneral.Invoke(new Action(() => { progressGeneral.Value = Convert.ToInt32(d * 100); }));
-};
+    // Compare handle to your current handle
+    // If handle != current_handle you can just return;
+    
+    // step defines the value of the current progress
+    // value defines the value of the entire progress
+    
+    // if value and step are equal to 0, you can show your dialog
+    // if value and step are equal to 1, you can close/hide your dialog
+    // You have to pass the values to your dialog or you have to pass handle to your dialog and do this
+    // implementation in your progress-dialog
+    
+    // Becareful this method is called from a different thread!
+    // The elapsed time you can get from handle.VStopWatch or from your own reference to your currentVFS-instance!
+}
 ```
-
-As you can see there are 2 progress values: The main progress and the progress of the current action. And to change 
-the values of the `ProgressBars` you need to `Invoke` to access the `GUI-Thread` (like you can see in this example).
-
-**New Format (non-thread): General**
-
-```csharp
-string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
-
-ExtendedVFS currentVFS = new ExtendedVFS(currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
-
-currentVFS.Create(@"C:\Data");
-currentVFS.Read(currentPath);
-```
-The only problem is that this can block the `UI-Thread` if you choose big files or much directories. 
-In `ModifiedVFS` the actual logic is implemented and `ModifiedVFST` is basically a wrapper which wraps the methods with
-a thread, a stopwatch and catches the exceptions. Consequently, I recommend to use `ModifiedVFST` instead of `ModifiedVFS`.
 
 I don't want to explain each method, because I've made XML-comments for each method and I think that these comments should
 epxpain enough. The naming is similar (not equal) to the `System.IO`-Namespaces.
