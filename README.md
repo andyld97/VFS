@@ -35,7 +35,7 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 
 ## Usage
 
-I want to explain the usage with an example. Represent you have this directory structure:
+I want to explain the usage with an example. Imagine you have this directory structure:
 ```
 C:\Data\Documents\ToDo.docx
 C:\Data\Documents\Meeting.docx
