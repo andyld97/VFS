@@ -5,8 +5,7 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 - [ ] Implementing new version in `VFS Application` and in `Setup`
 - [ ] Implementing new version in `PHP` and `C++`
 - [ ] Extend the `PHP` and `QT C++` code with more features
-- [ ] Refresh the old format (working byte-wise with a buffer,
-                              adding support to create a file from a directory(-array))
+- [ ] Refresh the old format (working byte-wise with a buffer)
 
 ## Changelog
 
@@ -15,7 +14,7 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 - Revised structure (Usage of this code is now more comfortable then bevor)
 - Progress is now also available in SplitVFS
 - Cleaned README.md
-- Now .NET 4.6.2 is needed
+- Now .NET Framework 4.6.2 is needed
 
 
 **Version 1.0.0.3 (02.01.2017)**
@@ -46,7 +45,7 @@ C:\Data\Passwort.txt
 In the following examples I am going to explain how you can create and import files, because
 I think that these explanations are enough to go on and use further methods. 
 
-**Old Format**
+**SplitVFS**
 ```csharp
 // MainCounter: 128 (how much bytes, see description)
 // PackByte:     45 (which byte, see description)
@@ -54,12 +53,11 @@ I think that these explanations are enough to go on and use further methods.
 public async Task CreateVFS()
 {
   SplitVFS currentVFS = new SplitVFS("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
-  await currentVFS.Create(@"C:\Data");
+  await currentVFS.Create(@"C:\Data"); // All files and directorys from C:\Data will be used
 }
 ```
-It's of course very inconvenient. But currently this version doesn't have a method. But you can look [here](https://github.com/andy123456789088/VFS/blob/master/Applications/VFS/VFS/GUI/frmPack.cs#L60) how it works.
 
-**New Format (thread): General usage**
+**ExtendedVFS: General usage**
 ```csharp
 public async Task CreateVFS()
 {
@@ -82,7 +80,7 @@ All methods returns an Result-instance, so you can see if this operation was suc
 value.
 
 
-**New Format (thread): Getting the elapsed time/Showing a progress dialog**
+**SplitVFS and ExtendedVFS: Getting the elapsed time/Showing a progress dialog**
 
 The class [Progress](https://github.com/andy123456789088/VFS/blob/master/Library/VFS/Progress.cs) has a static event that gets called if a method of `SplitVFS` or `ExtendedVFS` is called. See this implementation and read the comments:
 
