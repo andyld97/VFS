@@ -18,19 +18,19 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 - Now .NET 4.6.2 is needed
 
 
-**Version 1.0.0.3**
+**Version 1.0.0.3 (02.01.2017)**
 - Added new file format
 - New directory structure on GitHub
 - Renamed file extension from ".ap" to ".vhp"
 - Revised comments in VFS-Library
 
-**Version 1.0.0.2**
+**Version 1.0.0.2 (17.10.2016)**
 - A lot of bugfixes
 
-**Version 1.0.0.1**
+**Version 1.0.0.1 (26.03.2016 - 03.08.2016)**
 - Created a new application to manage files with a new graphical user-interface
 
-**Version 1.0.0.0**
+.**Version 1.0.0.0 (07.01.2015)**
 - First release
 
 ## Usage
