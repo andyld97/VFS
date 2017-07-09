@@ -11,7 +11,7 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 ## Changelog
 
 **Version 1.0.0.4 (09.07.2017)**
-- Replaced threads and BackgroundWorkers with async and await-task!
+- Replaced threads and BackgroundWorkers with async and await-tasks!
 - Revised structure (Usage of this code is now more comfortable then bevor)
 - Progress is now also available in SplitVFS
 - Cleaned README.md
