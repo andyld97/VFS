@@ -2,7 +2,7 @@
 // File.cs written by Code A Software (http://www.code-a-software.net)
 // SP: VHP-0001 (OpenSource-Software)
 // Created on:      11.04.2016
-// Last update on:  30.12.2016
+// Last update on:  30.06.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;

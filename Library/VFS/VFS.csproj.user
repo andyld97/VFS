@@ -3,4 +3,8 @@
   <PropertyGroup>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>F:\Andy%27s Dokumente\VFS\VFS\bin\Debug\VFS Application.exe</StartProgram>
+  </PropertyGroup>
 </Project>

@@ -3,12 +3,12 @@
   <Class Name="VFS.VFS">
     <Position X="6.25" Y="0.5" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>ABBAAIADAAAAQAgABKAEAAAgCAAAAEEAAAQACAAQAAA=</HashCode>
+      <HashCode>ABBAAIADAAAAQAgABKAGAAAgCAAAAEEAAAQACAAwAAA=</HashCode>
       <FileName>VFS.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="VFS.ExtendedVFS.ExtendedVFS">
-    <Position X="1" Y="9" Width="3.5" />
+    <Position X="3.25" Y="6.5" Width="3.5" />
     <TypeIdentifier>
       <HashCode>ABDAAIgCIAAAQCgAACAEAAAgCgIAAFEAAAQCDAAQgAA=</HashCode>
       <FileName>ExtendedVFS\ExtendedVFS.cs</FileName>
@@ -58,26 +58,11 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="VFS.ExtendedVFS.Wrapper.ExtendedVFST">
-    <Position X="5" Y="9" Width="3.25" />
-    <NestedTypes>
-      <Delegate Name="VFS.ExtendedVFS.Wrapper.ExtendedVFST.onFinishedEvent" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>ExtendedVFS\Wrapper\ExtendedVFST.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Delegate>
-    </NestedTypes>
-    <InheritanceLine Type="VFS.VFS" FixedToPoint="true">
-      <Path>
-        <Point X="7.875" Y="5.391" />
-        <Point X="7.875" Y="8.625" />
-        <Point X="5" Y="8.625" />
-        <Point X="5" Y="9" />
-      </Path>
-    </InheritanceLine>
+  <Class Name="VFS.SplitVFS">
+    <Position X="7.5" Y="6.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>EBBEAIAiAAAAQAgABGAEAAAoBAAADGEAAAQBCAAQAAA=</HashCode>
-      <FileName>ExtendedVFS\Wrapper\ExtendedVFST.cs</FileName>
+      <HashCode>ABCAAoICAAAAQgwgACAEAAAhAAAAAEFAACQQCAAQAAA=</HashCode>
+      <FileName>SplitVFS.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="VFS.Interfaces.IDirectory">

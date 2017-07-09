@@ -1,8 +1,7 @@
 ﻿// ------------------------------------------------------------------------
 // SplitVFS.cs written by Code A Software (http://www.code-a-software.net)
-// SP: VHP-0001 (OpenSource-Software)
 // Created on:      11.04.2016
-// Last update on:  08.01.2017
+// Last update on:  09.07.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
@@ -63,40 +62,22 @@ namespace VFS
         /// </summary>
         /// <param name="savePath">Path for storing the VFS</param>
         /// /// <param name="MainCounter">The amout of seperator chars</param>
-        /// /// <param name="PackByte">Char type from 1 to 255 for seperator</param>
+        /// /// <param name="PackByte">Char type from 0 to 255 for seperator</param>
         public SplitVFS(string savePath, int MainCounter = 128, int PackByte = 45)
         {
             // bootSect contains the first two items of the array.
             // bootSect[FS_DIR] contains all directorys and bootSect[FS_FILE] all files.
             this.savePath = savePath;
             this.MainCounter = MainCounter;
-            this.PackByte = PackByte;
+            // Avoid invalid byte
+            if (PackByte < 0 || PackByte > 255)
+                this.PackByte = 45;
+            else
+                this.PackByte = PackByte;
 
             // Reset dirIndex!
             VFS.DirIndex = 0;
         }
-        #endregion
-
-        #region Events
-        /// <summary>
-        /// This event is called when thread finishes.
-        /// </summary>
-        public delegate void onReady();
-
-        /// <summary>
-        /// This event is called when thread finishes.
-        /// </summary>
-        public event onReady OnReady;
-
-        /// <summary>
-        /// This event is called when a change was done in the system
-        /// </summary>
-        public delegate void onSaved();
-
-        /// <summary>
-        /// This event is called when a change was done in the system
-        /// </summary>
-        public event onSaved OnSaved;
         #endregion
 
         #region Methods
@@ -174,6 +155,49 @@ namespace VFS
             }
             return check;
         }
+
+        /// <summary>
+        /// Async-Implementation of System.IO.WriteAllBytes
+        /// </summary>
+        /// <param name="path">Path where the file is stored</param>
+        /// <param name="data">Data to write to the file</param>
+        /// <returns></returns>
+        private async Task writeAllBytes(string path, byte[] data)
+        {
+            using (System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.Write, 4096, true))
+            {
+                await fs.WriteAsync(data, 0, data.Length);
+            }
+        }
+
+        /// <summary>
+        /// Async-Implementation of System.IO.ReadAllBytes
+        /// </summary>
+        /// <param name="path">Path where the file is stored</param>
+        /// <returns></returns>
+        private async Task<byte[]> readAllBytes(string path)
+        {
+            List<byte> byteBuilder = new List<byte>();
+
+            using (System.IO.FileStream fs = new System.IO.FileStream(path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read, 4096, true))
+            {
+                long currentPosition = 0;
+                byte[] buffer = new byte[4096];
+
+                while (currentPosition < fs.Length)
+                {
+                    if (currentPosition + buffer.Length > fs.Length)
+                        buffer = new byte[fs.Length - currentPosition];
+
+                    currentPosition += await fs.ReadAsync(buffer, 0, buffer.Length);
+                    for (int b = 0; b <= buffer.Length - 1; b++)
+                        byteBuilder.Add(buffer[b]);
+                }
+            }
+
+            return byteBuilder.ToArray();
+        }
+
         #endregion
 
         #region Public 
@@ -185,9 +209,9 @@ namespace VFS
         /// <param name="dir">Stored directory</param>
         /// <param name="overrideExisting">Determines whether a file which exists should be overriden or not</param>
         /// <returns></returns>
-        public override bool WriteAllText(string content, string name, IDirectory dir, bool overrideExisting = false)
+        public override async Task<Result<bool>> WriteAllText(string content, string name, IDirectory dir, bool overrideExisting = false)
         {
-            return this.WriteAllBytes(this.calculateFrom(content), name, dir, overrideExisting);
+            return await this.WriteAllBytes(this.calculateFrom(content), name, dir, overrideExisting);
         }
 
         /// <summary>
@@ -198,46 +222,68 @@ namespace VFS
         /// <param name="dir">Stored directory</param>
         /// <param name="overrideExisting">Determines whether a file which exists should be overriden or not</param>
         /// <returns></returns>
-        public override bool WriteAllBytes(byte[] data, string name, IDirectory dir, bool overrideExisting = false)
+        public override async Task<Result<bool>> WriteAllBytes(byte[] data, string name, IDirectory dir, bool overrideExisting = false)
         {
-            bool condition = (data != null && !string.IsNullOrEmpty(name) && dir != null && dir.GetFiles() != null);
-            string filePath = dir.ToFullPath() + @"\" + name;
+            Progress.Register(0.0, 0.0, this, Methods.WRITE_ALL_BYTES);
 
-            if (condition)
-            {
-                if (!NULLFILE.Contains(dir.GetFiles(), filePath))
+            Func<Result<bool>> func = () => { 
+                bool condition = (data != null && !string.IsNullOrEmpty(name) && dir != null && dir.GetFiles() != null);
+                string filePath = dir.ToFullPath() + @"\" + name;
+
+                if (condition)
                 {
-                    IFile currentFile = new File(name, dir);
-                    currentFile.SetByes(data.ToList<byte>());
-                    dir.GetFiles().Add(currentFile);
-                }
-                else
-                {
-                    IFile currentFile = NULLFILE.ByPath(dir.GetFiles(), filePath);
-                    if (currentFile != null)
+                    if (!NULLFILE.Contains(dir.GetFiles(), filePath))
                     {
-                        if (currentFile.GetBytes().Count == 0)
+                        IFile currentFile = new File(name, dir);
+                        currentFile.SetByes(data.ToList<byte>());
+                        dir.GetFiles().Add(currentFile);
+                    }
+                    else
+                    {
+                        IFile currentFile = NULLFILE.ByPath(dir.GetFiles(), filePath);
+                        if (currentFile != null)
                         {
-                            currentFile.SetByes(data.ToList<byte>());
-                            return true;
+                            if (currentFile.GetBytes().Count == 0)
+                            {
+                                currentFile.SetByes(data.ToList<byte>());
+                                Progress.Register(1.0, 1.0, this, Methods.WRITE_ALL_BYTES);
+                                return new Result<bool>(true);
+                            }
+                            else
+                            {
+                                if (overrideExisting)
+                                {
+                                    currentFile.SetByes(data.ToList<byte>());
+                                    Progress.Register(1.0, 1.0, this, Methods.WRITE_ALL_BYTES);
+                                    return new Result<bool>(true);
+                                }
+                                else
+                                {
+                                    Progress.Register(1.0, 1.0, this, Methods.WRITE_ALL_BYTES);
+                                    return new Result<bool>(false);
+                                }
+                            }
                         }
                         else
                         {
-                            if (overrideExisting)
-                            {
-                                currentFile.SetByes(data.ToList<byte>());
-                                return true;
-                            }
-                            else
-                                return false;
+                            Progress.Register(1.0, 1.0, this, Methods.WRITE_ALL_BYTES);
+                            return new Result<bool>(false);
                         }
                     }
-                    else
-                        return false;
                 }
-            }
 
-            return condition;
+                Progress.Register(1.0, 1.0, this, Methods.WRITE_ALL_BYTES);
+                return new Result<bool>(condition);
+            };
+
+            try
+            {
+                return await Task.Run(func);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
+            }
         }
 
         /// <summary>
@@ -247,7 +293,7 @@ namespace VFS
         /// <param name="path">Full path</param>
         /// <param name="overrideExisting">Whether an existing file should be replaced by another one</param>
         /// <returns></returns>
-        public override bool WriteAllBytes(byte[] data, string path, bool overrideExisting = false)
+        public override async Task<Result<bool>> WriteAllBytes(byte[] data, string path, bool overrideExisting = false)
         {
             IDirectory currentNode = this.rootDir;
 
@@ -256,7 +302,7 @@ namespace VFS
                 File currentFile = (File)Activator.CreateInstance(typeof(File), new object[] { path, this.rootDir });
                 currentFile.Bytes = data.ToList<byte>();
                 this.rootDir.GetFiles().Add(currentFile);
-                return true;
+                return new Result<bool>(true);
             }
 
             string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
@@ -266,16 +312,13 @@ namespace VFS
                 if (currentNode.Contains(segments[x]))
                     currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(segments[x])];
                 else
-                    return true;
+                    return new Result<bool>(true);
             }
 
             if (segments.Length > 0)
-            {
-                this.WriteAllBytes(data.ToArray(), segments[segments.Length - 1], currentNode, true);
-                return true;
-            }
+                return await this.WriteAllBytes(data.ToArray(), segments[segments.Length - 1], currentNode, true);
             else
-                return false;
+                return new Result<bool>(true);
         }
 
         /// <summary>
@@ -286,12 +329,19 @@ namespace VFS
         /// <param name="stream">Input stream</param>
         /// <param name="overrideExisting">Whether a file should be replaced, if it exists already</param>
         /// <returns></returns>
-        public override bool WriteStream(string name, IDirectory dir, System.IO.Stream stream, bool overrideExisting = false)
+        public override async Task<Result<bool>> WriteStream(string name, IDirectory dir, System.IO.Stream stream, bool overrideExisting = false)
         {
-            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            try
             {
-                stream.CopyTo(ms);
-                return this.WriteAllBytes(ms.ToArray(), name, dir, overrideExisting);
+                using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    return await this.WriteAllBytes(ms.ToArray(), name, dir, overrideExisting);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
             }
         }
 
@@ -302,41 +352,66 @@ namespace VFS
         /// <param name="startNode">Dir, where you want to start at. It's well to use the root-Dir here!</param>
         /// <param name="different">Just to differentiate between the methods - no usage in in this method</param>
         /// <returns></returns>
-        public override byte[] ReadAllBytes(string path, IDirectory startNode, bool different = false)
+        public override async Task<Result<byte[]>> ReadAllBytes(string path, IDirectory startNode, bool different = false)
         {
-            IDirectory currentNode = startNode;
-            if (!path.Contains(@"\"))
+            Progress.Register(0.0, 0.0, this, Methods.READ_ALL_BYTES);
+
+            Func<Result<byte[]>> func = () =>
             {
-                if (NULLFILE.Contains(currentNode.GetFiles(), path))
+                IDirectory currentNode = startNode;
+                if (!path.Contains(@"\"))
                 {
-                    IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
-                    if (currentNode != null)
-                        return currentFile.GetBytes().ToArray();
+                    if (NULLFILE.Contains(currentNode.GetFiles(), path))
+                    {
+                        IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
+                        if (currentNode != null)
+                        {
+                            Progress.Register(1.0, 1.0, this, Methods.READ_ALL_BYTES);
+                            return new Result<byte[]>(currentFile.GetBytes().ToArray());
+                        }
+                        else
+                        {
+                            Progress.Register(1.0, 1.0, this, Methods.READ_ALL_BYTES);
+                            return new Result<byte[]>(null, false, null);
+                        }
+                    }
+                }
+                string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i <= segments.Length - 2; i++)
+                {
+                    string currentName = segments[i];
+                    int nIndex = currentNode.IndexOf(currentName);
+
+                    if (nIndex != -1)
+                        currentNode = currentNode.GetSubDirectories()[nIndex];
                     else
-                        return null;
+                    {
+                        Progress.Register(1.0, 1.0, this, Methods.READ_ALL_BYTES);
+                        return new Result<byte[]>(null, false, null);
+                    }                        
                 }
-            }
-            string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i <= segments.Length - 2; i++)
-            {
-                string currentName = segments[i];
-                int nIndex = currentNode.IndexOf(currentName);
 
-                if (nIndex != -1)
-                    currentNode = currentNode.GetSubDirectories()[nIndex];
-                else
-                    return null;
-            }
-
-            if (currentNode != null)
-            {
-                if (NULLFILE.Contains(currentNode.GetFiles(), path))
+                if (currentNode != null)
                 {
-                    IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
-                    return currentFile.GetBytes().ToArray();
+                    if (NULLFILE.Contains(currentNode.GetFiles(), path))
+                    {
+                        IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
+                        Progress.Register(1.0, 1.0, this, Methods.READ_ALL_BYTES);
+                        return new Result<byte[]>(currentFile.GetBytes().ToArray());
+                    }
                 }
+                Progress.Register(1.0, 1.0, this, Methods.READ_ALL_BYTES);
+                return null;
+            };
+
+            try
+            {
+                return await Task.Run(func);
             }
-            return null;
+            catch (Exception ex)
+            {
+                return new Result<byte[]>(null, false, ex);
+            }
         }
 
         /// <summary>
@@ -345,99 +420,125 @@ namespace VFS
         /// <param name="path">Filename</param>
         /// <param name="startNode">Directory where the path is beginning at</param>
         /// <returns></returns>
-        public override string ReadAllText(string path, IDirectory startNode)
+        public override async Task<Result<string>> ReadAllText(string path, IDirectory startNode)
         {
-            return this.calculateFrom(this.ReadAllBytes(path, startNode, true));
+            Result<byte[]> data = await this.ReadAllBytes(path, startNode, true);
+            if (data.Success && data.HasValue)
+                return new Result<string>(this.calculateFrom(data.Value), true, null);
+            else
+                return new Result<string>(string.Empty, false, null);
         }
 
         /// <summary>
         /// Writes filesystem to physical file
         /// </summary>
         /// <returns></returns>
-        public override bool Save()
+        public override async Task<Result<bool>> Save()
         {
-            // Refresh byte array // | // <,
-            string bootSector = String.Join("|", this.RootDirectory.ToFileStringArray()) + "|<" + String.Join(",", this.RootDirectory.ToStringArray()) + ",>" + this.generateString();
+            Progress.Register(0.0, 0.0, this, Methods.SAVE);
 
-            // Add archiv structure
-            this.data.Clear();
-
-            // Add file bytes to array
-            // Merge all infos to byte-Array
-            List<byte> final = new List<byte>();
-            final.AddRange(this.calculateFrom(bootSector));
-
-            string[] elements = this.RootDirectory.ToFileStringArray();
-            for (int i = 0; i <= elements.Length - 1; i++)
+            Func<Task<Result<bool>>> func = async () =>
             {
-                string str = elements[i];
-                if (!this.FormatPath(str).Contains(@"\"))
+                // Refresh byte array // | // <,
+                string bootSector = String.Join("|", this.RootDirectory.ToFileStringArray()) + "|<" + String.Join(",", this.RootDirectory.ToStringArray()) + ",>" + this.generateString();
+
+                // Add archiv structure
+                this.data.Clear();
+
+                // Add file bytes to array
+                // Merge all infos to byte-Array
+                List<byte> final = new List<byte>();
+                final.AddRange(this.calculateFrom(bootSector));
+
+                string[] elements = this.RootDirectory.ToFileStringArray();
+
+                int step = 0;
+                int count = elements.Length + 1; //+1 because after this there is one operation left.
+
+                for (int i = 0; i <= elements.Length - 1; i++)
                 {
-                    if (NULLFILE.Contains(this.rootDir.GetFiles(), str))
+                    Progress.Register(step / count, 0.0, this, Methods.SAVE);
+
+                    string str = elements[i];
+                    if (!this.FormatPath(str).Contains(@"\"))
                     {
-                        data.AddRange(NULLFILE.ByPath(rootDir.GetFiles(), str).GetBytes());
+                        if (NULLFILE.Contains(this.rootDir.GetFiles(), str))
+                        {
+                            data.AddRange(NULLFILE.ByPath(rootDir.GetFiles(), str).GetBytes());
+                            if (i != elements.Length - 1)
+                                data.AddRange(this.generateBytes());
+                        }
+                        continue;
+                    }
+
+                    string[] segemnts = str.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                    string nPath = string.Empty;
+                    for (int j = 0; j <= segemnts.Length - 2; j++)
+                        nPath += segemnts[j] + @"\";
+
+                    Directory currentDir = (Directory)this.rootDir.CalculateLastNode(nPath);
+                    if (currentDir != null && currentDir.Files != null && NULLFILE.Contains(currentDir.Files, str))
+                    {
+                        data.AddRange(NULLFILE.ByPath(currentDir.Files, str).GetBytes());
                         if (i != elements.Length - 1)
                             data.AddRange(this.generateBytes());
-                    }                    
-                    continue;
+                    }
+
+                    Progress.Register(step++ / count, 1.0, this, Methods.SAVE);
                 }
-                
-                string[] segemnts = str.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                string nPath = string.Empty;
-                for (int j = 0; j <= segemnts.Length - 2; j++)
-                    nPath += segemnts[j] + @"\";
+                final.AddRange(this.data);
 
-                Directory currentDir = (Directory)this.rootDir.CalculateLastNode(nPath);
-                if (currentDir != null && currentDir.Files != null && NULLFILE.Contains(currentDir.Files, str))
-                {
-                    data.AddRange(NULLFILE.ByPath(currentDir.Files, str).GetBytes());
-                    if (i != elements.Length - 1)
-                        data.AddRange(this.generateBytes());
-                }
-            }        
-                      
-            final.AddRange(this.data);
-
-            this.data.Clear();
-            System.IO.File.WriteAllBytes(this.savePath, final.ToArray());
-
-            if (this.OnSaved != null)
-                this.OnSaved();
-            return true;
+                this.data.Clear();
+                await this.writeAllBytes(this.savePath, final.ToArray());
+                Progress.Register(1.0, 1.0, this, Methods.SAVE);
+                return new Result<bool>(true);
+            };
+            try
+            {
+                return await Task.Run(func);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
+            }
         }
 
         /// <summary>
         /// Loads the content of the file into this instance
         /// </summary>
         /// <param name="filePath">The path where the file is stored</param>
-        public override void Read(string filePath)
+        public override async Task<Result<bool>> Read(string filePath)
         {
-            // Read archiv format.
-            // Doing this in a thread
-            System.Threading.Thread thr = new System.Threading.Thread(new System.Threading.ThreadStart(() =>
+            Progress.Register(0.0, 0.0, this, Methods.READ);
+
+            Func<Task<Result<bool>>> func = async () =>
             {
+                // Read archiv format.
+                // Doing this in a thread
                 if (System.IO.File.Exists(filePath))
                 {
                     List<List<byte>> getBytes = new List<List<byte>>();
-                    int s = 0;
                     getBytes.Add(new List<byte>());
 
-                    byte[] sy = System.IO.File.ReadAllBytes(filePath);
-                    for (int i = 0; i <= sy.Length - 1; i++)
+                    int s = 0;
+                    byte[] data = await this.readAllBytes(filePath); 
+
+                    for (int i = 0; i <= data.Length - 1; i++)
                     {
-                        if (this.checkNextItems(MainCounter, PackByte, i, sy))
+                        if (this.checkNextItems(MainCounter, PackByte, i, data))
                         {
                             getBytes.Add(new List<byte>());
                             i += MainCounter - 1;
                             s++;
                         }
                         else
-                            getBytes[s].Add(Convert.ToByte(sy[i]));
+                            getBytes[s].Add(Convert.ToByte(data[i]));
                     }
 
                     string[] files = this.calculateFrom(getBytes[0].ToArray()).Split(new string[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (getBytes.Count == 1 && files.Length != 1)                   
-                        return;
+                    if (getBytes.Count == 1 && files.Length != 1)
+                        return new Result<bool>(false);
+
 
                     string[] rFiles = new string[] { };
                     string[] rFolders = new string[] { };
@@ -453,13 +554,54 @@ namespace VFS
                     string[] paths = this.rootDir.ToFileStringArray();
 
                     if (paths.Length - 1 == getBytes.Count() - 2)
+                    {
+                        List<Result<bool>> results = new List<Result<bool>>();
                         for (int i = 0; i <= paths.Length - 1; i++)
-                            this.WriteAllBytes(getBytes[i + 1].ToArray(), paths[i], true);
+                            results.Add(await this.WriteAllBytes(getBytes[i + 1].ToArray(), paths[i], true));
+
+                        Result<bool> final = null;
+                        foreach (Result<bool> result in results)
+                        {
+                            if (!result.Success)
+                            {
+                                final = result;
+                                break;
+                            }
+                        }
+
+                        if (final != null)
+                        {
+                            Progress.Register(1.0, 1.0, this, Methods.READ);
+                            return new Result<bool>(final.Value, final != null, final.FailInfo);
+                        }
+                        else
+                        {
+                            Progress.Register(1.0, 1.0, this, Methods.READ);
+                            return new Result<bool>(true);
+                        }
+                    }
+                    else
+                    {
+                        Progress.Register(1.0, 1.0, this, Methods.READ);
+                        return new Result<bool>(false);
+                    }
                 }
-                if (this.OnReady != null)
-                    this.OnReady();
-            }));
-            thr.Start();
+                else
+                {
+                    Progress.Register(1.0, 1.0, this, Methods.READ);
+                    return new Result<bool>(false);
+                }
+            };
+
+            try
+            {
+                return await Task.Run(func);
+            }
+            catch (Exception ex)
+            {
+                Progress.Register(1.0, 1.0, this, Methods.READ);
+                return new Result<bool>(false, false, ex);
+            }
         }
 
         /// <summary>
@@ -467,73 +609,112 @@ namespace VFS
         /// </summary>
         /// <param name="filePath">The path of the physical file</param>
         /// <returns></returns>
-        public override bool Extract(string filePath)
+        public override async Task<Result<bool>> Extract(string filePath)
         {
-            if (System.IO.Directory.Exists(filePath))
+            Progress.Register(0.0, 0.0, this, Methods.EXTRACT);
+
+            Func<Result<bool>> func = () =>
             {
-                // Extract now.
-                // Create directories
-                Action<IDirectory> passDirs = null;
-
-                passDirs = new Action<IDirectory>((IDirectory dir) => {
-
-                    foreach (IDirectory currentDir in dir.GetSubDirectories())
-                    {
-                        string path = System.IO.Path.Combine(filePath, this.FormatPath(currentDir.ToFullPath()));
-                        try
-                        {
-                            System.IO.Directory.CreateDirectory(path);
-                        }
-                        catch (Exception)
-                        {
-                        }
-                        passDirs(currentDir);
-                    }
-
-                });
-                passDirs(this.rootDir);
-
-                // Create files
-                foreach (File currentFile in this.rootDir.GetFiles())
+                if (System.IO.Directory.Exists(filePath))
                 {
-                    string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.Path));
-                    try
-                    {
-                        System.IO.File.WriteAllBytes(path, currentFile.Bytes.ToArray());
-                    }
-                    catch (Exception)
-                    {
-                        
-                    }
-                }
+                    // Extract now.
+                    // Create directories
+                    Action<IDirectory> passDirs = null;
+                    bool failed = false;
+                    Exception exs = null;
 
-                Action<IDirectory> passFiles = null;
-
-                passFiles = new Action<IDirectory>((IDirectory dir) => {
-                    foreach (IDirectory currentDir in dir.GetSubDirectories())
+                    passDirs = new Action<IDirectory>((IDirectory dir) =>
                     {
-                        foreach (IFile currentFile in currentDir.GetFiles())
+                        foreach (IDirectory currentDir in dir.GetSubDirectories())
                         {
-                            string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.GetPath()));
+                            string path = System.IO.Path.Combine(filePath, this.FormatPath(currentDir.ToFullPath()));
                             try
                             {
-                                System.IO.File.WriteAllBytes(path, currentFile.GetBytes().ToArray());
+                                System.IO.Directory.CreateDirectory(path);
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
-
+                                failed = true;
+                                exs = ex;
+                                return;
                             }
+                            passDirs(currentDir);
                         }
-                        passFiles(currentDir);
-                    }
-                });
 
-                passFiles(this.rootDir);
-                return true;
-            }
-            else
+                    });
+                    passDirs(this.rootDir);
+
+                    if (failed)
+                        return new Result<bool>(false, false, exs);
+
+                    int step = 0;
+                    int count = this.rootDir.GetFiles().Count + 1; // +1 Because one operation left after this operation finished
+
+                    // Create files
+                    foreach (File currentFile in this.rootDir.GetFiles())
+                    {
+                        Progress.Register(step / count, 0.0, this, Methods.EXTRACT);
+                        string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.Path));
+                        try
+                        {
+                            System.IO.File.WriteAllBytes(path, currentFile.Bytes.ToArray());
+                        }
+                        catch (Exception ex)
+                        {
+                            return new Result<bool>(false, false, ex);
+                        }
+
+                        Progress.Register(step++ / count, 1.0, this, Methods.EXTRACT);
+                    }
+
+                    Action<IDirectory> passFiles = null;
+                    failed = false;
+                    exs = null;
+
+                    passFiles = new Action<IDirectory>((IDirectory dir) =>
+                    {
+                        foreach (IDirectory currentDir in dir.GetSubDirectories())
+                        {
+                            foreach (IFile currentFile in currentDir.GetFiles())
+                            {
+                                string path = System.IO.Path.Combine(filePath, this.FormatPath(currentFile.GetPath()));
+                                try
+                                {
+                                    System.IO.File.WriteAllBytes(path, currentFile.GetBytes().ToArray());
+                                }
+                                catch (Exception ex)
+                                {
+                                    failed = true;
+                                    exs = ex;
+                                    return;
+                                }
+                            }
+                            passFiles(currentDir);
+                        }
+                    });
+
+                    Progress.Register(1.0, 1.0, this, Methods.EXTRACT);
+
+                    if (failed)
+                        return new Result<bool>(false, false, exs);
+
+                    passFiles(this.rootDir);
+                    return new Result<bool>(true);
+                }
+                else
+                {
+                    Progress.Register(1.0, 1.0, this, Methods.EXTRACT);
+                    return new Result<bool>(false, false, new Exception("Dir doesn't exists!"));
+                }
+            };
+
+            try
             {
-                return false;
+                return await Task.Run(func);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
             }
         }
 
@@ -542,54 +723,77 @@ namespace VFS
         /// </summary>
         /// <param name="path">All file pathes</param>
         /// <param name="directoryPath">The physical directory where you want to write in</param>
-        public override void ExtractFiles(string[] path, string directoryPath)
+        public override async Task<Result<bool>> ExtractFiles(string[] path, string directoryPath)
         {
-            string[] dirs = new string[path.Length];
-            for (int i = 0; i <= path.Length - 1; i++)
-            {
-                string[] segments = path[i].Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                for (int x = 0; x <= segments.Length - 2; x++)
-                    dirs[i] += path[x];
-            }
+            Progress.Register(0.0, 0.0, this, Methods.EXTRACT_FILES);
 
-            for (int y = 0; y <= dirs.Length - 1; y++)
+            Task<Result<bool>> func = Task.Run(() =>
             {
-                if (!this.FormatPath(path[y]).Contains(@"\"))
+                string[] dirs = new string[path.Length];
+                for (int i = 0; i <= path.Length - 1; i++)
                 {
-                    // Those it from root dir.
-                    IFile _currentFile = NULLFILE.ByPath(this.rootDir.GetFiles(), path[y]);
-                    string p = System.IO.Path.Combine(directoryPath, this.FormatPath(path[y]));
-                    if (_currentFile != null)
+                    string[] segments = path[i].Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                    for (int x = 0; x <= segments.Length - 2; x++)
+                        dirs[i] += path[x];
+                }
+
+                int step = 0;
+                int count = dirs.Length;
+
+                for (int y = 0; y <= dirs.Length - 1; y++)
+                {
+                    Progress.Register(step / count, 0.0, this, Methods.EXTRACT_FILES);
+                    if (!this.FormatPath(path[y]).Contains(@"\"))
+                    {
+                        // Those it from root dir.
+                        IFile _currentFile = NULLFILE.ByPath(this.rootDir.GetFiles(), path[y]);
+                        string p = System.IO.Path.Combine(directoryPath, this.FormatPath(path[y]));
+                        if (_currentFile != null)
+                        {
+                            try
+                            {
+                                System.IO.File.WriteAllBytes(p, _currentFile.GetBytes().ToArray());
+                            }
+                            catch (Exception ex)
+                            {
+                                // ToDo Handle exception
+                                return new Result<bool>(false, false, ex);
+                            }
+                        }
+                        Progress.Register(step++ / count, 1.0, this, Methods.EXTRACT_FILES);
+                        continue;
+                    }
+                    string currentPath = dirs[y];
+                    string currentPathWithFile = path[y];
+                    IDirectory lastNodeFromPath = this.RootDirectory.CalculateLastNode(currentPath);
+
+                    System.IO.Directory.CreateDirectory(System.IO.Path.Combine(directoryPath, this.FormatPath(lastNodeFromPath.ToFullPath())));
+                    IFile currentFile = NULLFILE.ByPath(lastNodeFromPath.GetFiles(), currentPathWithFile);
+                    string pa = System.IO.Path.Combine(directoryPath, this.FormatPath(currentPathWithFile));
+
+                    if (currentFile != null)
                     {
                         try
                         {
-                            System.IO.File.WriteAllBytes(p, _currentFile.GetBytes().ToArray());
+                            System.IO.File.WriteAllBytes(pa, currentFile.GetBytes().ToArray());
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
-                     
+                            return new Result<bool>(false, false, ex);
                         }
                     }
-                    continue;
+                    Progress.Register(step++ / count, 1.0, this, Methods.EXTRACT_FILES);
                 }
-                string currentPath = dirs[y];
-                string currentPathWithFile = path[y];
-                IDirectory lastNodeFromPath = this.RootDirectory.CalculateLastNode(currentPath);
+                return new Result<bool>(true);
+            });
 
-                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(directoryPath, this.FormatPath(lastNodeFromPath.ToFullPath())));
-                IFile currentFile = NULLFILE.ByPath(lastNodeFromPath.GetFiles(), currentPathWithFile);
-                string pa = System.IO.Path.Combine(directoryPath, this.FormatPath(currentPathWithFile));
-
-                if (currentFile != null)
-                {
-                    try
-                    {
-                        System.IO.File.WriteAllBytes(pa, currentFile.GetBytes().ToArray());
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
+            try
+            {
+                return await func;
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
             }
         }
 
@@ -599,66 +803,102 @@ namespace VFS
         /// </summary>
         /// <param name="currentDir">The direcotry</param>
         /// <param name="toPath">A vaild file path</param>
-        public override void ExtractDirectory(IDirectory currentDir, string toPath)
+        public override async Task<Result<bool>> ExtractDirectory(IDirectory currentDir, string toPath)
         {
-            if (System.IO.Directory.Exists(toPath))
+            Progress.Register(0.0, 0.0, this, Methods.EXTRACT_DIR);
+
+            Task<Result<bool>> func = Task.Run(() =>
             {
-                Action<IDirectory> passDirs = null;
-
-                string path = System.IO.Path.Combine(toPath, currentDir.GetName());
-                try
+                if (System.IO.Directory.Exists(toPath))
                 {
-                    System.IO.Directory.CreateDirectory(path);
-                }
-                catch (Exception)
-                {
-                    
-                }
+                    Action<IDirectory> passDirs = null;
 
-
-                // Create files from main dir
-                foreach (IFile currentFile in currentDir.GetFiles())
-                {
-                    string p = System.IO.Path.Combine(path, currentFile.GetName());
+                    string path = System.IO.Path.Combine(toPath, currentDir.GetName());
                     try
                     {
-                        System.IO.File.WriteAllBytes(p, currentFile.GetBytes().ToArray());
+                        System.IO.Directory.CreateDirectory(path);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-
+                        return new Result<bool>(false, false, ex);
                     }
-                }
 
-                passDirs = new Action<IDirectory>((IDirectory currentDirectory) =>
-                {
-                    foreach (IDirectory subDir in currentDirectory.GetSubDirectories())
+
+                    int step = 0;
+                    int count = currentDir.GetFiles().Count + 1;
+
+                    // Create files from main dir
+                    foreach (IFile currentFile in currentDir.GetFiles())
                     {
-                        string dirPath = System.IO.Path.Combine(toPath, currentDir.GetName(), subDir.ToFullPath(currentDir));
+                        Progress.Register(step / count, 0.0, this, Methods.EXTRACT_DIR);
+
+                        string p = System.IO.Path.Combine(path, currentFile.GetName());
                         try
                         {
-                            System.IO.Directory.CreateDirectory(dirPath);
-                            foreach (IFile currentFile in subDir.GetFiles())
+                            System.IO.File.WriteAllBytes(p, currentFile.GetBytes().ToArray());
+                        }
+                        catch (Exception ex)
+                        {
+                            return new Result<bool>(false, false, ex);
+                        }
+
+                        Progress.Register(step++ / count, 1.0, this, Methods.EXTRACT_DIR);
+                    }
+
+                    bool failed = false;
+                    Exception exTmp = null;
+
+                    passDirs = new Action<IDirectory>((IDirectory currentDirectory) =>
+                    {
+                        foreach (IDirectory subDir in currentDirectory.GetSubDirectories())
+                        {
+                            string dirPath = System.IO.Path.Combine(toPath, currentDir.GetName(), subDir.ToFullPath(currentDir));
+                            try
                             {
-                                string p = System.IO.Path.Combine(dirPath, currentFile.GetName());
-                                try
+                                System.IO.Directory.CreateDirectory(dirPath);
+                                foreach (IFile currentFile in subDir.GetFiles())
                                 {
-                                    System.IO.File.WriteAllBytes(p, currentFile.GetBytes().ToArray());
-                                }
-                                catch (Exception e)
-                                {
-                                    
+                                    string p = System.IO.Path.Combine(dirPath, currentFile.GetName());
+                                    try
+                                    {
+                                        System.IO.File.WriteAllBytes(p, currentFile.GetBytes().ToArray());
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        failed = true;
+                                        exTmp = e;
+                                        return;
+                                    }
                                 }
                             }
+                            catch (Exception ess)
+                            {
+                                failed = true;
+                                exTmp = ess;
+                                return;
+                            }
+                            passDirs(subDir);
                         }
-                        catch (Exception)
-                        {
-                            
-                        }
-                        passDirs(subDir);
-                    }
-                });
-                passDirs(currentDir);
+                    });
+                    passDirs(currentDir);
+
+                    Progress.Register(1.0, 1.0, this, Methods.EXTRACT_DIR);
+                    return new Result<bool>(failed, !failed, exTmp);
+                }
+                else
+                {
+                    Progress.Register(1.0, 1.0, this, Methods.EXTRACT_DIR);
+                    return new Result<bool>(false, false, new Exception("File doesn't exists!"));
+                }
+            });
+
+            try
+            {
+                return await func;
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
             }
         }
 
@@ -667,25 +907,39 @@ namespace VFS
         /// </summary>
         /// <param name="path">The virutal path</param>
         /// <param name="filePath">The path where do you want to extract the directory</param>
-        public override void ExtractDirectory(string path, string filePath)
+        public override async Task<Result<bool>> ExtractDirectory(string path, string filePath)
         {
-            string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-            IDirectory currentNode = this.RootDirectory;
-
-            for (int i = 0; i <= segments.Length - 1; i++)
+            Task<Result<bool>> func = Task.Run(async () =>
             {
-                string currentSegment = segments[i];
-                if (currentNode.Contains(currentSegment))
-                    currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(currentSegment)];
-                else
-                {
-                    currentNode = null;
-                    break;
-                }
-            }
+                string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                IDirectory currentNode = this.RootDirectory;
 
-            if (currentNode != null)
-                this.ExtractDirectory(currentNode, filePath);
+                for (int i = 0; i <= segments.Length - 1; i++)
+                {
+                    string currentSegment = segments[i];
+                    if (currentNode.Contains(currentSegment))
+                        currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(currentSegment)];
+                    else
+                    {
+                        currentNode = null;
+                        break;
+                    }
+                }
+
+                if (currentNode != null)
+                    return await this.ExtractDirectory(currentNode, filePath);
+                else
+                    return new Result<bool>(false);
+            });
+
+            try
+            {
+                return await func;
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
+            }
         }
 
         /// <summary>
@@ -693,13 +947,14 @@ namespace VFS
         /// </summary>
         /// <param name="files">Array of files</param>
         /// <param name="directoryPath">Path to extract in</param>
-        public override void ExtractFiles(IFile[] files, string directoryPath)
+        public override async Task<Result<bool>> ExtractFiles(IFile[] files, string directoryPath)
         {
             string[] fileArr = new string[files.Length];
             int index = 0;
             foreach (IFile currentFile in files)
                 fileArr[index++] = currentFile.GetPath();
-            this.ExtractFiles(fileArr, directoryPath);
+
+            return await this.ExtractFiles(fileArr, directoryPath);
         }
 
         /// <summary>
@@ -707,9 +962,9 @@ namespace VFS
         /// </summary>
         /// <param name="directory">All files and folders in this directory are used</param>
         /// <returns></returns>
-        public override void Create(string directory)
+        public override async Task<Result<bool>> Create(string directory)
         {
-            this.Create(new string[] { directory }, new string[] { });
+            return await this.Create(new string[] { directory }, new string[] { });
         }
 
         /// <summary>
@@ -717,12 +972,14 @@ namespace VFS
         /// </summary>
         /// <param name="files">Files which will be processed</param>
         /// <param name="directories">Directories which will be processed</param>
-        public override void Create(string[] files, string[] directories)
+        public override async Task<Result<bool>> Create(string[] files, string[] directories)
         {
-            VFS currentSystem = new SplitVFS(this.savePath, MainCounter, PackByte);
+            Progress.Register(0.0, 0.0, this, Methods.CREATE);
 
-            Thread workingThread = null;
-            workingThread = new Thread(new ThreadStart(() => {
+            Func<Result<bool>> func = () =>
+            {
+                VFS currentSystem = new SplitVFS(this.savePath, MainCounter, PackByte);
+
                 // Add files at first
                 foreach (string file in files)
                 {
@@ -735,20 +992,30 @@ namespace VFS
                             currentFile.Bytes = System.IO.File.ReadAllBytes(file).ToList();
                             currentSystem.RootDirectory.GetFiles().Add(currentFile);
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             // Log exception
+                            return new Result<bool>(false, false, ex);
                         }
                     }
                 }
 
+                int step = 0;
+                int count = directories.Length;
+
                 foreach (string dir in directories)
                 {
+                    Progress.Register(step / count, 0.0, this, Methods.CREATE);
+
                     System.IO.DirectoryInfo info = new System.IO.DirectoryInfo(dir);
                     Directory vDir = new Directory(info.Name);
 
+                    bool failed = false;
+                    Exception exTmp = null;
+
                     Action<string> recurseDirs = null;
-                    recurseDirs = new Action<string>((string lastDir) => {
+                    recurseDirs = new Action<string>((string lastDir) =>
+                    {
                         System.IO.DirectoryInfo data = new System.IO.DirectoryInfo(lastDir);
                         string[] segements = data.FullName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -757,6 +1024,7 @@ namespace VFS
 
                         for (int i = 0; i <= segements.Length - 1; i++)
                         {
+                            Progress.Register(step / count, (i / (segements.Length - 1)), this, Methods.CREATE);
                             if (segements[i] == vDir.Name)
                             {
                                 doAdding = true;
@@ -772,6 +1040,7 @@ namespace VFS
 
                         Interfaces.IDirectory lastDirectory = (nPath == string.Empty ? vDir : vDir.CalculateLastNode(nPath));
 
+                        // ToDo: Consider this loop \/ in progress calculation!
                         foreach (var fi in data.GetFiles())
                         {
                             File currentFile = new File(fi.Name, lastDirectory);
@@ -779,9 +1048,12 @@ namespace VFS
                             {
                                 currentFile.Bytes = System.IO.File.ReadAllBytes(fi.FullName).ToList();
                             }
-                            catch (Exception)
+                            catch (Exception ex)
                             {
                                 // Log exception
+                                failed = true;
+                                exTmp = ex;
+                                return;
                             }
                             lastDirectory.GetFiles().Add(currentFile);
                         }
@@ -792,13 +1064,29 @@ namespace VFS
 
                     recurseDirs(dir);
                     currentSystem.RootDirectory.GetSubDirectories().Add(vDir);
-                }
-                currentSystem.Save();
-                workingThread.Abort();
 
-                this.OnReady?.Invoke();
-            }));
-            workingThread.Start();
+                    if (failed)
+                    {
+                        Progress.Register(1.0, 1.0, this, Methods.CREATE);
+                        return new Result<bool>(failed, !failed, exTmp);
+                    }
+
+                    Progress.Register(step++ / count, 1.0, this, Methods.CREATE);
+                }
+
+                // Make sure 1.0/1.0
+                Progress.Register(1.0, 1.0, this, Methods.CREATE);
+                return new Result<bool>(true);
+            };
+
+            try
+            {
+                return await Task.Run(func);
+            }
+            catch (Exception ex)
+            {
+                return new Result<bool>(false, false, ex);
+            }
         }
 
         #endregion

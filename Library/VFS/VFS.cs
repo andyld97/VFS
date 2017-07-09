@@ -1,14 +1,15 @@
 ﻿// ------------------------------------------------------------------------
 // VFS.cs written by Code A Software (http://www.code-a-software.net)
-// SP: VHP-0001 (OpenSource-Software)
 // Created on:      07.01.2017
-// Last update on:  14.01.2017
+// Last update on:  09.07.2017
 // ------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using VFS.Interfaces;
 
 namespace VFS
@@ -32,7 +33,7 @@ namespace VFS
         }
 
         /// <summary>
-        /// A File which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
+        /// A file which doesn't relay to somenthing, just to use some methods which aren't static anymore (Since IFile and IDirectory-Interfaces)
         /// </summary>
         public abstract IFile NULLFILE
         {
@@ -43,6 +44,11 @@ namespace VFS
         /// The path where the VFS-file is stored
         /// </summary>
         protected string savePath;
+
+        /// <summary>
+        /// The stopwatch to measure the elapsed time
+        /// </summary>
+        public Stopwatch VStopWatch = new Stopwatch();
 
         /// <summary>
         /// Formatting the path to the right format
@@ -63,25 +69,26 @@ namespace VFS
                 return path;
         }
 
+
         /// <summary>
         /// Creates a new VFS
         /// </summary>
         /// <param name="directory">All files and folders in this directory are used</param>
         /// <returns></returns>
-        public abstract void Create(string directory);
+        public abstract Task<Result<bool>> Create(string directory);
 
         /// <summary>
         /// Creates a new VFS
         /// </summary>
         /// <param name="files">Files which will be processed</param>
         /// <param name="directories">Directories which will be processed</param>
-        public abstract void Create(string[] files, string[] directories);
+        public abstract Task<Result<bool>> Create(string[] files, string[] directories);
 
         /// <summary>
         /// Loads a VHP-File into the RAM (just header-content)
         /// </summary>
         /// <param name="filePath">The path where the vhp-file is stored</param>
-        public abstract void Read(string filePath);
+        public abstract Task<Result<bool>> Read(string filePath);
 
         /// <summary>
         /// Returns true if a file is already existing
@@ -117,51 +124,55 @@ namespace VFS
         /// <param name="path">Path of the virtual file</param>
         /// <param name="startNode">The directory where the path is beginning</param>
         /// <returns></returns>
-        public virtual bool RemoveFile(string path, IDirectory startNode)
+        public virtual async Task<Result<bool>> RemoveFile(string path, IDirectory startNode)
         {
-            // Search suitable Directory instance and check if the file is there and then delete it.
-            if (!path.Contains(@"\"))
-            {
-                string nPath = startNode.ToFullPath() + @"\" + path;
-                if (NULLFILE.Contains(startNode.GetFiles(), nPath))
+            Func<Result<bool>> work = new Func<Result<bool>>(delegate {
+                // Search suitable Directory instance and check if the file is there and then delete it.
+                if (!path.Contains(@"\"))
                 {
-                    IFile currentFile = NULLFILE.ByPath(startNode.GetFiles(), nPath);
-                    if (currentFile != null)
+                    string nPath = startNode.ToFullPath() + @"\" + path;
+                    if (NULLFILE.Contains(startNode.GetFiles(), nPath))
                     {
-                        startNode.GetFiles().Remove(currentFile);
-                        return true;
+                        IFile currentFile = NULLFILE.ByPath(startNode.GetFiles(), nPath);
+                        if (currentFile != null)
+                        {
+                            startNode.GetFiles().Remove(currentFile);
+                            return new Result<bool>(true, true, null);
+                        }
+                        else
+                            return new Result<bool>(false, false, null);
                     }
                     else
-                        return false;
+                        return new Result<bool>(false, false, null);
                 }
-                else
-                    return false;
-            }
 
-            string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-            IDirectory currentNode = startNode;
+                string[] segments = path.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                IDirectory currentNode = startNode;
 
-            for (int i = 0; i <= segments.Length - 2; i++)
-            {
-                if (currentNode.Contains(segments[i]))
-                    currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(segments[i])];
-                else
-                    return false;
-            }
-
-            if (NULLFILE.Contains(currentNode.GetFiles(), path))
-            {
-                IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
-                if (currentFile != null)
+                for (int i = 0; i <= segments.Length - 2; i++)
                 {
-                    currentNode.GetFiles().Remove(currentFile);
-                    return true;
+                    if (currentNode.Contains(segments[i]))
+                        currentNode = currentNode.GetSubDirectories()[currentNode.IndexOf(segments[i])];
+                    else
+                        return new Result<bool>(false, false, null);
+                }
+
+                if (NULLFILE.Contains(currentNode.GetFiles(), path))
+                {
+                    IFile currentFile = NULLFILE.ByPath(currentNode.GetFiles(), path);
+                    if (currentFile != null)
+                    {
+                        currentNode.GetFiles().Remove(currentFile);
+                        return new Result<bool>(true, true, null);
+                    }
+                    else
+                        return new Result<bool>(false, false, null);
                 }
                 else
-                    return false;
-            }
-            else
-                return false;
+                    return new Result<bool>(false, false, null);
+            });
+
+            return await Task.Run(() => work.Invoke());
         }
 
         /// <summary>
@@ -169,35 +180,35 @@ namespace VFS
         /// </summary>
         /// <param name="filePath">Path where the content will be extracted</param>
         /// <returns></returns>
-        public abstract bool Extract(string filePath);
+        public abstract Task<Result<bool>> Extract(string filePath);
 
         /// <summary>
         /// Extracts the given files to the given path
         /// </summary>
         /// <param name="files">The files which should be extracted</param>
         /// <param name="directoryPath">Path where the files will be extracted</param>
-        public abstract void ExtractFiles(string[] files, string directoryPath);
+        public abstract Task<Result<bool>> ExtractFiles(string[] files, string directoryPath);
 
         /// <summary>
         /// Extracts the given files to the given path
         /// </summary>
         /// <param name="files">The files which should be extracted</param>
         /// <param name="directoryPath">Path where the files will be extracted</param>
-        public abstract void ExtractFiles(IFile[] files, string directoryPath);
+        public abstract Task<Result<bool>> ExtractFiles(IFile[] files, string directoryPath);
 
         /// <summary>
         /// Extracts the given directory to the given path
         /// </summary>
         /// <param name="currentDir">The virutal directory which should be extracted</param>
         /// <param name="toPath">Path where the virtual directory will be extracted</param>
-        public abstract void ExtractDirectory(IDirectory currentDir, string toPath);
+        public abstract Task<Result<bool>> ExtractDirectory(IDirectory currentDir, string toPath);
 
         /// <summary>
         /// Extract the directory to a given path
         /// </summary>
         /// <param name="path">The virutal path where the directory is stored</param>
         /// <param name="filePath">Path where the directory will be extracted</param>
-        public abstract void ExtractDirectory(string path, string filePath);
+        public abstract Task<Result<bool>> ExtractDirectory(string path, string filePath);
 
         /// <summary>
         /// Returns the content of a virtual file as a string (Max: 1 GB)
@@ -205,7 +216,7 @@ namespace VFS
         /// <param name="path">Path of the virtual file</param>
         /// <param name="startNode">The directory where the path is beginning</param>
         /// <returns></returns>
-        public abstract string ReadAllText(string path, IDirectory startNode);
+        public abstract Task<Result<string>> ReadAllText(string path, IDirectory startNode);
 
         /// <summary>
         /// Returns the bytes of a virutal files (reading from originial file) (Max: 1 GB)
@@ -214,7 +225,7 @@ namespace VFS
         /// <param name="startNode">The directory where the path is beginning</param>
         /// <param name="different">Just to differniate between these methods (not used in this method)</param>
         /// <returns></returns>
-        public abstract byte[] ReadAllBytes(string path, IDirectory startNode, bool different = false);
+        public abstract Task<Result<byte[]>> ReadAllBytes(string path, IDirectory startNode, bool different = false);
 
         /// <summary>
         /// Writes bytes into a file in the workspace directory (while saving the file will be saved too)
@@ -224,7 +235,7 @@ namespace VFS
         /// <param name="dir">The directory where the file is stored in</param>
         /// <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
         /// <returns></returns>
-        public abstract bool WriteAllBytes(byte[] data, string name, IDirectory dir, bool overrideExisting = false);
+        public abstract Task<Result<bool>> WriteAllBytes(byte[] data, string name, IDirectory dir, bool overrideExisting = false);
 
         /// <summary>
         /// Writes bytes into a file in the workspace directory (while saving the file will be saved too)
@@ -233,7 +244,7 @@ namespace VFS
         /// <param name="path">The path where the file is stored in</param>
         /// <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
         /// <returns></returns>
-        public abstract bool WriteAllBytes(byte[] data, string path, bool overrideExisting = false);
+        public abstract Task<Result<bool>> WriteAllBytes(byte[] data, string path, bool overrideExisting = false);
 
         /// <summary>
         /// Writes bytes into a file in the workspace directory (while saving the file will be saved too)
@@ -243,7 +254,7 @@ namespace VFS
         /// <param name="dir">The directory where the file is stored in</param>
         /// <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
         /// <returns></returns>
-        public abstract bool WriteAllText(string content, string name, IDirectory dir, bool overrideExisting = false);
+        public abstract Task<Result<bool>> WriteAllText(string content, string name, IDirectory dir, bool overrideExisting = false);
 
         /// <summary>
         /// Writes a stream (file) into a file in the workspace directory (while saving the file will be saved too)
@@ -253,14 +264,14 @@ namespace VFS
         /// <param name="stream">The stream which will be written to a file stream</param>
         /// <param name="overrideExisting">Determines if the file will be replace if the file is already exisiting</param>
         /// <returns></returns>
-        public abstract bool WriteStream(string name, IDirectory dir, Stream stream, bool overrideExisting = false);
+        public abstract Task<Result<bool>> WriteStream(string name, IDirectory dir, Stream stream, bool overrideExisting = false);
 
         /// <summary>
         /// Automatically called when SaveAfterChange is true.
         /// This method is for saving changes.
         /// </summary>
         /// <returns></returns>
-        public abstract bool Save();
+        public abstract Task<Result<bool>> Save();
 
         /// <summary>
         /// Iterates all directories and searches for a special string
