@@ -106,7 +106,7 @@ private void Progress_OnValueChanged(double value, double step, VFS.VFS handle)
     // You have to pass the values to your dialog or you have to pass handle to your dialog and do this
     // implementation in your progress-dialog
     
-    // Becareful this method is called from a different thread!
+    // Be careful this method is called from a different thread!
     // The elapsed time you can get from handle.VStopWatch or from your own reference to your currentVFS-instance!
 }
 ```
