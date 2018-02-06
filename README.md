@@ -71,7 +71,12 @@ public async Task CreateVFS()
   FilePath targetFile = new FilePath("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE");
   
   SplitVFS currentVFS = new SplitVFS(targetFile, NetStorage.NETStorageProvider, 128, 45);
-  await currentVFS.Create(new DirectoryPath(@"C:\Data")); // All files and directorys from C:\Data will be used
+  
+  // All files and directorys from C:\Data will be used
+  await currentVFS.Create(new DirectoryPath(@"C:\Data"));   
+  
+  // This is for reading the file
+  await currentVFS.Read(new FilePath(@"C:\Test.vfs"));
 }
 ```
 
@@ -124,7 +129,12 @@ public async Task CreateVFS()
   FilePath targetFile = new FilePath(YOUR_STORAGE_FILE);
   
   SplitVFS currentVFS = new SplitVFS(targetFile, UwpStorage.UWPStorageProvider, 128, 45);
-  await currentVFS.Create(new DirectoryPath(ApplicationData.Current.LocalFolder)); // All files and directorys from C:\Data will be used
+  
+  // All files and directorys from C:\Data will be used
+  await currentVFS.Create(new DirectoryPath(ApplicationData.Current.LocalFolder)); 
+  
+  // This is for reading the file
+  await currentVFS.Read(new FilePath(YOUR_STORAGE_FILE));
 }
 ```
 
@@ -147,6 +157,7 @@ public async Task CreateVFS()
   FilePath targetFile = new FilePath(YOUR_STORAGE_FILE);
   ExtendedVFST currentVFS = new ExtendedVFS(targetFile, UwpStroage.UWPStorageProvider, 32768); // 32768 is the default buffer-size
   await currentVFS.Create(ApplicationData.Current.LocalFolder);
+  await currentVFS.Read(targetFile);  
   
   Result<string> rs = await currentVFS.ReadAllText(...);
   if (rs.Success)
