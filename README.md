@@ -2,7 +2,7 @@
 VFS (Virtual File System) is a file format which makes it possible to store any files and directories just into one file. See more in the [documentation](https://github.com/andy123456789088/VFS/blob/master/Documentation/Documentation%20VFS.pdf).
 
 ## Future updates
-- [X] Implementing new version in `VFS Application` and in `Setup`
+- [X] Implemented new version in `VFS Application` and in `Setup`
 - [ ] Finish GUI (The GUI is not ready, but for now you can use it for simple testing and working)
 - [ ] Implementing new version in `PHP` and `C++`
 - [ ] Extend the `PHP` and `QT C++` code with more features
@@ -54,6 +54,8 @@ in the constructor!
 
 **.NET Framework**
  
+ For .NET Framework you need to import the references VFS and VFS.Net
+ 
 **SplitVFS**
 ```csharp
 using VFS;
@@ -100,10 +102,13 @@ public async Task CreateVFS()
 ```
 **.NET UWP**
 
+For UWP you need to import the references VFS and VFS.Uwp
+
 **SplitVFS**
 ```csharp
 using VFS;
 using VFS.Uwp;
+using Windows.Storage;
 
 ...
 
