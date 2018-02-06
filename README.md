@@ -2,12 +2,17 @@
 VFS (Virtual File System) is a file format which makes it possible to store any files and directories just into one file. See more in the [documentation](https://github.com/andy123456789088/VFS/blob/master/Documentation/Documentation%20VFS.pdf).
 
 ## Future updates
-- [ ] Implementing new version in `VFS Application` and in `Setup`
+- [X] Implementing new version in `VFS Application` and in `Setup`
+- [ ] Finish GUI (The GUI is not ready, but for now you can use it for simple testing and working)
 - [ ] Implementing new version in `PHP` and `C++`
 - [ ] Extend the `PHP` and `QT C++` code with more features
 - [ ] Refresh the old format (working byte-wise with a buffer)
 
 ## Changelog
+
+**Version 1.0.0.5 (06.02.2018)**
+- Revised structure (VFS Library is now written in .NET Standard)
+- VFS can be used now in .NET Framework and in Universal Windows App (UWP)
 
 **Version 1.0.0.4 (09.07.2017)**
 - Replaced threads and BackgroundWorkers with async and await-tasks!
@@ -15,7 +20,6 @@ VFS (Virtual File System) is a file format which makes it possible to store any 
 - Progress is now also available in SplitVFS
 - Cleaned README.md
 - Now .NET Framework 4.6.2 is needed
-
 
 **Version 1.0.0.3 (02.01.2017)**
 - Added new file format
@@ -45,26 +49,46 @@ C:\Data\Passwort.txt
 In the following examples I am going to explain how you can create and import files, because
 I think that these explanations are enough to go on and use further methods. 
 
+If you want to read a local file/folder, you always need to create the instance of FilePath/DirectoryPath and pass the path
+in the constructor!
+
+**.NET Framework**
+ 
 **SplitVFS**
 ```csharp
+using VFS;
+using VFS.Net;
+
+...
+
 // MainCounter: 128 (how much bytes, see description)
 // PackByte:     45 (which byte, see description)
 
 public async Task CreateVFS()
 {
-  SplitVFS currentVFS = new SplitVFS("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE", 128, 45);
-  await currentVFS.Create(@"C:\Data"); // All files and directorys from C:\Data will be used
+  FilePath targetFile = new FilePath("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE");
+  
+  SplitVFS currentVFS = new SplitVFS(targetFile, NetStorage.NETStorageProvider, 128, 45);
+  await currentVFS.Create(new DirectoryPath(@"C:\Data")); // All files and directorys from C:\Data will be used
 }
 ```
 
 **ExtendedVFS: General usage**
 ```csharp
+
+using VFS;
+using VFS.Net;
+
+...
+
 public async Task CreateVFS()
 {
-  string currentPath = "_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE";
-  ExtendedVFST currentVFS = new ExtendedVFST(currentPath, "_YOUR_WORKSPACE_PATH", 32768); // 32768 is the default buffer-size
-  await currentVFS.Create(@"C:\Data");
-  await currentVFS.Read(currentPath);
+  // Workspace will automtically created in Application.StartupPath now
+  
+  FilePath targetFile = new FilePath("_PATH_OF_THE_FILE_YOU_WANT_TO_CREATE");
+  ExtendedVFST currentVFS = new ExtendedVFST(targetFile, NetStorage.NETStorageProvider, 32768); // 32768 is the default buffer-size
+  await currentVFS.Create(new FilePath(@"C:\Data"));
+  await currentVFS.Read(targetFile);
   
   Result<string> rs = await currentVFS.ReadAllText(...);
   if (rs.Success)
@@ -74,6 +98,59 @@ public async Task CreateVFS()
 }
 
 ```
+**.NET UWP**
+
+**SplitVFS**
+```csharp
+using VFS;
+using VFS.Uwp;
+
+...
+
+// MainCounter: 128 (how much bytes, see description)
+// PackByte:     45 (which byte, see description)
+
+// ApplicationData.Current.LocalFolder is a StorageFolder in UWP-Applications
+// Now you can pass e.g. downloaded files to targetFile
+// YOUR_STORAGE_FILE is from Type Windows.Storage.StorageFile
+
+public async Task CreateVFS()
+{
+  FilePath targetFile = new FilePath(YOUR_STORAGE_FILE);
+  
+  SplitVFS currentVFS = new SplitVFS(targetFile, UwpStorage.UWPStorageProvider, 128, 45);
+  await currentVFS.Create(new DirectoryPath(ApplicationData.Current.LocalFolder)); // All files and directorys from C:\Data will be used
+}
+```
+
+**ExtendedVFS: General usage**
+```csharp
+
+using VFS;
+using VFS.Uwp;
+using Windows.Storage;
+
+...
+
+public async Task CreateVFS()
+{
+  // Workspace will automtically created in Application.StartupPath now
+  // ApplicationData.Current.LocalFolder is a StorageFolder in UWP-Applications
+  // Now you can pass e.g. downloaded files to targetFile
+  // YOUR_STORAGE_FILE is from Type Windows.Storage.StorageFile
+  
+  FilePath targetFile = new FilePath(YOUR_STORAGE_FILE);
+  ExtendedVFST currentVFS = new ExtendedVFS(targetFile, UwpStroage.UWPStorageProvider, 32768); // 32768 is the default buffer-size
+  await currentVFS.Create(ApplicationData.Current.LocalFolder);
+  
+  Result<string> rs = await currentVFS.ReadAllText(...);
+  if (rs.Success)
+  {
+      MessageBox.Show(rs.Value);
+  }
+}
+```
+
 Now it's very easy to use this methods without any events or something, because await just waits for finishing.
 You can just disable your current window at the beginning and re-enable it at the end of this method.
 All methods returns an Result-instance, so you can see if this operation was successfully and you can also get the
@@ -82,7 +159,7 @@ value.
 
 **SplitVFS and ExtendedVFS: Getting the elapsed time/Showing a progress dialog**
 
-The class [Progress](https://github.com/andy123456789088/VFS/blob/master/Library/VFS/Progress.cs) has a static event that gets called if a method of `SplitVFS` or `ExtendedVFS` is called. See this implementation and read the comments:
+The class [Progress](https://github.com/andy123456789088/VFS/blob/master/VFS/VFS/Progress.cs) has a static event that gets called if a method of `SplitVFS` or `ExtendedVFS` is called. See this implementation and read the comments:
 
 ```csharp
 
