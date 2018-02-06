@@ -52,7 +52,7 @@ I think that these explanations are enough to go on and use further methods.
 If you want to read a local file/folder, you always need to create the instance of FilePath/DirectoryPath and pass the path
 in the constructor!
 
-**.NET Framework**
+**.NET Framework: General usage**
  
  For .NET Framework you need to import the references VFS and VFS.Net
  
@@ -80,7 +80,7 @@ public async Task CreateVFS()
 }
 ```
 
-**ExtendedVFS: General usage**
+**ExtendedVFS**
 ```csharp
 
 using VFS;
@@ -105,7 +105,7 @@ public async Task CreateVFS()
 }
 
 ```
-**.NET UWP**
+**.NET UWP: General usage**
 
 For UWP you need to import the references VFS and VFS.Uwp
 
@@ -138,7 +138,7 @@ public async Task CreateVFS()
 }
 ```
 
-**ExtendedVFS: General usage**
+**ExtendedVFS**
 ```csharp
 
 using VFS;
