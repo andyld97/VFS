@@ -82,7 +82,7 @@ namespace VFS.Interfaces
         /// Create virtual directories and files
         /// </summary>
         /// <param name="data">String-Array which contains pathes of the directories and files</param>
-        void AddPathesWithFiles(string[] data);
+        Task AddPathesWithFiles(string[] data);
 
         /// <summary>
         /// Create the virtual directories from the pathes given in data-array

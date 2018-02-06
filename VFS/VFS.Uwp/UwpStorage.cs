@@ -22,7 +22,7 @@ namespace VFS.Uwp
 
         private StorageFolder workspacePath = null;
 
-        public async Task<IFilePath> CombiniePath(IDirectoryPath path, string name)
+        public async Task<IFilePath> CombinePath(IDirectoryPath path, string name)
         {
             var file = await (path as DirectoryPath).Folder.CreateFileAsync(name, Windows.Storage.CreationCollisionOption.OpenIfExists);
             return new FilePath(file);

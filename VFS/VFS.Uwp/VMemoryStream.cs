@@ -27,7 +27,7 @@ namespace VFS.Uwp
 
         public void Close()
         {
-            ms.Close();
+            ms.Dispose();
         }
 
         public void CopyTo(IMemoryStream stream)

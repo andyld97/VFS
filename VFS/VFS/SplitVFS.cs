@@ -95,7 +95,7 @@ namespace VFS
         /// <returns></returns>
         protected byte[] calculateFrom(string data)
         {
-            return System.Text.Encoding.Default.GetBytes(data);
+            return System.Text.Encoding.UTF8.GetBytes(data);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace VFS
         {
             if (data == null)
                 return string.Empty;
-            return System.Text.Encoding.Default.GetString(data);
+            return System.Text.Encoding.UTF8.GetString(data);
         }
 
         /// <summary>
@@ -553,7 +553,7 @@ namespace VFS
                         rFolders = files[1].Replace(">", string.Empty).Replace(">", string.Empty).Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 
                     this.rootDir.AddPathes(rFolders);
-                    this.rootDir.AddFiles(rFiles);
+                    await this.rootDir.AddFiles(rFiles);
 
                     string[] paths = this.rootDir.ToFileStringArray();
 
@@ -659,7 +659,7 @@ namespace VFS
                         Progress.Register(step / count, 0.0, this.Handle, Methods.EXTRACT);
                         try
                         {
-                            IFilePath currentFileToWrite = await storage.CombiniePath(path, this.FormatPath(currentFile.Path));
+                            IFilePath currentFileToWrite = await storage.CombinePath(path, this.FormatPath(currentFile.Path));
                             byte[] dataToWrite = currentFile.Bytes.ToArray();
 
                             using (IStream writeStream = await storage.OpenFile(currentFileToWrite, FileAccess.Write, FileShare.ShareWrite, 4096))
@@ -685,7 +685,7 @@ namespace VFS
                         {
                             foreach (IFile currentFile in currentDir.GetFiles())
                             {
-                                IFilePath fileToWrite = await storage.CombiniePath(path, this.FormatPath(currentFile.GetPath()));
+                                IFilePath fileToWrite = await storage.CombinePath(path, this.FormatPath(currentFile.GetPath()));
                                 try
                                 {
                                     var data = currentFile.GetBytes().ToArray();
@@ -759,7 +759,7 @@ namespace VFS
                     {
                         // Those it from root dir.
                         IFile _currentFile = NULLFILE.ByPath(this.rootDir.GetFiles(), path[y]);
-                        IFilePath cF = await storage.CombiniePath(targetDirectory, this.FormatPath(path[y]));
+                        IFilePath cF = await storage.CombinePath(targetDirectory, this.FormatPath(path[y]));
 
                         if (_currentFile != null)
                         {
@@ -787,7 +787,7 @@ namespace VFS
                     await storage.CreateDirectory(targetDirectory, this.FormatPath(lastNodeFromPath.ToFullPath()));
 
                     IFile currentFile = NULLFILE.ByPath(lastNodeFromPath.GetFiles(), currentPathWithFile);
-                    IFilePath toWriteFile = await storage.CombiniePath(targetDirectory, this.FormatPath(currentPathWithFile));
+                    IFilePath toWriteFile = await storage.CombinePath(targetDirectory, this.FormatPath(currentPathWithFile));
 
                     if (currentFile != null)
                     {
@@ -854,7 +854,7 @@ namespace VFS
                     {
                         Progress.Register(step / count, 0.0, this.Handle, Methods.EXTRACT_DIR);
 
-                        IFilePath file = await storage.CombiniePath(dir, currentFile.GetName());
+                        IFilePath file = await storage.CombinePath(dir, currentFile.GetName());
                         try
                         {
                             using (var writeStream = await storage.OpenFile(file, FileAccess.Write, FileShare.ShareWrite, 4096))
@@ -884,7 +884,7 @@ namespace VFS
 
                                 foreach (IFile currentFile in subDir.GetFiles())
                                 {
-                                    IFilePath localFile = await storage.CombiniePath(subSubDir, currentFile.GetName());
+                                    IFilePath localFile = await storage.CombinePath(subSubDir, currentFile.GetName());
 
                                     try
                                     {

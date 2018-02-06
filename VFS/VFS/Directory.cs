@@ -169,7 +169,7 @@ namespace VFS
         /// Create virtual directories and files
         /// </summary>
         /// <param name="data">String-Array which contains pathes of the directories and files</param>
-        public void AddPathesWithFiles(string[] data)
+        public async Task AddPathesWithFiles(string[] data)
         {
             string[] directorys = new string[data.Length];
             for (int i = 0; i <= data.Length - 1; i++)
@@ -179,7 +179,7 @@ namespace VFS
                     directorys[i] += splittedData[s] + @"\";
             }
             this.AddPathes(directorys);
-            this.AddFiles(data);
+            await this.AddFiles(data);
 
             this.throwChangedEvent(Type.AddedPath);
         }

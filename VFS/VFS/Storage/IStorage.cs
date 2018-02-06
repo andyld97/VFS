@@ -25,7 +25,7 @@ namespace VFS.Storage
 
         Task<IDirectoryPath> CreateDirectory(IDirectoryPath id, string subPath, bool isPath);
 
-        Task<IFilePath> CombiniePath(IDirectoryPath path, string name);
+        Task<IFilePath> CombinePath(IDirectoryPath path, string name);
 
         Task DeleteFile(IFilePath file);
 

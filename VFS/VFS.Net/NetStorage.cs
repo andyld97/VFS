@@ -33,7 +33,7 @@ namespace VFS.Net
             return await CreateDirectory(id, subPath);
         }
 
-        public async Task<IFilePath> CombiniePath(IDirectoryPath path, string name)
+        public async Task<IFilePath> CombinePath(IDirectoryPath path, string name)
         {
             return await Task.Run(delegate
             {

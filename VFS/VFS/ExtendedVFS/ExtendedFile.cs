@@ -103,7 +103,7 @@ namespace VFS.ExtendedVFS
         public async Task Initalize()
         {
             if (storage != null)
-                this.OriginalFile = await storage.CombiniePath(storage.GetWorkSpacePath(), hi.Path);
+                this.OriginalFile = await storage.CombinePath(storage.GetWorkSpacePath(), hi.Path);
         }
 
         /// <summary>

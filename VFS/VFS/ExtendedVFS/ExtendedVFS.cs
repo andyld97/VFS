@@ -355,7 +355,7 @@ namespace VFS.ExtendedVFS
                         {
                             currentPosition += await fs.ReadAsync(buffer, 0, buffer.Length);
 
-                            if (!foundSegment && System.Text.Encoding.Default.GetString(buffer) == "^")
+                            if (!foundSegment && System.Text.Encoding.UTF8.GetString(buffer) == "^")
                             {
                                 foundSegment = true;
                                 buffer = new byte[BUFFER_SIZE];
@@ -373,7 +373,7 @@ namespace VFS.ExtendedVFS
                         if (headerSplt.Length - 1 == 1)
                         {
                             this.rootDir.AddPathes(headerSplt[1].Replace(">", string.Empty).Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-                            this.rootDir.AddFiles(headerSplt[0].Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries));
+                            await this.rootDir.AddFiles(headerSplt[0].Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries));
                         }
                     }
                 }
@@ -699,7 +699,7 @@ namespace VFS.ExtendedVFS
                 }
             }
 
-            return await storage.CombiniePath(currentDir, segements[segements.Length - 1]);
+            return await storage.CombinePath(currentDir, segements[segements.Length - 1]);
         }
 
         /// <summary>
@@ -1075,7 +1075,7 @@ namespace VFS.ExtendedVFS
             dir.GetFiles().Add(mf);
 
             // Write the bytes to dirsToCreate:
-            mf.OriginalFile = await storage.CombiniePath(createdDir, name);
+            mf.OriginalFile = await storage.CombinePath(createdDir, name);
 
             Task<Result<bool>> func = Task.Run(async () =>
             {
@@ -1237,7 +1237,7 @@ namespace VFS.ExtendedVFS
                 dir.GetFiles().Add(mf);
 
                 // Write the bytes to dirsToCreate:
-                mf.OriginalFile = await storage.CombiniePath(currentDir, name);
+                mf.OriginalFile = await storage.CombinePath(currentDir, name);
 
                 using (var writeStream = await storage.OpenFile(mf.OriginalFile, Storage.FileAccess.Write, Storage.FileShare.ShareWrite, (int)BUFFER_SIZE))
                 {
@@ -1327,7 +1327,7 @@ namespace VFS.ExtendedVFS
                 this.RootDirectory.GetSubDirectories().Clear();
                 this.RootDirectory.GetFiles().Clear();
 
-                storage.DeleteFile(this.saveFile);
+                await storage.DeleteFile(this.saveFile);
 
                 Progress.Register(1.0, 0.5, this.Handle, Methods.SAVE);
                 //this.CreateVHP(this.WorkSpacePath);

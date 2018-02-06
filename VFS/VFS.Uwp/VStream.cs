@@ -30,7 +30,7 @@ namespace VFS.Uwp
 
         public void Close()
         {
-            Stream.Close();
+            Stream.Dispose();
         }
 
         public void CopyTo(IMemoryStream stream)
