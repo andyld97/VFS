@@ -100,10 +100,10 @@ namespace VFS.ExtendedVFS
             this.Parent = Parent;
         }
 
-        public async Task Initalize()
+        public void Initalize()
         {
             if (storage != null)
-                this.OriginalFile = await storage.CombinePath(storage.GetWorkSpacePath(), hi.Path);
+                this.OriginalFile = storage.CombinePath(storage.GetWorkSpacePath(), hi.Path);
         }
 
         /// <summary>

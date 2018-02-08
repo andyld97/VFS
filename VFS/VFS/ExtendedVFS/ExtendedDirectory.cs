@@ -60,7 +60,7 @@ namespace VFS.ExtendedVFS
                 {
                     string[] segements = currentFileName.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                     var currentFile = new ExtendedFile(HeaderInfo.FromString(segements[segements.Length - 1]), this, storage);
-                    await currentFile.Initalize();
+                    currentFile.Initalize();
                     this.GetFiles().Add(currentFile);
                     continue;
                 }
@@ -77,7 +77,7 @@ namespace VFS.ExtendedVFS
                 if (segments.Length > 0 && !NULLFILE.Contains(currentNode.GetFiles(), String.Join(@"\", segments)))
                 {
                     ExtendedFile cF = new ExtendedFile(HeaderInfo.FromString(segments[segments.Length - 1]), currentNode, storage);
-                    await cF.Initalize();
+                    cF.Initalize();
                     currentNode.GetFiles().Add(cF);
                 }
             }

@@ -13,7 +13,7 @@ namespace VFS.Storage
 {
     public interface IFilePath
     {
-        Task<long> Length();
+        long Length();
 
         string GetName();
 

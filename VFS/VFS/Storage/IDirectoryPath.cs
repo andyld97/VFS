@@ -15,13 +15,13 @@ namespace VFS.Storage
     {
         string Name();
 
-        Task<IEnumerable<IDirectoryPath>> GetDirectories();
+        IEnumerable<IDirectoryPath>  GetDirectories();
 
-        Task<IEnumerable<IFilePath>> GetFiles();
+        IEnumerable<IFilePath> GetFiles();
 
-        Task<bool> Remove(bool recursive);
+        bool Remove(bool recursive);
 
-        Task<bool> CreateDirectory(string name);
+        bool CreateDirectory(string name);
 
         string ToFullPath();
 

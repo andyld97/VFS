@@ -14,7 +14,7 @@ namespace VFS.Uwp
 {
     public class VStream : IStream
     {
-        public System.IO.Stream Stream { get; set; }
+        public System.IO.Stream Stream { get; set;}
 
         public long Position { get => Stream.Position; set => Stream.Position = value; }
 
@@ -22,15 +22,12 @@ namespace VFS.Uwp
 
         public VStream(System.IO.Stream stream)
         {
-            if (stream == null)
-                throw new ArgumentException("stream");
-
-            this.Stream = stream;
+            this.Stream = stream ?? throw new ArgumentException("stream");            
         }
 
         public void Close()
         {
-            Stream.Dispose();
+            this.Stream.Dispose();
         }
 
         public void CopyTo(IMemoryStream stream)

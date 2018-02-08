@@ -43,11 +43,9 @@ namespace VFS.Net
                 return (fi == null ? string.Empty : fi.Name);
         }
 
-        public async Task<long> Length()
+        public long Length()
         {
-            return await Task<long>.Run(delegate {
-                return (fi == null ? 0L : fi.Length);
-            });            
+            return (fi == null ? 0L : fi.Length);
         }
 
         public IDirectoryPath ParentDirectory()

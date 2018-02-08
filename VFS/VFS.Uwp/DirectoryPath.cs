@@ -15,19 +15,21 @@ namespace VFS.Uwp
 {
     public class DirectoryPath : IDirectoryPath
     {
-        private StorageFolder sd = null;
-        public StorageFolder Folder { get => sd; }
-                
-        public DirectoryPath(StorageFolder sd)
+        public StorageFolder LocalFolder { get => path; }
+
+        private StorageFolder path = null;
+        
+        public DirectoryPath(StorageFolder path)
         {
-            this.sd = sd;
+            this.path = path;
         }
 
-        public async Task<bool> CreateDirectory(string name)
+        public bool CreateDirectory(string name)
         {
             try
             {
-                await sd.CreateFolderAsync(name);
+                var task = Task.Run(async () => await LocalFolder.CreateFolderAsync(name));
+                task.Wait();
                 return true;
             }
             catch (Exception)
@@ -36,21 +38,24 @@ namespace VFS.Uwp
             }
         }
 
-        public async Task<IEnumerable<IDirectoryPath>> GetDirectories()
+        public IEnumerable<IDirectoryPath> GetDirectories()
         {
             List<IDirectoryPath> directories = new List<IDirectoryPath>();
+            var task = Task.Run(async () => await LocalFolder.GetFoldersAsync());
+            task.Wait();
 
-            foreach (var info in await sd.GetFoldersAsync())
+            foreach (var info in task.Result)
                 directories.Add(new DirectoryPath(info));
 
             return directories;
         }
 
-        public async Task<IEnumerable<IFilePath>> GetFiles()
-        {
+        public IEnumerable<IFilePath> GetFiles()
+        {      
             List<IFilePath> files = new List<IFilePath>();
+            var task = Task.Run(async () => await LocalFolder.GetFilesAsync());
 
-            foreach (var info in await sd.GetFilesAsync())
+            foreach (var info in task.Result)
                 files.Add(new FilePath(info));
 
             return files;
@@ -58,14 +63,15 @@ namespace VFS.Uwp
 
         public string Name()
         {
-            return sd.Name;
+            return LocalFolder.Name;
         }
 
-        public async Task<bool> Remove(bool recursive)
+        public bool Remove(bool recursive)
         {
             try
             {
-                await sd.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                var task = Task.Run(async () => await LocalFolder.DeleteAsync());
+                task.Wait();
                 return true;
             }
             catch (Exception)
@@ -76,7 +82,7 @@ namespace VFS.Uwp
 
         public string ToFullPath()
         {
-            return sd.Path;
+            return LocalFolder.Path;
         }
     }
 }

@@ -12,6 +12,7 @@ using VFS.Interfaces;
 using VFS.ExtendedVFS;
 using System.Threading.Tasks;
 using VFS.Storage;
+using System.Diagnostics;
 
 namespace VFS.ExtendedVFS
 {
@@ -154,12 +155,12 @@ namespace VFS.ExtendedVFS
                     long startSize = (oldFile == null ? 0L : oldFile.EndPosition);
                     try
                     {
-                        size = currentFile.Length().Result;
+                        size = currentFile.Length();
                     }
                     catch (Exception) { }
                     HeaderInfo hi = new HeaderInfo(currentFile.GetName(), startSize, startSize + size);
                     ExtendedFile cFile = new ExtendedFile(hi, this.RootDirectory as ExtendedDirectory, storage);
-                    await cFile.Initalize();
+                    cFile.Initalize();
                     this.RootDirectory.GetFiles().Add(cFile);
                     oldFile = cFile;
                 }
@@ -196,23 +197,23 @@ namespace VFS.ExtendedVFS
 
                         ExtendedDirectory lastDirectory = (nPath == string.Empty ? vDir : (ExtendedDirectory)vDir.CalculateLastNode(vDir, nPath));
 
-                        foreach (var fi in await lastDir.GetFiles())
+                        foreach (var fi in lastDir.GetFiles())
                         {
                             long size = 0;
                             long startSize = (oldFile == null ? 0L : oldFile.EndPosition);
                             try
                             {
-                                size = fi.Length().Result;
+                                size = fi.Length();
                             }
                             catch (Exception) { }
                             HeaderInfo hi = new HeaderInfo(fi.ToFullPath(), startSize, startSize + size);
                             ExtendedFile cFile = new ExtendedFile(hi, lastDirectory, storage);
-                            await cFile.Initalize();
+                            cFile.Initalize();
                             lastDirectory.GetFiles().Add(cFile);
                             oldFile = cFile;
                         }
 
-                        foreach (var d in currentDirectory.GetDirectories().Result)
+                        foreach (var d in lastDir.GetDirectories())
                             recurseDirs(d);
                     });
 
@@ -340,7 +341,7 @@ namespace VFS.ExtendedVFS
                 long currentPosition = 0;
                 bool foundSegment = false;
 
-                if (await storage.FileExists(file))
+                if (storage.FileExists(file))
                 {
                     using (var fs = await storage.OpenFile(file, Storage.FileAccess.Read, Storage.FileShare.ShareRead, 1))
                     {
@@ -469,7 +470,7 @@ namespace VFS.ExtendedVFS
                                 // File is currently in the workspace directory and needs to be read out.
 
                                 // Get file
-                                if (mf.OriginalFile.Length().Result <= READ_RESTRICTION)
+                                if (mf.OriginalFile.Length() <= READ_RESTRICTION)
                                 {
                                     List<byte> fileBytes = new List<byte>();
 
@@ -478,14 +479,14 @@ namespace VFS.ExtendedVFS
                                         byte[] buffer = new byte[BUFFER_SIZE];
 
                                         long currentPosition = 0L;
-                                        while (currentPosition < mf.OriginalFile.Length().Result)
+                                        while (currentPosition < mf.OriginalFile.Length())
                                         {
                                             if (Math.Abs(currentPosition - fsRead.Length) < BUFFER_SIZE)
                                                 buffer = new byte[Math.Abs(currentPosition - fsRead.Length)];
 
                                             currentPosition += await fsRead.ReadAsync(buffer, 0, buffer.Length);
                                             fileBytes.AddRange(buffer);
-                                            double value = currentPosition / mf.OriginalFile.Length().Result;
+                                            double value = currentPosition / mf.OriginalFile.Length();
                                             Progress.Register(value, value, this.Handle, Methods.READ_ALL_BYTES);
                                         }
                                     }
@@ -560,7 +561,7 @@ namespace VFS.ExtendedVFS
                             }
                             else
                             {
-                                if (mf.OriginalFile.Length().Result <= READ_RESTRICTION)
+                                if (mf.OriginalFile.Length() <= READ_RESTRICTION)
                                 {
                                     List<byte> fileBytes = new List<byte>();
                                     using (var fsRead = await storage.OpenFile(mf.OriginalFile, Storage.FileAccess.Read, Storage.FileShare.ShareRead, (int)BUFFER_SIZE))
@@ -568,7 +569,7 @@ namespace VFS.ExtendedVFS
                                         byte[] buffer = new byte[BUFFER_SIZE];
 
                                         long currentPosition = 0L;
-                                        while (currentPosition < mf.OriginalFile.Length().Result)
+                                        while (currentPosition < mf.OriginalFile.Length())
                                         {
                                             if (Math.Abs(currentPosition - fsRead.Length) < BUFFER_SIZE)
                                                 buffer = new byte[Math.Abs(currentPosition - fsRead.Length)];
@@ -608,7 +609,7 @@ namespace VFS.ExtendedVFS
         /// <returns></returns>
         public static async Task<bool?> IsNewVersion(IFilePath file, IStorage storageImplementation)
         {
-            if (await storageImplementation.FileExists(file))
+            if (storageImplementation.FileExists(file))
             {
                 try
                 {
@@ -685,21 +686,21 @@ namespace VFS.ExtendedVFS
             }
         }
 
-        private async Task<IFilePath> createFile(string subPath, IDirectoryPath directory)
+        private IFilePath createFile(string subPath, IDirectoryPath directory)
         {
             IDirectoryPath currentDir = directory;
             string[] segements = subPath.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < segements.Length - 1; i++)
             {
-                await currentDir.CreateDirectory(segements[i]);
-                foreach (var value in currentDir.GetDirectories().Result.Where(t => t.Name() == segements[i]))
+                currentDir.CreateDirectory(segements[i]);
+                foreach (var value in currentDir.GetDirectories().Where(t => t.Name() == segements[i]))
                 {
                     currentDir = value;
                     break;
                 }
             }
 
-            return await storage.CombinePath(currentDir, segements[segements.Length - 1]);
+            return storage.CombinePath(currentDir, segements[segements.Length - 1]);
         }
 
         /// <summary>
@@ -712,27 +713,27 @@ namespace VFS.ExtendedVFS
             Func<Task<Result<bool>>> func = async () =>
             {
                 // filePath have to be a directory
-                if (await storage.DirectoryExists(directory))
+                if (storage.DirectoryExists(directory))
                 {
                     // Extract now.
                     // Create directories
-                    Func<IDirectory, Task> passDirs = null;
-                    passDirs = async (IDirectory dir) =>
+                    Action<IDirectory> passDirs = null;
+                    passDirs = (IDirectory dir) =>
                     {
                         foreach (IDirectory currentDir in dir.GetSubDirectories())
                         {
                             try
                             {
-                                await storage.CreateDirectory(directory, this.FormatPath(currentDir.ToFullPath()));
+                                storage.CreateDirectory(directory, this.FormatPath(currentDir.ToFullPath()));
                             }
                             catch (Exception)
                             {
                             }
-                            await passDirs(currentDir);
+                            passDirs(currentDir);
                         }
 
                     };
-                    await passDirs(this.rootDir);
+                    passDirs(this.rootDir);
 
                     // Count files
                     int steps = (this.rootDir.GetSubDirectories().Count > 0 ? rootDir.GetSubDirectories()[0].GetFiles().Count : 0);
@@ -760,7 +761,7 @@ namespace VFS.ExtendedVFS
                         foreach (ExtendedFile currentFile in this.rootDir.GetSubDirectories()[0].GetFiles())
                         {
                             string subPath = this.FormatPath(currentFile.Path);
-                            await this.copyFileStream(currentFile, await createFile(subPath, directory), Methods.EXTRACT);
+                            await this.copyFileStream(currentFile, createFile(subPath, directory), Methods.EXTRACT);
                             Progress.Register(++counter / (double)steps, this.Handle, Methods.EXTRACT, true);
                         }
                     }
@@ -775,7 +776,7 @@ namespace VFS.ExtendedVFS
                             foreach (ExtendedFile currentFile in currentDir.GetFiles())
                             {
                                 string subPath = this.FormatPath(currentFile.GetPath());
-                                await this.copyFileStream(currentFile, await createFile(subPath, directory), Methods.EXTRACT);
+                                await this.copyFileStream(currentFile, createFile(subPath, directory), Methods.EXTRACT);
 
                                 Progress.Register(++counter / (double)steps, this.Handle, Methods.EXTRACT, true);
                             }
@@ -815,13 +816,13 @@ namespace VFS.ExtendedVFS
 
             Func<Task<Result<bool>>> func = async () =>
             {
-                if (await storage.DirectoryExists(toPath))
+                if (storage.DirectoryExists(toPath))
                 {
                     Func<IDirectory, Task> passDirs = null;
 
                     try
                     {
-                        await storage.CreateDirectory(toPath, currentDir.GetName());
+                        storage.CreateDirectory(toPath, currentDir.GetName());
                     }
                     catch (Exception e)
                     {
@@ -856,7 +857,7 @@ namespace VFS.ExtendedVFS
                         if (toPath == this.WorkSpacePath && currentFile.IsInvalid)
                             continue; // Invalid file shouldn't be overriden
 
-                        await this.copyFileStream(currentFile, await createFile(currentFile.GetName(), toPath), Methods.EXTRACT_DIR);
+                        await this.copyFileStream(currentFile, createFile(currentFile.GetName(), toPath), Methods.EXTRACT_DIR);
                         Progress.Register(++currentCounter / (double)steps, this.Handle, Methods.EXTRACT_DIR, true);
                     }
 
@@ -866,13 +867,13 @@ namespace VFS.ExtendedVFS
                         {
                             try
                             {
-                               await storage.CreateDirectory(toPath, currentDir.GetName() + @"\" + subDir.ToFullPath(currentDir));
+                                storage.CreateDirectory(toPath, currentDir.GetName() + @"\" + subDir.ToFullPath(currentDir));
                                 foreach (ExtendedFile currentFile in subDir.GetFiles())
                                 {
                                     if (toPath == this.WorkSpacePath && currentFile.IsInvalid)
                                         continue; // Invalid file shouldn't be overriden
 
-                                    await this.copyFileStream(currentFile, await createFile(currentDir.GetName() + @"\" + subDir.ToFullPath(currentDir) + @"\" + currentFile.GetName(), toPath), Methods.EXTRACT_DIR);
+                                    this.copyFileStream(currentFile, createFile(currentDir.GetName() + @"\" + subDir.ToFullPath(currentDir) + @"\" + currentFile.GetName(), toPath), Methods.EXTRACT_DIR);
                                     Progress.Register(++currentCounter / (double)steps, this.Handle, Methods.EXTRACT_DIR, true);
                                 }
                             }
@@ -964,7 +965,7 @@ namespace VFS.ExtendedVFS
         /// <param name="directoryPath">Path where the files will be extracted</param>
         public override async Task<Result<bool>> ExtractFiles(IFile[] files, IDirectoryPath directoryPath)
         {
-            if (files == null || directoryPath == null || !(await storage.DirectoryExists(directoryPath)))
+            if (files == null || directoryPath == null || !storage.DirectoryExists(directoryPath))
                 return new Result<bool>(false);
 
             Progress.Register(0.0, 0.0, this.Handle, Methods.EXTRACT_FILES);
@@ -982,7 +983,7 @@ namespace VFS.ExtendedVFS
                         if (directoryPath == this.WorkSpacePath && currentFile.IsInvalid)
                             continue; // Invalid file shouldn't be overriden.
 
-                        Result<bool> rst = await this.copyFileStream(currentFile, await createFile(@"\" + segments[segments.Length - 1], directoryPath), Methods.EXTRACT_FILES);
+                        Result<bool> rst = await this.copyFileStream(currentFile, createFile(@"\" + segments[segments.Length - 1], directoryPath), Methods.EXTRACT_FILES);
                         if (!rst.Value)
                         {
                             Progress.Register(1.0, 1.0, this.Handle, Methods.EXTRACT_FILES);
@@ -1012,7 +1013,7 @@ namespace VFS.ExtendedVFS
         public override async Task<Result<bool>> RemoveFile(string path, IDirectory startNode)
         {
             Result<bool> result = await base.RemoveFile(path, startNode);
-            
+
             if (this.SaveAfterChange)
                 await this.Save();
 
@@ -1046,7 +1047,7 @@ namespace VFS.ExtendedVFS
             IDirectoryPath createdDir = null;
             try
             {
-                createdDir = await storage.CreateDirectory(this.WorkSpacePath, this.FormatPath(dir.ToFullPath()));
+                createdDir = storage.CreateDirectory(this.WorkSpacePath, this.FormatPath(dir.ToFullPath()));
             }
             catch (Exception ex)
             {
@@ -1057,7 +1058,7 @@ namespace VFS.ExtendedVFS
 
             // CreateFile
             ExtendedFile mf = new ExtendedFile(new HeaderInfo(dir.ToFullPath() + @"\" + name, -data.Length, 0, false), dir as ExtendedDirectory, storage);
-            await mf.Initalize();
+            mf.Initalize();
             mf.IsInvalid = true;
 
             ExtendedFile oldFile = null;
@@ -1075,7 +1076,7 @@ namespace VFS.ExtendedVFS
             dir.GetFiles().Add(mf);
 
             // Write the bytes to dirsToCreate:
-            mf.OriginalFile = await storage.CombinePath(createdDir, name);
+            mf.OriginalFile = storage.CombinePath(createdDir, name);
 
             Task<Result<bool>> func = Task.Run(async () =>
             {
@@ -1223,7 +1224,7 @@ namespace VFS.ExtendedVFS
                 IDirectoryPath currentDir = null;
                 try
                 {
-                    currentDir = await storage.CreateDirectory(this.WorkSpacePath, this.FormatPath(dir.ToFullPath()));
+                    currentDir = storage.CreateDirectory(this.WorkSpacePath, this.FormatPath(dir.ToFullPath()));
                 }
                 catch (Exception ex)
                 {
@@ -1232,12 +1233,12 @@ namespace VFS.ExtendedVFS
 
                 // CreateFile
                 ExtendedFile mf = new ExtendedFile(new HeaderInfo(dir.ToFullPath() + @"\" + name, -stream.Length, 0, false), dir as ExtendedDirectory, storage);
-                await mf.Initalize();
+                mf.Initalize();
                 mf.IsInvalid = true;
                 dir.GetFiles().Add(mf);
 
                 // Write the bytes to dirsToCreate:
-                mf.OriginalFile = await storage.CombinePath(currentDir, name);
+                mf.OriginalFile = storage.CombinePath(currentDir, name);
 
                 using (var writeStream = await storage.OpenFile(mf.OriginalFile, Storage.FileAccess.Write, Storage.FileShare.ShareWrite, (int)BUFFER_SIZE))
                 {
@@ -1277,7 +1278,7 @@ namespace VFS.ExtendedVFS
                 if (this.SaveAfterChange)
                     await this.Save();
 
-                return new Result<bool>(true); 
+                return new Result<bool>(true);
             });
 
             return await task;
@@ -1288,7 +1289,7 @@ namespace VFS.ExtendedVFS
         /// </summary>
         public void ClearWorkspaceDirectory()
         {
-           WorkSpacePath.Remove(true);
+            WorkSpacePath.Remove(true);
             /*
             // Delete all files at top and delete all directories in top recursive
             foreach (System.IO.DirectoryInfo di in new System.IO.DirectoryInfo(this.WorkSpacePath).GetDirectories("*.*", SearchOption.TopDirectoryOnly))
@@ -1320,36 +1321,39 @@ namespace VFS.ExtendedVFS
                     return new Result<bool>(false, false, null);
 
                 Progress.Register(1.0, 0.25, this.Handle, Methods.SAVE);
+
                 // Extract files, clear vPathes, CreateVHP
                 // Extract files from root directory into workspace directory
                 await this.ExtractFiles(this.RootDirectory.GetFiles().ToArray(), this.WorkSpacePath);
 
+                storage.DeleteFile(this.saveFile);
+
                 this.RootDirectory.GetSubDirectories().Clear();
                 this.RootDirectory.GetFiles().Clear();
 
-                await storage.DeleteFile(this.saveFile);
-
                 Progress.Register(1.0, 0.5, this.Handle, Methods.SAVE);
-                //this.CreateVHP(this.WorkSpacePath);
+
                 // Another idea: read all files in workspace dir but only at the top directory
                 List<IFilePath> files = new List<IFilePath>();
-                foreach (IFilePath fi in this.WorkSpacePath.GetFiles().Result)
+                foreach (IFilePath fi in this.WorkSpacePath.GetFiles())
                     files.Add(fi);
 
                 // VHP without directories, just with these files.
                 await this.Create(files.ToArray(), new IDirectoryPath[] { });
+
 
                 Progress.Register(1.0, 0.75, this.Handle, Methods.SAVE);
                 await this.Read(this.saveFile);
                 this.ClearWorkspaceDirectory();
 
                 Progress.Register(1.0, 1.0, this.Handle, Methods.SAVE);
+
                 return new Result<bool>(true, true, null);
             }
 
             // Step 1
             Progress.Register(1.0, 0.25, this.Handle, Methods.SAVE);
-            await this.ExtractDirectory(this.RootDirectory, this.WorkSpacePath);
+            await ExtractDirectory(this.RootDirectory, this.WorkSpacePath);
 
             // Step 2: Clear root directory
             this.RootDirectory.GetFiles().Clear();
@@ -1361,16 +1365,17 @@ namespace VFS.ExtendedVFS
             List<IFilePath> files1 = new List<IFilePath>();
             List<IDirectoryPath> directories = new List<IDirectoryPath>();
 
-            foreach (IFilePath fi in this.WorkSpacePath.GetFiles().Result)
+            foreach (IFilePath fi in this.WorkSpacePath.GetFiles())
                 files1.Add(fi);
-            foreach (IDirectoryPath di in this.WorkSpacePath.GetDirectories().Result)
+
+            foreach (IDirectoryPath di in this.WorkSpacePath.GetDirectories())
                 directories.Add(di);
 
             await this.Create(files1.ToArray(), directories.ToArray());
 
             // Step 3
-            Progress.Register(1.0, 0.75, this.Handle, Methods.SAVE);
             await this.Read(this.saveFile);
+            Progress.Register(1.0, 0.75, this.Handle, Methods.SAVE);
 
             // Step 4
             // Delte directory entirely and create new one

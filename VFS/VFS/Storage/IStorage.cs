@@ -17,17 +17,17 @@ namespace VFS.Storage
 
         IMemoryStream OpenMemoryStream();
 
-        Task<bool> FileExists(IFilePath file);
+        bool FileExists(IFilePath file);
 
-        Task<bool> DirectoryExists(IDirectoryPath directory);
+        bool DirectoryExists(IDirectoryPath directory);
 
-        Task<IDirectoryPath> CreateDirectory(IDirectoryPath id, string subPath);
+        IDirectoryPath CreateDirectory(IDirectoryPath id, string subPath);
 
-        Task<IDirectoryPath> CreateDirectory(IDirectoryPath id, string subPath, bool isPath);
+        IDirectoryPath CreateDirectory(IDirectoryPath id, string subPath, bool isPath);
 
-        Task<IFilePath> CombinePath(IDirectoryPath path, string name);
+        IFilePath CombinePath(IDirectoryPath path, string name);
 
-        Task DeleteFile(IFilePath file);
+        void DeleteFile(IFilePath file);
 
         IDirectoryPath GetWorkSpacePath();
     }

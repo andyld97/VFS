@@ -18,6 +18,7 @@ using V = VFS;
 using System.Threading;
 using VFS.Application.GUI.Tab;
 using VN = VFS.Net;
+using VFS.Net;
 
 namespace VFS.Application.GUI
 {
@@ -42,6 +43,7 @@ namespace VFS.Application.GUI
             InitializeComponent();
             this.loadLanguage();
         }
+
 
         private void loadLanguage()
         {

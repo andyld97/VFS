@@ -27,48 +27,39 @@ namespace VFS.Net
             this.di = new System.IO.DirectoryInfo(path);
         }
 
-        public async Task<bool> CreateDirectory(string name)
+        public bool CreateDirectory(string name)
         {
-            return await Task<bool>.Run(delegate
+            try
             {
-                try
-                {
-                    System.IO.Directory.CreateDirectory(System.IO.Path.Combine(di.FullName, name));
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            });
+                System.IO.Directory.CreateDirectory(System.IO.Path.Combine(di.FullName, name));
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public async Task<IEnumerable<IDirectoryPath>> GetDirectories()
+        public IEnumerable<IDirectoryPath> GetDirectories()
         {
-            return await Task.Run(delegate
-            {
-                this.di = new System.IO.DirectoryInfo(path);
-                List<DirectoryPath> dirs = new List<DirectoryPath>();
+            this.di = new System.IO.DirectoryInfo(path);
+            List<DirectoryPath> dirs = new List<DirectoryPath>();
 
-                foreach (var directory in di.GetDirectories("*.*", System.IO.SearchOption.TopDirectoryOnly))
-                    dirs.Add(new DirectoryPath(directory.FullName));
+            foreach (var directory in di.GetDirectories())
+                dirs.Add(new DirectoryPath(directory.FullName));
 
-                return dirs;
-            });
+            return dirs;     
         }
 
-        public async Task<IEnumerable<IFilePath>> GetFiles()
+        public IEnumerable<IFilePath> GetFiles()
         {
-            return await Task.Run(delegate
-            {
-                this.di = new System.IO.DirectoryInfo(path);
-                List<FilePath> files = new List<FilePath>();
+            this.di = new System.IO.DirectoryInfo(path);
+            List<FilePath> files = new List<FilePath>();
 
-                foreach (var file in di.GetFiles("*.*", System.IO.SearchOption.TopDirectoryOnly))
-                    files.Add(new FilePath(file.FullName));
+            foreach (var file in di.GetFiles("*.*", System.IO.SearchOption.TopDirectoryOnly))
+                files.Add(new FilePath(file.FullName));
 
-                return files;
-            });
+            return files;
         }
 
         public string Name()
@@ -81,20 +72,17 @@ namespace VFS.Net
             return new DirectoryPath(di.Parent.FullName);
         }
 
-        public async Task<bool> Remove(bool recursive)
+        public bool Remove(bool recursive)
         {
-            return await Task.Run(delegate
+            try
             {
-                try
-                {
-                    System.IO.Directory.Delete(path, recursive);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            });
+                System.IO.Directory.Delete(path, recursive);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public string ToFullPath()

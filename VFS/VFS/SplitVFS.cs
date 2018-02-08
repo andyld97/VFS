@@ -519,7 +519,7 @@ namespace VFS
             {
                 // Read archiv format.
                 // Doing this in a thread
-                if (await storage.FileExists(file))
+                if (storage.FileExists(file))
                 {
                     List<List<byte>> getBytes = new List<List<byte>>();
                     getBytes.Add(new List<byte>());
@@ -619,7 +619,7 @@ namespace VFS
 
             Func<Task<Result<bool>>> func = async () =>
             {
-                if ( await storage.DirectoryExists(path))
+                if (storage.DirectoryExists(path))
                 {
                     // Extract now.
                     // Create directories
@@ -634,7 +634,7 @@ namespace VFS
                             IDirectoryPath dirPath = null;
                             try
                             {
-                                dirPath = await storage.CreateDirectory(path, this.FormatPath(currentDir.ToFullPath()));
+                                dirPath = storage.CreateDirectory(path, this.FormatPath(currentDir.ToFullPath()));
                             }
                             catch (Exception ex)
                             {
@@ -659,7 +659,7 @@ namespace VFS
                         Progress.Register(step / count, 0.0, this.Handle, Methods.EXTRACT);
                         try
                         {
-                            IFilePath currentFileToWrite = await storage.CombinePath(path, this.FormatPath(currentFile.Path));
+                            IFilePath currentFileToWrite = storage.CombinePath(path, this.FormatPath(currentFile.Path));
                             byte[] dataToWrite = currentFile.Bytes.ToArray();
 
                             using (IStream writeStream = await storage.OpenFile(currentFileToWrite, FileAccess.Write, FileShare.ShareWrite, 4096))
@@ -685,7 +685,7 @@ namespace VFS
                         {
                             foreach (IFile currentFile in currentDir.GetFiles())
                             {
-                                IFilePath fileToWrite = await storage.CombinePath(path, this.FormatPath(currentFile.GetPath()));
+                                IFilePath fileToWrite = storage.CombinePath(path, this.FormatPath(currentFile.GetPath()));
                                 try
                                 {
                                     var data = currentFile.GetBytes().ToArray();
@@ -759,7 +759,7 @@ namespace VFS
                     {
                         // Those it from root dir.
                         IFile _currentFile = NULLFILE.ByPath(this.rootDir.GetFiles(), path[y]);
-                        IFilePath cF = await storage.CombinePath(targetDirectory, this.FormatPath(path[y]));
+                        IFilePath cF = storage.CombinePath(targetDirectory, this.FormatPath(path[y]));
 
                         if (_currentFile != null)
                         {
@@ -784,10 +784,10 @@ namespace VFS
                     string currentPathWithFile = path[y];
                     IDirectory lastNodeFromPath = this.RootDirectory.CalculateLastNode(currentPath);
 
-                    await storage.CreateDirectory(targetDirectory, this.FormatPath(lastNodeFromPath.ToFullPath()));
+                    storage.CreateDirectory(targetDirectory, this.FormatPath(lastNodeFromPath.ToFullPath()));
 
                     IFile currentFile = NULLFILE.ByPath(lastNodeFromPath.GetFiles(), currentPathWithFile);
-                    IFilePath toWriteFile = await storage.CombinePath(targetDirectory, this.FormatPath(currentPathWithFile));
+                    IFilePath toWriteFile = storage.CombinePath(targetDirectory, this.FormatPath(currentPathWithFile));
 
                     if (currentFile != null)
                     {
@@ -831,14 +831,14 @@ namespace VFS
 
             Task<Result<bool>> func = Task.Run(async () =>
             {
-                if (await storage.DirectoryExists(targetDir))
+                if (storage.DirectoryExists(targetDir))
                 {
                     Action<IDirectory> passDirs = null;
 
                     IDirectoryPath dir = null;
                     try
                     {
-                        dir = await storage.CreateDirectory(dir, currentDir.GetName());
+                        dir = storage.CreateDirectory(dir, currentDir.GetName());
                     }
                     catch (Exception ex)
                     {
@@ -854,7 +854,7 @@ namespace VFS
                     {
                         Progress.Register(step / count, 0.0, this.Handle, Methods.EXTRACT_DIR);
 
-                        IFilePath file = await storage.CombinePath(dir, currentFile.GetName());
+                        IFilePath file = storage.CombinePath(dir, currentFile.GetName());
                         try
                         {
                             using (var writeStream = await storage.OpenFile(file, FileAccess.Write, FileShare.ShareWrite, 4096))
@@ -880,11 +880,11 @@ namespace VFS
                         {
                             try
                             {
-                                IDirectoryPath subSubDir = await storage.CreateDirectory(targetDir, currentDir.GetName() + @"\" + currentDir);
+                                IDirectoryPath subSubDir = storage.CreateDirectory(targetDir, currentDir.GetName() + @"\" + currentDir);
 
                                 foreach (IFile currentFile in subDir.GetFiles())
                                 {
-                                    IFilePath localFile = await storage.CombinePath(subSubDir, currentFile.GetName());
+                                    IFilePath localFile = storage.CombinePath(subSubDir, currentFile.GetName());
 
                                     try
                                     {
@@ -1073,7 +1073,7 @@ namespace VFS
                         Interfaces.IDirectory lastDirectory = (nPath == string.Empty ? vDir : vDir.CalculateLastNode(nPath));
 
                         // ToDo: Consider this loop \/ in progress calculation!
-                        foreach (var fi in lastDir.GetFiles().Result)
+                        foreach (var fi in lastDir.GetFiles())
                         {
                             File currentFile = new File(fi.GetName(), lastDirectory);
                             try
@@ -1091,7 +1091,7 @@ namespace VFS
                             lastDirectory.GetFiles().Add(currentFile);
                         }
 
-                        foreach (var d in lastDir.GetDirectories().Result)
+                        foreach (var d in lastDir.GetDirectories())
                             recurseDirs(d);
                     });
 

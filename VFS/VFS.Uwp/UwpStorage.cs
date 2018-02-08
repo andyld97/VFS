@@ -22,68 +22,87 @@ namespace VFS.Uwp
 
         private StorageFolder workspacePath = null;
 
-        public async Task<IFilePath> CombinePath(IDirectoryPath path, string name)
+        public IFilePath CombinePath(IDirectoryPath path, string name)
         {
-            var file = await (path as DirectoryPath).Folder.CreateFileAsync(name, Windows.Storage.CreationCollisionOption.OpenIfExists);
-            return new FilePath(file);
+            var task = Task.Run(async () => {
+                var file = await (path as DirectoryPath).LocalFolder.CreateFileAsync(name, Windows.Storage.CreationCollisionOption.OpenIfExists);
+                return new FilePath(file);
+            });
+            task.Wait();
+            return task.Result;
         }
 
-        public async Task<IDirectoryPath> CreateDirectory(IDirectoryPath id, string subPath)
+        public IDirectoryPath CreateDirectory(IDirectoryPath id, string subPath)
         {
-            StorageFolder current = (id as DirectoryPath).Folder;
-
-            string[] segements = subPath.Split(new string[] { @"\"}, StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < segements.Length; i++)
+            var task = Task.Run(async () =>
             {
-                string currentSegement = segements[i];
-                current = await current.CreateFolderAsync(currentSegement);
-            }
+                StorageFolder current = (id as DirectoryPath).LocalFolder;
 
-            return new DirectoryPath(current);
+                string[] segements = subPath.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int i = 0; i < segements.Length; i++)
+                {
+                    string currentSegement = segements[i];
+                    current = await current.CreateFolderAsync(currentSegement);
+                }
+
+                return new DirectoryPath(current);
+            });
+            task.Wait();
+
+            return task.Result;
         }
 
-        public async Task<IDirectoryPath> CreateDirectory(IDirectoryPath id, string subPath, bool isPath)
+        public IDirectoryPath CreateDirectory(IDirectoryPath id, string subPath, bool isPath)
         {
-            return await CreateDirectory(id, subPath);
+            return CreateDirectory(id, subPath);
         }
 
-        public async Task DeleteFile(IFilePath file)
+        public void DeleteFile(IFilePath file)
         {
-            await (file as FilePath).LocalFile.DeleteAsync();
+            var task = Task.Run(async () =>
+            {
+                await (file as FilePath).LocalFile.DeleteAsync();
+            });
+            task.Wait();
         }
 
-        public async Task<bool> DirectoryExists(IDirectoryPath directory)
+        public bool DirectoryExists(IDirectoryPath directory)
         {
-            try
+            var task = Task.Run(async () =>
             {
-                var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directory.ToFullPath());
-                var parentFolder = await folder.GetParentAsync();
+                try
+                {
+                    var folder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(directory.ToFullPath());
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
 
-                await parentFolder.GetItemAsync(folder.Name);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            });
+            task.Wait();
+            return task.Result;
         }
 
-        public async Task<bool> FileExists(IFilePath file)
+        public bool FileExists(IFilePath file)
         {
-            try
+            var task = Task.Run(async () =>
             {
-                var f = await Windows.Storage.StorageFile.GetFileFromPathAsync(file.ToFullPath());
-                var parentFolder = await f.GetParentAsync();
-                await parentFolder.GetItemAsync(file.GetName());
+                try
+                {
+                    var folder = await Windows.Storage.StorageFile.GetFileFromPathAsync(file.ToFullPath());
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
 
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            });
+            task.Wait();
+            return task.Result;
         }
 
         public IDirectoryPath GetWorkSpacePath()
@@ -98,7 +117,8 @@ namespace VFS.Uwp
 
         public async Task<IStream> OpenFile(IFilePath file, FileAccess access, FileShare share, int BUFFER)
         {
-            var localFile = (file as FilePath).LocalFile;
+            var localFile = await StorageFile.GetFileFromPathAsync(file.ToFullPath());
+
             Windows.Storage.Streams.IRandomAccessStream stream = null;
 
             switch (access)
@@ -115,7 +135,7 @@ namespace VFS.Uwp
                     break;
             }
 
-            return new VStream(System.IO.WindowsRuntimeStreamExtensions.AsStream(stream));
+            return new VStream(System.IO.WindowsRuntimeStreamExtensions.AsStream(stream, BUFFER));
         }
 
         public IMemoryStream OpenMemoryStream()

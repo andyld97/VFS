@@ -15,9 +15,9 @@ namespace VFS.Uwp
 {
     public class FilePath : IFilePath
     {
-        public StorageFile LocalFile { get => sf; }
-
         private StorageFile sf = null;
+
+        public StorageFile LocalFile { get => sf; }
 
         public FilePath(StorageFile sf)
         {
@@ -29,14 +29,19 @@ namespace VFS.Uwp
             return sf.Name;
         }
 
-        public async Task<long> Length()
+        public long Length()
         {
-            Windows.Storage.FileProperties.BasicProperties basicProperties = await sf.GetBasicPropertiesAsync();
-            return (long)basicProperties.Size;
+            Task<ulong> task = Task.Run(async () => {
+                var properties = await sf.GetBasicPropertiesAsync();
+                return properties.Size;
+            });
+
+            task.Wait();
+            return (long)task.Result;
         }
 
         public async Task SetName(string name)
-        {
+        {;
             await sf.RenameAsync(name);
         }
 
